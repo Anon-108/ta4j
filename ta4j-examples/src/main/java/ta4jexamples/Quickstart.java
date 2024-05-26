@@ -45,7 +45,7 @@ import ta4jexamples.loaders.CsvTradesLoader;
 
 /**
  * Quickstart for ta4j.
- * * ta4j 快速入门。
+ * * ta4j 快速入门!
  *
  * Global example.
  */
