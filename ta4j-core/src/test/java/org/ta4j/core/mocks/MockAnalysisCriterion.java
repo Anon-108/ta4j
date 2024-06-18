@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -58,6 +58,7 @@ public class MockAnalysisCriterion implements AnalysisCriterion {
      * @param position is ignored
      *                 被忽略
      */
+    @Override
     public Num calculate(BarSeries series, Position position) {
         return values.get(values.size() - 1);
     }
@@ -70,6 +71,7 @@ public class MockAnalysisCriterion implements AnalysisCriterion {
      *                      BarSeries 被忽略
      * @param tradingRecord is ignored 被忽略
      */
+    @Override
     public Num calculate(BarSeries series, TradingRecord tradingRecord) {
         return values.get(values.size() - 1);
     }
@@ -85,6 +87,7 @@ public class MockAnalysisCriterion implements AnalysisCriterion {
      * @return boolean indicating first value is greater than second value
      * * @return 布尔值表示第一个值大于第二个值
      */
+    @Override
     public boolean betterThan(Num criterionValue1, Num criterionValue2) {
         return criterionValue1.isGreaterThan(criterionValue2);
     }

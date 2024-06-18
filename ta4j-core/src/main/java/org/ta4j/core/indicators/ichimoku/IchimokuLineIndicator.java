@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -52,19 +52,24 @@ public class IchimokuLineIndicator extends CachedIndicator<Num> {
 
     /**
      * Contructor.
-     * 
-     * @param series   the series
+     *
+     * @param series   the bar series
      * @param barCount the time frame
      *                 时间范围
      */
     public IchimokuLineIndicator(BarSeries series, int barCount) {
         super(series);
-        periodHigh = new HighestValueIndicator(new HighPriceIndicator(series), barCount);
-        periodLow = new LowestValueIndicator(new LowPriceIndicator(series), barCount);
+        this.periodHigh = new HighestValueIndicator(new HighPriceIndicator(series), barCount);
+        this.periodLow = new LowestValueIndicator(new LowPriceIndicator(series), barCount);
     }
 
     @Override
     protected Num calculate(int index) {
         return periodHigh.getValue(index).plus(periodLow.getValue(index)).dividedBy(numOf(2));
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return 0;
     }
 }

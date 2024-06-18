@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -29,14 +29,8 @@ import org.ta4j.core.rules.OrRule;
 import org.ta4j.core.rules.XorRule;
 
 /**
- * A rule for strategy building.
- * * 建立策略的规则。
- *
- * A trading rule may be composed of a combination of other rules.
- * * 一条交易规则可能由其他规则组合而成。
- *
- * A {@link Strategy trading strategy} is a pair of complementary (entry and exit) rules.
- * * {@link Strategy 交易策略} 是一对互补的（进入和退出）规则。
+ * A rule (also called "trading rule") used to build a {@link Strategy trading
+ * strategy}. A trading rule can consist of a combination of other rules.
  */
 public interface Rule {
 

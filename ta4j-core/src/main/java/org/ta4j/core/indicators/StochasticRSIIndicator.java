@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -48,9 +48,12 @@ import org.ta4j.core.num.Num;
  * 交易者通常使用Stochastic RSI指标来识别价格的超买和超卖情况，并据此制定买卖策略。例如，当Stochastic RSI指标从超卖区域上升至超买区域时，可能暗示着价格即将下跌，为卖出信号；相反，当Stochastic RSI指标从超买区域下降至超卖区域时，可能暗示着价格即将上涨，为买入信号。
  *
  * 总的来说，Stochastic RSI指标是一种结合了RSI指标和随机振荡器的特点，用于识别价格的超买和超卖情况的技术指标，可以帮助交易者更好地理解市场的价格动态并制定相应的交易策略。
- * 
+ *
+ *
+ * <pre>
  * Stoch RSI = (RSI - MinimumRSIn) / (MaximumRSIn - MinimumRSIn)
  * 随机 RSI = (RSI - 最小 RSIn) / (最大 RAIn - 最小 RAIn)
+ * </pre>
  */
 public class StochasticRSIIndicator extends CachedIndicator<Num> {
 
@@ -59,11 +62,14 @@ public class StochasticRSIIndicator extends CachedIndicator<Num> {
     private final HighestValueIndicator maxRsi;
 
     /**
-     * Constructor. In most cases, this should be used to avoid confusion over what Indicator parameters should be used.
-     * * 构造函数。 在大多数情况下，这应该用来避免混淆应该使用哪些指标参数。
+     * Constructor.
      * 
-     * @param series   the series 序列
-     * @param barCount the time frame 時間範圍
+     * <p>
+     * <b>Note:</b> In most cases, this constructor should be used to avoid
+     * confusion about which indicator parameters to use.
+     *
+     * @param series   the bar series
+     * @param barCount the time frame for {@link #minRsi} and {@link #maxRsi}
      */
     public StochasticRSIIndicator(BarSeries series, int barCount) {
         this(new ClosePriceIndicator(series), barCount);
@@ -71,10 +77,9 @@ public class StochasticRSIIndicator extends CachedIndicator<Num> {
 
     /**
      * Constructor.
-     * 
-     * @param indicator the Indicator, in practice is always a ClosePriceIndicator.
-     *                  指标，在实践中始终是 ClosePriceIndicator。
-     * @param barCount  the time frame  時間範圍
+     *
+     * @param indicator the Indicator (usually a {@link ClosePriceIndicator})
+     * @param barCount  the time frame for {@link #minRsi} and {@link #maxRsi}
      */
     public StochasticRSIIndicator(Indicator<Num> indicator, int barCount) {
         this(new RSIIndicator(indicator, barCount), barCount);
@@ -82,21 +87,26 @@ public class StochasticRSIIndicator extends CachedIndicator<Num> {
 
     /**
      * Constructor.
-     * 
-     * @param rsiIndicator the rsi indicator  rsi 指标
-     * @param barCount     the time frame 時間指標
+     *
+     * @param rsiIndicator the {@link RSIIndicator}
+     * @param barCount     the time frame for {@link #minRsi} and {@link #maxRsi}
      */
     public StochasticRSIIndicator(RSIIndicator rsiIndicator, int barCount) {
         super(rsiIndicator);
         this.rsi = rsiIndicator;
-        minRsi = new LowestValueIndicator(rsiIndicator, barCount);
-        maxRsi = new HighestValueIndicator(rsiIndicator, barCount);
+        this.minRsi = new LowestValueIndicator(rsiIndicator, barCount);
+        this.maxRsi = new HighestValueIndicator(rsiIndicator, barCount);
     }
 
     @Override
     protected Num calculate(int index) {
         Num minRsiValue = minRsi.getValue(index);
         return rsi.getValue(index).minus(minRsiValue).dividedBy(maxRsi.getValue(index).minus(minRsiValue));
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return 0;
     }
 
 }

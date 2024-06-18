@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -23,11 +23,15 @@
  */
 package org.ta4j.core.indicators.helpers;
 
-import org.ta4j.core.Bar;
 import org.ta4j.core.BarSeries;
+import org.ta4j.core.indicators.AbstractIndicator;
+import org.ta4j.core.num.Num;
 
 /**
  * Low price indicator.
+ *
+ * <p>
+ * Returns the low price of a bar.
  * 低价指标。
  *
  * 低价指标通常用于衡量资产在一段时间内达到的最低价格水平。这种指标有助于分析市场中的价格走势，并且可以帮助确定价格的支撑位或价格底部。
@@ -41,10 +45,25 @@ import org.ta4j.core.BarSeries;
  *
  * 低价指标通常以数字形式表示，例如某个资产在一段时间内的最低交易价格。这些指标提供了有关市场价格走势和价格极值的重要信息，并且对于制定交易决策和进行市场分析非常有帮助。
  */
-public class LowPriceIndicator extends PriceIndicator {
+public class LowPriceIndicator extends AbstractIndicator<Num> {
 
+    /**
+     * Constructor.
+     *
+     * @param series the bar series
+     */
     public LowPriceIndicator(BarSeries series) {
-        super(series, Bar::getLowPrice);
+        super(series);
     }
 
+    @Override
+    public Num getValue(int index) {
+        return getBarSeries().getBar(index).getLowPrice();
+    }
+
+    /** @return {@code 0} */
+    @Override
+    public int getUnstableBars() {
+        return 0;
+    }
 }

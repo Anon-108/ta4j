@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -29,21 +29,17 @@ import org.ta4j.core.BarSeries;
 import org.ta4j.core.num.Num;
 
 /**
- * A fixed decimal indicator.
- * 一个固定的小数指示符。
+ * A fixed {@code Num} indicator.
  *
- * 固定小数指标可能是指一种技术分析指标，其输出结果为固定的小数值。这种指标通常用于衡量价格变化、波动性或其他市场特征，并且其输出值的精度通常是固定的。
- * 一个例子是平均真实范围（Average True Range，ATR）指标。ATR指标通常用于衡量资产价格的波动性，其输出结果是一个正数，表示一段时间内价格的平均波动范围。例如，ATR值为2.5可能表示该资产在过去一段时间内的平均每天波动范围为2.5个价格单位。
- *
- * 另一个例子是移动平均线指标。移动平均线指标通常用于平滑价格数据并识别趋势方向，其输出结果是一个数值序列，表示不同时间段内的平均价格。例如，一个20日移动平均线的输出值可能是一个固定的小数，表示过去20个交易日的平均价格。
- *
- * 这些固定小数指标在技术分析中广泛使用，因为它们提供了对市场特征的定量衡量，帮助分析师和交易者更好地理解市场的走势和行为。
+ * <p>
+ * Returns constant {@link Num} values for a bar.
  */
 public class FixedDecimalIndicator extends FixedIndicator<Num> {
 
     /**
      * Constructor.
-     * 
+     *
+     * @param series the bar series
      * @param values the values to be returned by this indicator
      *               该指标要返回的值
      */
@@ -56,8 +52,8 @@ public class FixedDecimalIndicator extends FixedIndicator<Num> {
 
     /**
      * Constructor.
-     * 构造函数
-     * 
+     *
+     * @param series the bar series
      * @param values the values to be returned by this indicator
      *               该指标要返回的值
      */

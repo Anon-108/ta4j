@@ -1,8 +1,8 @@
 /**
  * 麻省理工学院许可证 (MIT)
  *
- * 版权所有 (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j 组织及相关
- *作者（见作者）
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
+ * authors (see AUTHORS)
  *
  * 特此免费授予任何获得以下文件副本的人的许可
  * 本软件及相关文档文件（以下简称“软件”），用于处理
@@ -25,13 +25,10 @@
  * Trading rules for trading strategies.
  * 交易策略的交易规则。
  *
- * {@link org.ta4j.core.Rule} can be combined and set as entry/exit signals for
-  a trading {@link org.ta4j.core.Strategy}. A trading strategy is designed to
-  achieve a profitable return by going long or short over a
-  {@link org.ta4j.core.BarSeries}.
- {@link org.ta4j.core.Rule} 可以组合并设置为进入/退出信号
- 交易{@link org.ta4j.core.Strategy}。 交易策略旨在
- 通过做多或做空来获得可盈利的回报
- {@link org.ta4j.core.BarSeries}。
+ * <p>
+ * A {@link org.ta4j.core.Rule rule} can be combined and set as entry/exit
+ * signals for a {@link org.ta4j.core.Strategy trading strategy}. A trading
+ * strategy is designed to achieve a profitable return by going long or short
+ * over a {@link org.ta4j.core.BarSeries series}.
  */
 package org.ta4j.core.rules;

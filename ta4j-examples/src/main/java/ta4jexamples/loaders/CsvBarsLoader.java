@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -26,7 +26,7 @@ package ta4jexamples.loaders;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -37,7 +37,10 @@ import java.util.logging.Logger;
 import org.ta4j.core.BarSeries;
 import org.ta4j.core.BaseBarSeries;
 
+import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.exceptions.CsvValidationException;
 
 /**
  * This class build a Ta4j bar series from a CSV file containing bars.
@@ -51,6 +54,7 @@ public class CsvBarsLoader {
      * @return the bar series from Apple Inc. bars.
      * * @return 来自 Apple Inc. 酒吧的酒吧系列。
      */
+
     public static BarSeries loadAppleIncSeries() {
         return loadCsvSeries("appleinc_bars_from_20130101_usd.csv");
     }
@@ -61,18 +65,29 @@ public class CsvBarsLoader {
 
         BarSeries series = new BaseBarSeries("apple_bars");
 
-        try (CSVReader csvReader = new CSVReader(new InputStreamReader(stream, Charset.forName("UTF-8")), ',', '"',
-                1)) {
-            String[] line;
-            while ((line = csvReader.readNext()) != null) {
-                ZonedDateTime date = LocalDate.parse(line[0], DATE_FORMAT).atStartOfDay(ZoneId.systemDefault());
-                double open = Double.parseDouble(line[1]);
-                double high = Double.parseDouble(line[2]);
-                double low = Double.parseDouble(line[3]);
-                double close = Double.parseDouble(line[4]);
-                double volume = Double.parseDouble(line[5]);
+        // new CSVReader(, ',', '"',
+        // 1)
 
-                series.addBar(date, open, high, low, close, volume);
+        try {
+            assert stream != null;
+            try (CSVReader csvReader = new CSVReaderBuilder(new InputStreamReader(stream, StandardCharsets.UTF_8))
+                    .withCSVParser(new CSVParserBuilder().withSeparator(',').build())
+                    .withSkipLines(1)
+                    .build()) {
+                String[] line;
+                while ((line = csvReader.readNext()) != null) {
+                    ZonedDateTime date = LocalDate.parse(line[0], DATE_FORMAT).atStartOfDay(ZoneId.systemDefault());
+                    double open = Double.parseDouble(line[1]);
+                    double high = Double.parseDouble(line[2]);
+                    double low = Double.parseDouble(line[3]);
+                    double close = Double.parseDouble(line[4]);
+                    double volume = Double.parseDouble(line[5]);
+
+                    series.addBar(date, open, high, low, close, volume);
+                }
+            } catch (CsvValidationException e) {
+                Logger.getLogger(CsvBarsLoader.class.getName())
+                        .log(Level.SEVERE, "Unable to load bars from CSV. File is not valid csv.", e);
             }
         } catch (IOException ioe) {
             Logger.getLogger(CsvBarsLoader.class.getName()).log(Level.SEVERE, "Unable to load bars from CSV 无法从 CSV 加载条形图", ioe);

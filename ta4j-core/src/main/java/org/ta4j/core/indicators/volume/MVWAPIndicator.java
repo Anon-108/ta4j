@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -46,7 +46,8 @@ import org.ta4j.core.num.Num;
  *    其中，\( n \) 表示移动窗口期的长度，\( TPV_i \) 和 \( 成交量_i \) 分别表示第 \( i \) 个交易周期的成交量加权的典型价格和成交量。
  *
  * MVWAP指标提供了一个考虑成交量的平均价格，因此更加反映了市场中的交易活动情况。它常被用来识别价格的趋势和支撑/阻力水平，以及判断交易者的入场和离场时机。
- * 
+ *
+ *
  * @see <a href=
  *      "http://www.investopedia.com/articles/trading/11/trading-with-vwap-mvwap.asp">
  *      http://www.investopedia.com/articles/trading/11/trading-with-vwap-mvwap.asp</a>
@@ -57,7 +58,7 @@ public class MVWAPIndicator extends CachedIndicator<Num> {
 
     /**
      * Constructor.
-     * 
+     *
      * @param vwap     the vwap
      *                 vwap
      * @param barCount the time frame
@@ -71,6 +72,11 @@ public class MVWAPIndicator extends CachedIndicator<Num> {
     @Override
     protected Num calculate(int index) {
         return sma.getValue(index);
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return 0;
     }
 
 }

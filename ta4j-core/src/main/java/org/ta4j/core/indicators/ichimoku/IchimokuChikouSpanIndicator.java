@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -30,6 +30,7 @@ import org.ta4j.core.num.NaN;
 import org.ta4j.core.num.Num;
 
 /**
+ * Ichimoku clouds: Chikou Span indicator.
  * Ichimoku clouds: Chikou Span indicator
  * 一目(均衡线) 云:赤口跨度指标
  *
@@ -57,11 +58,9 @@ public class IchimokuChikouSpanIndicator extends CachedIndicator<Num> {
     private final int timeDelay;
 
     /**
-     * Constructor.
-     * 构造函数。
+     * Constructor with {@code barCount} = 26.
      *
-     * @param series the series
-     *               该系列
+     * @param series the bar series
      */
     public IchimokuChikouSpanIndicator(BarSeries series) {
         this(series, 26);
@@ -71,8 +70,7 @@ public class IchimokuChikouSpanIndicator extends CachedIndicator<Num> {
      * Constructor.
      * 构造函数
      *
-     * @param series    the series
-     *                  该系列
+     * @param series    the bar series
      * @param timeDelay the time delay (usually 26)
      *                  时间延迟（通常为 26）
      */
@@ -90,6 +88,11 @@ public class IchimokuChikouSpanIndicator extends CachedIndicator<Num> {
         } else {
             return NaN.NaN;
         }
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return 0;
     }
 
 }

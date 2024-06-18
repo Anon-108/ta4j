@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -32,6 +32,7 @@ import org.ta4j.core.indicators.helpers.VolumeIndicator;
 import org.ta4j.core.num.Num;
 
 /**
+ * Intraday Intensity Index.
  * Intraday Intensity Index
  * 日内强度指数
  *
@@ -65,6 +66,11 @@ public class IIIIndicator extends CachedIndicator<Num> {
     private final VolumeIndicator volumeIndicator;
     private final Num two;
 
+    /**
+     * Constructor.
+     *
+     * @param series the bar series
+     */
     public IIIIndicator(BarSeries series) {
         super(series);
         this.closePriceIndicator = new ClosePriceIndicator(series);
@@ -77,7 +83,7 @@ public class IIIIndicator extends CachedIndicator<Num> {
     @Override
     protected Num calculate(int index) {
         if (index == getBarSeries().getBeginIndex()) {
-            return numOf(0);
+            return zero();
         }
         final Num doubledClosePrice = two.multipliedBy(closePriceIndicator.getValue(index));
         final Num high = highPriceIndicator.getValue(index);
@@ -87,5 +93,10 @@ public class IIIIndicator extends CachedIndicator<Num> {
 
         return doubledClosePrice.minus(highPlusLow)
                 .dividedBy(highMinusLow.multipliedBy(volumeIndicator.getValue(index)));
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return 0;
     }
 }

@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -23,16 +23,15 @@
  */
 package ta4jexamples.loaders;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,6 +39,7 @@ import org.ta4j.core.Bar;
 import org.ta4j.core.BarSeries;
 import org.ta4j.core.BaseBar;
 import org.ta4j.core.BaseBarSeries;
+import org.ta4j.core.num.Num;
 
 import com.opencsv.CSVReader;
 
@@ -59,22 +59,13 @@ public class CsvTradesLoader {
         // 读取 CSV 文件的所有行
         InputStream stream = CsvTradesLoader.class.getClassLoader()
                 .getResourceAsStream("bitstamp_trades_from_20131125_usd.csv");
-        CSVReader csvReader = null;
         List<String[]> lines = null;
-        try {
-            csvReader = new CSVReader(new InputStreamReader(stream, Charset.forName("UTF-8")), ',');
+        assert stream != null;
+        try (CSVReader csvReader = new com.opencsv.CSVReader(new InputStreamReader(stream))) {
             lines = csvReader.readAll();
-            lines.remove(0); // Removing header line // 删除标题行
-        } catch (IOException ioe) {
-            Logger.getLogger(CsvTradesLoader.class.getName()).log(Level.SEVERE, "Unable to load trades from CSV 无法从 CSV 加载交易", ioe);
-        } finally {
-            if (csvReader != null) {
-                try {
-                    csvReader.close();
-                } catch (IOException ioe) {
-                    ioe.printStackTrace();
-                }
-            }
+            lines.remove(0); // Removing header line
+        } catch (Exception ioe) {
+            Logger.getLogger(CsvTradesLoader.class.getName()).log(Level.SEVERE, "Unable to load trades from CSV", ioe);
         }
 
         BarSeries series = new BaseBarSeries();
@@ -117,12 +108,12 @@ public class CsvTradesLoader {
      * @param lines     the csv data returned by CSVReader.readAll()
      *                  CSVReader.readAll() 返回的 csv 数据
      */
-    @SuppressWarnings("deprecation")
     private static void buildSeries(BarSeries series, ZonedDateTime beginTime, ZonedDateTime endTime, int duration,
             List<String[]> lines) {
 
         Duration barDuration = Duration.ofSeconds(duration);
         ZonedDateTime barEndTime = beginTime;
+        ListIterator<String[]> iterator = lines.listIterator();
         // line number of trade data
         // 交易数据的行号
         int i = 0;
@@ -133,27 +124,25 @@ public class CsvTradesLoader {
             Bar bar = new BaseBar(barDuration, barEndTime, series.function());
             do {
                 // get a trade
-                // 获得一笔交易
-                String[] tradeLine = lines.get(i);
+                String[] tradeLine = iterator.next();
                 ZonedDateTime tradeTimeStamp = ZonedDateTime
                         .ofInstant(Instant.ofEpochMilli(Long.parseLong(tradeLine[0]) * 1000), ZoneId.systemDefault());
                 // if the trade happened during the bar
                 // 如果交易发生在柱期间
                 if (bar.inPeriod(tradeTimeStamp)) {
                     // add the trade to the bar
-                    // 将交易添加到柱
-                    double tradePrice = Double.parseDouble(tradeLine[1]);
-                    double tradeVolume = Double.parseDouble(tradeLine[2]);
-                    bar.addTrade(tradeVolume, tradePrice, series.function());
+                    Num tradePrice = series.numOf(Double.parseDouble(tradeLine[1]));
+                    Num tradeVolume = series.numOf(Double.parseDouble(tradeLine[2]));
+                    bar.addTrade(tradeVolume, tradePrice);
                 } else {
                     // the trade happened after the end of the bar go to the next bar but stay with the same trade (don't increment i) this break will drop us after the inner "while", skipping the increment
                     // 交易发生在柱结束后转到下一个柱，但保持相同的交易（不要增加 i）这个中断将在内部“while”之后放弃我们，跳过增量
                     break;
                 }
                 i++;
-            } while (i < lines.size());
-            // if the bar has any trades add it to the bars list this is where the break drops to
-            // 如果柱有任何交易，则将其添加到柱列表中，这是突破下降的位置
+            } while (iterator.hasNext());
+            // if the bar has any trades add it to the bars list
+            // this is where the break drops to
             if (bar.getTrades() > 0) {
                 series.addBar(bar);
             }

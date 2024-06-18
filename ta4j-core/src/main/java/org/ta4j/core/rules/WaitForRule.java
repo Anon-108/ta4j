@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -29,31 +29,24 @@ import org.ta4j.core.Trade.TradeType;
 import org.ta4j.core.TradingRecord;
 
 /**
- * A {@link org.ta4j.core.Rule} which waits for a number of {@link Bar} after a trade.
- * * 一个 {@link org.ta4j.core.Rule} 在交易后等待多个 {@link Bar}。
+ * A rule that waits for a number of {@link Bar bars} after a trade of a
+ * specified type.
  *
- * Satisfied after a fixed number of bars since the last trade.
- * * 自上次交易以来，在固定数量的柱线后满足。
+ * <p>
+ * Satisfied after a fixed number of bars have passed since the last trade.
  */
 public class WaitForRule extends AbstractRule {
 
-    /**
-     * The type of the trade since we have to wait for
-     * * 交易的类型，因为我们必须等待
-     */
+    /** The trade type to wait for. */
     private final TradeType tradeType;
 
-    /**
-     * The number of bars to wait for
-     * 等待的柱数
-     */
+    /** The number of bars to wait for. */
     private final int numberOfBars;
 
     /**
      * Constructor.
      *
-     * @param tradeType    the type of the trade since we have to wait for
-     *                     交易的类型，因为我们必须等待
+     * @param tradeType    the trade type to wait for
      * @param numberOfBars the number of bars to wait for
      *                     等待的柱数
      */
@@ -62,6 +55,7 @@ public class WaitForRule extends AbstractRule {
         this.numberOfBars = numberOfBars;
     }
 
+    /** This rule uses the {@code tradingRecord}. */
     @Override
     public boolean isSatisfied(int index, TradingRecord tradingRecord) {
         boolean satisfied = false;

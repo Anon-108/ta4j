@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -49,14 +49,11 @@ public class TestUtils {
      * Verifies that the actual {@code Num} value is equal to the given {@code String} representation.
      * * 验证实际的 {@code Num} 值是否等于给定的 {@code String} 表示。
      *
+     * @param expected the given {@code String} representation to compare the actual
+     *                 value to
      * @param actual   the actual {@code Num} value
-     *                 实际的 {@code Num} 值
-     *
-     * @param expected the given {@code String} representation to compare the actual  value to
-     *                 * @param 期望给定的 {@code String} 表示将实际值与
-     *
-     * @throws AssertionError if the actual value is not equal to the given    {@code String} representation
-     * * @throws AssertionError 如果实际值不等于给定的 {@code String} 表示
+     * @throws AssertionError if the actual value is not equal to the given
+     *                        {@code String} representation
      */
     public static void assertNumEquals(String expected, Num actual) {
         assertEquals(actual.numOf(new BigDecimal(expected)), actual);
@@ -66,14 +63,11 @@ public class TestUtils {
      * Verifies that the actual {@code Num} value is equal to the given {@code Num}.
      * * 验证实际的 {@code Num} 值是否等于给定的 {@code Num}。
      *
+     * @param expected the given {@code Num} representation to compare the actual
+     *                 value to
      * @param actual   the actual {@code Num} value
-     *                 实际的 {@code Num} 值
-     *
-     * @param expected the given {@code Num} representation to compare the actual    value to
-     *                 * @param 期望给定的 {@code Num} 表示将实际值与
-     *
-     * @throws AssertionError if the actual value is not equal to the given  {@code Num} representation
-     * * @throws AssertionError 如果实际值不等于给定的 {@code Num} 表示
+     * @throws AssertionError if the actual value is not equal to the given
+     *                        {@code Num} representation
      */
     public static void assertNumEquals(Num expected, Num actual) {
         assertEquals(expected, actual);
@@ -83,16 +77,17 @@ public class TestUtils {
      * Verifies that the actual {@code Num} value is equal to the given {@code int} representation.
      * * 验证实际的 {@code Num} 值是否等于给定的 {@code int} 表示。
      *
+     *
+     * @param expected the given {@code int} representation to compare the actual
+     *                 value to
      * @param actual   the actual {@code Num} value
-     *                 实际的 {@code Num} 值
-     *
-     * @param expected the given {@code int} representation to compare the actual   value to
-     *                 * @param 期望给定的 {@code int} 表示将实际值与
-     *
-     * @throws AssertionError if the actual value is not equal to the given   {@code int} representation
-     * * @throws AssertionError 如果实际值不等于给定的 {@code int} 表示
+     * @throws AssertionError if the actual value is not equal to the given
+     *                        {@code int} representation
      */
     public static void assertNumEquals(int expected, Num actual) {
+        if (actual.isNaN()) {
+            throw new AssertionError("Expected: " + expected + " Actual: " + actual);
+        }
         assertEquals(actual.numOf(expected), actual);
     }
 
@@ -100,14 +95,11 @@ public class TestUtils {
      * Verifies that the actual {@code Num} value is equal (within a positive offset) to the given {@code double} representation.
      * * 验证实际的 {@code Num} 值是否等于（在正偏移量内）给定的 {@code double} 表示。
      *
+     * @param expected the given {@code double} representation to compare the actual
+     *                 value to
      * @param actual   the actual {@code Num} value
-     *                 实际的 {@code Num} 值
-     *
-     * @param expected the given {@code double} representation to compare the actual   value to
-     *                 * @param 期望给定的 {@code double} 表示将实际值与
-     *
-     * @throws AssertionError if the actual value is not equal to the given    {@code double} representation
-     * * @throws AssertionError 如果实际值不等于给定的 {@code double} 表示
+     * @throws AssertionError if the actual value is not equal to the given
+     *                        {@code double} representation
      */
     public static void assertNumEquals(double expected, Num actual) {
         assertEquals(expected, actual.doubleValue(), GENERAL_OFFSET);
@@ -133,7 +125,7 @@ public class TestUtils {
     /**
      * Verifies that two indicators have the same size and values to an offset
      * 验证两个指标的大小和偏移值是否相同
-     * 
+     *
      * @param expected indicator of expected values
      *                 预期值指标
      *
@@ -221,7 +213,7 @@ public class TestUtils {
     /**
      * Verifies that two indicators have the same size and values
      * * 验证两个指标的大小和值是否相同
-     * 
+     *
      * @param expected indicator of expected values
      *                 预期值指标
      *

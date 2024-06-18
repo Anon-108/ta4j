@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -29,6 +29,9 @@ import org.ta4j.core.num.Num;
 
 /**
  * Lowest value indicator.
+ *
+ * <p>
+ * Returns the lowest indicator value from the bar series within the bar count.
  * 最低值指标。
  *
  * 最低值指标通常用于确定在一段时间内资产或指标达到的最低水平。这种指标对于分析市场中的价格极值以及确定支撑位或价格底部非常有用。
@@ -45,9 +48,14 @@ import org.ta4j.core.num.Num;
 public class LowestValueIndicator extends CachedIndicator<Num> {
 
     private final Indicator<Num> indicator;
-
     private final int barCount;
 
+    /**
+     * Constructor.
+     *
+     * @param indicator the {@link Indicator}
+     * @param barCount  the time frame
+     */
     public LowestValueIndicator(Indicator<Num> indicator, int barCount) {
         super(indicator);
         this.indicator = indicator;
@@ -67,6 +75,12 @@ public class LowestValueIndicator extends CachedIndicator<Num> {
             }
         }
         return lowest;
+    }
+
+    /** @return {@link #barCount} */
+    @Override
+    public int getUnstableBars() {
+        return barCount;
     }
 
     @Override

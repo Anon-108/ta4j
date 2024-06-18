@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -29,6 +29,10 @@ import org.ta4j.core.num.Num;
 
 /**
  * Amount indicator.
+ *
+ * <p>
+ * Returns the amount of a bar.
+ * 返回柱的数量。
  * 总量指标
  *
  * "Amount" indicator通常指的是成交量指标，它是用于技术分析的重要指标之一。成交量指标衡量的是某一资产在特定时间段内的交易量，通常以柱状图的形式显示在价格图表的下方。成交量的增加或减少可以提供有关市场参与者情绪和趋势强度的重要信息。
@@ -57,6 +61,11 @@ import org.ta4j.core.num.Num;
  */
 public class AmountIndicator extends CachedIndicator<Num> {
 
+    /**
+     * Constructor.
+     *
+     * @param series the bar series
+     */
     public AmountIndicator(BarSeries series) {
         super(series);
     }
@@ -64,5 +73,11 @@ public class AmountIndicator extends CachedIndicator<Num> {
     @Override
     protected Num calculate(int index) {
         return getBarSeries().getBar(index).getAmount();
+    }
+
+    /** @return {@code 0} */
+    @Override
+    public int getUnstableBars() {
+        return 0;
     }
 }

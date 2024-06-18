@@ -13,7 +13,7 @@ Ta4j is an open source Java library for [technical analysis](http://en.wikipedia
 
 ### Features
 
- * [x] 100% Pure Java - works on any Java Platform version 8 or later
+ * [x] 100% Pure Java - works on any Java Platform version 11 or later
  * [x] More than 130 technical indicators (Aroon, ATR, moving averages, parabolic SAR, RSI, etc.)
  * [x] A powerful engine for building custom trading strategies
  * [x] Utilities to run and compare strategies
@@ -38,7 +38,7 @@ Ta4j 在 [Maven Central](http://search.maven.org/#search) 上可用。 你只需
 <dependency>
   <groupId>org.ta4j</groupId>
   <artifactId>ta4j-core</artifactId>
-  <version>0.14</version>
+  <version>0.16</version>
 </dependency>
 ```
 
@@ -50,13 +50,12 @@ For ***snapshots***, add the following repository to your `pom.xml` file.
     <url>https://oss.sonatype.org/content/repositories/snapshots</url>
 </repository>
 ```
-The current ***snapshot version*** is `0.15-SNAPSHOT` from the [develop](https://github.com/ta4j/ta4j/tree/develop) branch.
-当前的***快照版本***是来自 [develop](https://github.com/ta4j/ta4j/tree/develop) 分支的 `0.15-SNAPSHOT`。
+The current ***snapshot version*** is `0.17-SNAPSHOT` from the [develop](https://github.com/ta4j/ta4j/tree/develop) branch.
 ```xml
 <dependency>
   <groupId>org.ta4j</groupId>
   <artifactId>ta4j-core</artifactId>
-  <version>0.15-SNAPSHOT</version>
+  <version>0.17-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -66,7 +65,7 @@ You can also download ***example code*** from the maven central repository by ad
 <dependency>
   <groupId>org.ta4j</groupId>
   <artifactId>ta4j-examples</artifactId>
-  <version>0.14</version>
+  <version>0.16</version>
 </dependency>
 ```
 ### Getting Help
@@ -81,10 +80,12 @@ Here are some ways for you to contribute to ta4j:
   * Take a look at the [Roadmap items](https://ta4j.github.io/ta4j-wiki/Roadmap-and-Tasks.html)
   * [Fork this repository](http://help.github.com/forking/) and submit pull requests.
   * Take a look at [How to contribute](https://ta4j.github.io/ta4j-wiki/How-to-contribute)
-  * 
-  * 您可以通过以下方式为 ta4j 做出贡献：
-  * 看看[路线图项目](https://ta4j.github.io/ta4j-wiki/Roadmap-and-Tasks.html)
-  * [fork this repository](http://help.github.com/forking/) 并提交拉取请求。
-  * 看看[如何贡献](https://ta4j.github.io/ta4j-wiki/How-to-contribute)
-See also: the [contribution policy](.github/CONTRIBUTING.md) and [Code of Cunduct](CODE_OF_CONDUCT.md)
-    另请参阅：[贡献政策](.github/CONTRIBUTING.md) 和 [行为准则](CODE OF CONDUCT.md)
+
+See also: the [contribution policy](.github/CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md)
+
+&nbsp;
+&nbsp;
+
+<a href = https://github.com/ta4j/ta4j/graphs/contributors>
+  <img src = https://contrib.rocks/image?repo=ta4j/ta4j>
+</a>

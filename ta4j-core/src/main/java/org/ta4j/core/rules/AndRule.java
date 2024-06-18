@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -30,11 +30,12 @@ import org.ta4j.core.TradingRecord;
  * An AND combination of two {@link Rule rules}.
  * * 两个 {@link Rule 规则} 的 AND 组合。
  *
- * Satisfied when the two provided rules are satisfied as well.<br>
- * * 满足两个提供的规则时也满足。<br>
+ * <p>
+ * Satisfied when both rules are satisfied.
  *
- * Warning: the second rule is not tested if the first rule is not satisfied.
- * * 警告：如果不满足第一条规则，则不测试第二条规则。
+ * <p>
+ * <b>Warning:</b> The second rule is not tested if the first rule is not
+ * satisfied.
  */
 public class AndRule extends AbstractRule {
 
@@ -42,7 +43,7 @@ public class AndRule extends AbstractRule {
     private final Rule rule2;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param rule1 a trading rule
      *              交易规则
@@ -62,10 +63,12 @@ public class AndRule extends AbstractRule {
         return satisfied;
     }
 
+    /** @return the first rule */
     public Rule getRule1() {
         return rule1;
     }
 
+    /** @return the second rule */
     public Rule getRule2() {
         return rule2;
     }

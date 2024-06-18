@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -29,6 +29,7 @@ import org.ta4j.core.indicators.helpers.LossIndicator;
 import org.ta4j.core.num.Num;
 
 /**
+ * Chande Momentum Oscillator (CMO) indicator.
  * Chande Momentum Oscillator indicator.
  * Chande 动量振荡器指标。
  *
@@ -65,6 +66,7 @@ public class CMOIndicator extends CachedIndicator<Num> {
     private final GainIndicator gainIndicator;
     private final LossIndicator lossIndicator;
     private final int barCount;
+    private final Num hundred;
 
     /**
      * Constructor.
@@ -79,18 +81,23 @@ public class CMOIndicator extends CachedIndicator<Num> {
         this.gainIndicator = new GainIndicator(indicator);
         this.lossIndicator = new LossIndicator(indicator);
         this.barCount = barCount;
+        this.hundred = hundred();
     }
 
     @Override
     protected Num calculate(int index) {
-        Num sumOfGains = numOf(0);
+        Num sumOfGains = zero();
+        Num sumOfLosses = zero();
         for (int i = Math.max(1, index - barCount + 1); i <= index; i++) {
             sumOfGains = sumOfGains.plus(gainIndicator.getValue(i));
-        }
-        Num sumOfLosses = numOf(0);
-        for (int i = Math.max(1, index - barCount + 1); i <= index; i++) {
             sumOfLosses = sumOfLosses.plus(lossIndicator.getValue(i));
         }
-        return sumOfGains.minus(sumOfLosses).dividedBy(sumOfGains.plus(sumOfLosses)).multipliedBy(numOf(100));
+
+        return sumOfGains.minus(sumOfLosses).dividedBy(sumOfGains.plus(sumOfLosses)).multipliedBy(hundred);
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return barCount;
     }
 }

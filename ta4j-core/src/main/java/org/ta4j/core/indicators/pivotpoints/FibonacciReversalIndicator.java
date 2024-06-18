@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -60,8 +60,7 @@ public class FibonacciReversalIndicator extends RecursiveCachedIndicator<Num> {
     }
 
     /**
-     * Standard Fibonacci factors
-     * 标准斐波那契因子
+     * Standard Fibonacci factors.
      */
     public enum FibonacciFactor {
         FACTOR_1(0.382), FACTOR_2(0.618), FACTOR_3(1);
@@ -126,13 +125,20 @@ public class FibonacciReversalIndicator extends RecursiveCachedIndicator<Num> {
         Num high = bar.getHighPrice();
         Num low = bar.getLowPrice();
         for (int i : barsOfPreviousPeriod) {
-            high = (getBarSeries().getBar(i).getHighPrice()).max(high);
-            low = (getBarSeries().getBar(i).getLowPrice()).min(low);
+            Bar iBar = getBarSeries().getBar(i);
+            high = iBar.getHighPrice().max(high);
+            low = iBar.getLowPrice().min(low);
         }
 
-        if (fibReversalTyp == FibReversalTyp.RESISTANCE) {
-            return pivotPointIndicator.getValue(index).plus(fibonacciFactor.multipliedBy(high.minus(low)));
-        }
-        return pivotPointIndicator.getValue(index).minus(fibonacciFactor.multipliedBy(high.minus(low)));
+        Num pivotPointValue = pivotPointIndicator.getValue(index);
+        Num fibValue = fibonacciFactor.multipliedBy(high.minus(low));
+
+        return fibReversalTyp == FibReversalTyp.RESISTANCE ? pivotPointValue.plus(fibValue)
+                : pivotPointValue.minus(fibValue);
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return 0;
     }
 }

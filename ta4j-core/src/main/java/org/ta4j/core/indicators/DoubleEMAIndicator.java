@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -53,6 +53,7 @@ import org.ta4j.core.num.Num;
  */
 public class DoubleEMAIndicator extends CachedIndicator<Num> {
 
+    private final Num two;
     private final int barCount;
     private final EMAIndicator ema;
     private final EMAIndicator emaEma;
@@ -67,6 +68,7 @@ public class DoubleEMAIndicator extends CachedIndicator<Num> {
      */
     public DoubleEMAIndicator(Indicator<Num> indicator, int barCount) {
         super(indicator);
+        this.two = numOf(2);
         this.barCount = barCount;
         this.ema = new EMAIndicator(indicator, barCount);
         this.emaEma = new EMAIndicator(ema, barCount);
@@ -74,7 +76,12 @@ public class DoubleEMAIndicator extends CachedIndicator<Num> {
 
     @Override
     protected Num calculate(int index) {
-        return ema.getValue(index).multipliedBy(numOf(2)).minus(emaEma.getValue(index));
+        return ema.getValue(index).multipliedBy(two).minus(emaEma.getValue(index));
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return barCount;
     }
 
     @Override

@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -30,30 +30,33 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.ta4j.core.TradingRecord;
-import org.ta4j.core.indicators.DateTimeIndicator;
+import org.ta4j.core.indicators.helpers.DateTimeIndicator;
 
 /**
- * Day of the week rule.
- * 星期几规则。
- *
- * Satisfied when the day of the week value of the DateTimeIndicator is equal to one of the DayOfWeek varargs
- * * 当 DateTimeIndicator 的星期几值等于 DayOfWeek 可变参数之一时满足
+ * Satisfied when the "day of the week" value of the {@link DateTimeIndicator}
+ * matches the specified set of {@link DayOfWeek}.
  */
 public class DayOfWeekRule extends AbstractRule {
 
     private final Set<DayOfWeek> daysOfWeekSet;
     private final DateTimeIndicator timeIndicator;
 
+    /**
+     * Constructor.
+     *
+     * @param timeIndicator the {@link DateTimeIndicator}
+     * @param daysOfWeek    the days of the week
+     */
     public DayOfWeekRule(DateTimeIndicator timeIndicator, DayOfWeek... daysOfWeek) {
-        this.daysOfWeekSet = new HashSet<>(Arrays.asList(daysOfWeek));
         this.timeIndicator = timeIndicator;
+        this.daysOfWeekSet = new HashSet<>(Arrays.asList(daysOfWeek));
     }
 
+    /** This rule does not use the {@code tradingRecord}. */
     @Override
     public boolean isSatisfied(int index, TradingRecord tradingRecord) {
-        ZonedDateTime dateTime = this.timeIndicator.getValue(index);
-        boolean satisfied = daysOfWeekSet.contains(dateTime.getDayOfWeek());
-
+        ZonedDateTime dateTime = timeIndicator.getValue(index);
+        final boolean satisfied = daysOfWeekSet.contains(dateTime.getDayOfWeek());
         traceIsSatisfied(index, satisfied);
         return satisfied;
     }

@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -33,6 +33,7 @@ import org.ta4j.core.num.Num;
  * Simple linear regression indicator.
  * 简单的线性回归指标。
  *
+ * <p>
  * A moving (i.e. over the time frame) simple linear regression (least squares).
  * * 移动（即在时间范围内）简单线性回归（最小二乘）。
  * y = slope * x + intercept See also:
@@ -57,22 +58,27 @@ import org.ta4j.core.num.Num;
  *
  * 简单线性回归模型可用于估计自变量和因变量之间的关系，预测因变量的值，并评估预测结果的准确性。在金融领域，简单线性回归模型常用于分析市场数据，例如分析股票收益与某个指数之间的关系，或者分析经济指标对股票市场的影响等。
  *
+ *
+ * <pre>
+ * y = slope * x + intercept
+ * </pre>
+ *
+ * @see http://introcs.cs.princeton.edu/java/97data/LinearRegression.java.html
  */
 public class SimpleLinearRegressionIndicator extends CachedIndicator<Num> {
 
     /**
-     * The type for the outcome of the {@link SimpleLinearRegressionIndicator}
-     * {@link SimpleLinearRegressionIndicator} 结果的类型
+     * The type for the outcome of the {@link SimpleLinearRegressionIndicator}.
      */
     public enum SimpleLinearRegressionType {
         Y, SLOPE, INTERCEPT
     }
 
-    private Indicator<Num> indicator;
-    private int barCount;
+    private final Indicator<Num> indicator;
+    private final int barCount;
     private Num slope;
     private Num intercept;
-    private SimpleLinearRegressionType type;
+    private final SimpleLinearRegressionType type;
 
     /**
      * Constructor for the y-values of the formula (y = slope * x + intercept).
@@ -125,6 +131,11 @@ public class SimpleLinearRegressionIndicator extends CachedIndicator<Num> {
         return slope.multipliedBy(numOf(index)).plus(intercept);
     }
 
+    @Override
+    public int getUnstableBars() {
+        return barCount;
+    }
+
     /**
      * Calculates the regression line.
      * 计算回归线。
@@ -135,10 +146,10 @@ public class SimpleLinearRegressionIndicator extends CachedIndicator<Num> {
      *                   条形系列中的结束索引（包括）
      */
     private void calculateRegressionLine(int startIndex, int endIndex) {
+        Num zero = zero();
         // First pass: compute xBar and yBar
-        // 第一遍：计算 xBar 和 yBar
-        Num sumX = numOf(0);
-        Num sumY = numOf(0);
+        Num sumX = zero;
+        Num sumY = zero;
         for (int i = startIndex; i <= endIndex; i++) {
             sumX = sumX.plus(numOf(i));
             sumY = sumY.plus(indicator.getValue(i));
@@ -148,9 +159,8 @@ public class SimpleLinearRegressionIndicator extends CachedIndicator<Num> {
         Num yBar = sumY.dividedBy(nbObservations);
 
         // Second pass: compute slope and intercept
-        // 第二遍：计算斜率和截距
-        Num xxBar = numOf(0);
-        Num xyBar = numOf(0);
+        Num xxBar = zero;
+        Num xyBar = zero;
         for (int i = startIndex; i <= endIndex; i++) {
             Num dX = numOf(i).minus(xBar);
             Num dY = indicator.getValue(i).minus(yBar);

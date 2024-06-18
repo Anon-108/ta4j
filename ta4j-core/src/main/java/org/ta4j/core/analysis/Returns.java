@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -35,11 +35,7 @@ import org.ta4j.core.num.NaN;
 import org.ta4j.core.num.Num;
 
 /**
- * The return rates.
- * 返回比率。
- *
- * This class allows to compute the return rate of a price time-series
- * * 这个类允许计算价格时间序列的回报率
+ * Allows to compute the return rate of a price time-series.
  */
 public class Returns implements Indicator<Num> {
 
@@ -60,30 +56,20 @@ public class Returns implements Indicator<Num> {
         };
 
         /**
-         * @return calculate a single return rate
-         * * @return 计算单次退货率
+         * @return the single return rate
          */
         public abstract Num calculate(Num xNew, Num xOld);
     }
 
     private final ReturnType type;
 
-    /**
-     * The bar series
-     * * 酒吧系列
-     */
+    /** The bar series. */
     private final BarSeries barSeries;
 
-    /**
-     * The return rates
-     * * 退货率
-     */
-    private List<Num> values;
+    /** The return rates. */
+    private final List<Num> values;
 
-    /**
-     * Unit element for efficient arithmetic return computation
-     * * 用于高效算术返回计算的单元元素
-     */
+    /** Unit element for efficient arithmetic return computation. */
     private static Num one;
 
     /**
@@ -93,18 +79,18 @@ public class Returns implements Indicator<Num> {
      * @param barSeries the bar series
      *                  bar系列
      * @param position  a single position
-     *                  单一职位
+     * @param type      the ReturnType
      */
     public Returns(BarSeries barSeries, Position position, ReturnType type) {
-        one = barSeries.numOf(1);
+        one = barSeries.one();
         this.barSeries = barSeries;
         this.type = type;
         // at index 0, there is no return
         // 在索引 0 处，没有返回
         values = new ArrayList<>(Collections.singletonList(NaN.NaN));
-        calculate(position);
+        calculate(position, barSeries.getEndIndex());
 
-        fillToTheEnd();
+        fillToTheEnd(barSeries.getEndIndex());
     }
 
     /**
@@ -113,10 +99,10 @@ public class Returns implements Indicator<Num> {
      * @param barSeries     the bar series
      *                      bar系列
      * @param tradingRecord the trading record
-     *                      交易记录
+     * @param type          the ReturnType
      */
     public Returns(BarSeries barSeries, TradingRecord tradingRecord, ReturnType type) {
-        one = barSeries.numOf(1);
+        one = barSeries.one();
         this.barSeries = barSeries;
         this.type = type;
         // at index 0, there is no return
@@ -124,9 +110,12 @@ public class Returns implements Indicator<Num> {
         values = new ArrayList<>(Collections.singletonList(NaN.NaN));
         calculate(tradingRecord);
 
-        fillToTheEnd();
+        fillToTheEnd(tradingRecord.getEndIndex(barSeries));
     }
 
+    /**
+     * @return the return rates
+     */
     public List<Num> getValues() {
         return values;
     }
@@ -140,6 +129,11 @@ public class Returns implements Indicator<Num> {
     @Override
     public Num getValue(int index) {
         return values.get(index);
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return 0;
     }
 
     @Override
@@ -160,18 +154,13 @@ public class Returns implements Indicator<Num> {
         return barSeries.getBarCount() - 1;
     }
 
-    public void calculate(Position position) {
-        calculate(position, barSeries.getEndIndex());
-    }
-
     /**
      * Calculates the cash flow for a single position (including accrued cashflow for open positions).
      * * 计算单个头寸的现金流（包括未平仓头寸的应计现金流）。
      *
      * @param position   a single position
-     *                   单一职位
-     * @param finalIndex index up until cash flow of open positions is considered
-     *                   索引直到考虑未平仓头寸的现金流
+     * @param finalIndex the index up to which the cash flow of open positions is
+     *                   considered
      */
     public void calculate(Position position, int finalIndex) {
         boolean isLongTrade = position.getEntry().isBuy();
@@ -180,7 +169,7 @@ public class Returns implements Indicator<Num> {
         final int entryIndex = position.getEntry().getIndex();
         int begin = entryIndex + 1;
         if (begin > values.size()) {
-            values.addAll(Collections.nCopies(begin - values.size(), barSeries.numOf(0)));
+            values.addAll(Collections.nCopies(begin - values.size(), barSeries.zero()));
         }
 
         int startingIndex = Math.max(begin, 1);
@@ -234,18 +223,19 @@ public class Returns implements Indicator<Num> {
      *                      交易记录
      */
     private void calculate(TradingRecord tradingRecord) {
+        int endIndex = tradingRecord.getEndIndex(getBarSeries());
         // For each position...
-        // 对于每个位置...
-        tradingRecord.getPositions().forEach(this::calculate);
+        tradingRecord.getPositions().forEach(p -> calculate(p, endIndex));
     }
 
     /**
-     * Fills with zeroes until the end of the series.
-     * * 用零填充，直到系列结束。
+     * Pads {@link #values} with zeros up until {@code endIndex}.
+     *
+     * @param endIndex the end index
      */
-    private void fillToTheEnd() {
-        if (barSeries.getEndIndex() >= values.size()) {
-            values.addAll(Collections.nCopies(barSeries.getEndIndex() - values.size() + 1, barSeries.numOf(0)));
+    private void fillToTheEnd(int endIndex) {
+        if (endIndex >= values.size()) {
+            values.addAll(Collections.nCopies(barSeries.getEndIndex() - values.size() + 1, barSeries.zero()));
         }
     }
 }

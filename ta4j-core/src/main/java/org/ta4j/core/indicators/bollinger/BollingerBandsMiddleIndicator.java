@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -28,8 +28,12 @@ import org.ta4j.core.indicators.CachedIndicator;
 import org.ta4j.core.num.Num;
 
 /**
- * Buy - Occurs when the price line crosses from below to above the Lower Bollinger Band. Sell - Occurs when the price line crosses from above to below the Upper Bollinger Band.
- * 买入 - 当价格线从布林带下轨线下方穿过上方时发生。卖出 - 当价格线从布林带上轨上方穿过布林带上轨线时发生。
+ * Buy - Occurs when the price line crosses from below to above the Lower
+ * Bollinger Band.
+ *
+ * <p>
+ * Sell - Occurs when the price line crosses from above to below the Upper
+ * Bollinger Band.
  */
 public class BollingerBandsMiddleIndicator extends CachedIndicator<Num> {
 
@@ -37,11 +41,8 @@ public class BollingerBandsMiddleIndicator extends CachedIndicator<Num> {
 
     /**
      * Constructor.
-     * 构造函数。
-     * 
-     * @param indicator the indicator that gives the values of the middle band
-     *                  * @param indicator 给出中间波段值的指标
      *
+     * @param indicator the indicator that gives the values of the middle band
      */
     public BollingerBandsMiddleIndicator(Indicator<Num> indicator) {
         super(indicator);
@@ -51,6 +52,11 @@ public class BollingerBandsMiddleIndicator extends CachedIndicator<Num> {
     @Override
     protected Num calculate(int index) {
         return indicator.getValue(index);
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return 0;
     }
 
     public Indicator<Num> getIndicator() {

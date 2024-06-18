@@ -1,8 +1,8 @@
 /**
  * 麻省理工学院许可证 (MIT)
  *
- * 版权所有 (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j 组织及相关
- *作者（见作者）
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
+ * authors (see AUTHORS)
  *
  * 特此免费授予任何获得以下文件副本的人的许可
  * 本软件及相关文档文件（以下简称“软件”），用于处理
@@ -22,12 +22,16 @@
  * 与软件或软件中的使用或其他交易的连接。
  */
 /**
- * {@link org.ta4j.core.num.Num Num} interface and implementations of  接口和实现
- * {@link org.ta4j.core.num.NaN NaN}, {@link org.ta4j.core.num.DoubleNum DoubleNum} and {@link org.ta4j.core.num.DecimalNum PrecisionNum 精度数}
+ * {@link org.ta4j.core.num.Num Num} interface and implementations of
+ * {@link org.ta4j.core.num.NaN NaN}, {@link org.ta4j.core.num.DoubleNum
+ * DoubleNum} and {@link org.ta4j.core.num.DecimalNum PrecisionNum}.
  *
- * The {@link org.ta4j.core.num.Num Num interface 数字接口} enables the use of different 可以使用不同的
- * delegates (Double, {@link java.math.BigDecimal BigDecimal}, ...) for storage  and calculations in {@link org.ta4j.core.BarSeries BarSeries}, {@link org.ta4j.core.Bar Bars}, {@link org.ta4j.core.Indicator Indicators} and {@link org.ta4j.core.analysis.criteria.AbstractAnalysisCriterion AnalysisCriterions}
- * * 代表 (Double, {@link java.math.BigDecimal BigDecimal}, ...) 在 {@link org.ta4j.core.BarSeries BarSeries}, {@link org.ta4j.core.Bar Bars} 中进行存储和计算 ,
- * {@link org.ta4j.core.Indicator Indicators} 和 {@link org.ta4j.core.analysis.criteria.AbstractAnalysisCriterion AnalysisCriterions}
+ * <p>
+ * The {@link org.ta4j.core.num.Num Num interface} enables the use of different
+ * delegates (Double, {@link java.math.BigDecimal BigDecimal}, ...) for storage
+ * and calculations in {@link org.ta4j.core.BarSeries BarSeries},
+ * {@link org.ta4j.core.Bar Bars}, {@link org.ta4j.core.Indicator Indicators}
+ * and {@link org.ta4j.core.criteria.AbstractAnalysisCriterion
+ * AnalysisCriterions}.
  */
 package org.ta4j.core.num;

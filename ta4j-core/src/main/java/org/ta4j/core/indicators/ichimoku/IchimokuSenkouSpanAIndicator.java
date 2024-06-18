@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -29,6 +29,7 @@ import org.ta4j.core.num.NaN;
 import org.ta4j.core.num.Num;
 
 /**
+ * Ichimoku clouds: Senkou Span A (Leading Span A) indicator.
  * Ichimoku clouds: Senkou Span A (Leading Span A) indicator
  * * Ichimoku 云：Senkou Span A (Leading Span A) 指标
  *
@@ -50,21 +51,19 @@ import org.ta4j.core.num.Num;
  */
 public class IchimokuSenkouSpanAIndicator extends CachedIndicator<Num> {
 
-    /** The Tenkan-sen indicator
-     * Tenkan-sen 指标 */
+    /** The Tenkan-sen indicator. */
     private final IchimokuTenkanSenIndicator conversionLine;
 
-    /** The Kijun-sen indicator
-     * Kijun-sen指标 */
+    /** The Kijun-sen indicator. */
     private final IchimokuKijunSenIndicator baseLine;
 
-    // Cloud offset
+    /** The cloud offset. */
     private final int offset;
 
     /**
-     * Constructor.
-     * 
-     * @param series the series
+     * Constructor with {@code offset} = 26.
+     *
+     * @param series the bar series
      */
     public IchimokuSenkouSpanAIndicator(BarSeries series) {
         this(series, new IchimokuTenkanSenIndicator(series), new IchimokuKijunSenIndicator(series), 26);
@@ -72,10 +71,10 @@ public class IchimokuSenkouSpanAIndicator extends CachedIndicator<Num> {
 
     /**
      * Constructor.
-     * 
-     * @param series                 the series
-     * @param barCountConversionLine the time frame for the conversion line (usually 9)
-     *                               转换线的时间范围（通常为 9）
+     *
+     * @param series                 the bar series
+     * @param barCountConversionLine the time frame for the conversion line (usually
+     *                               9)
      * @param barCountBaseLine       the time frame for the base line (usually 26)
      *                               基线的时间范围（通常为 26）
      */
@@ -86,8 +85,8 @@ public class IchimokuSenkouSpanAIndicator extends CachedIndicator<Num> {
 
     /**
      * Constructor.
-     * 
-     * @param series         the series
+     *
+     * @param series         the bar series
      * @param conversionLine the conversion line
      *                       转换线
      * @param baseLine       the base line
@@ -97,7 +96,6 @@ public class IchimokuSenkouSpanAIndicator extends CachedIndicator<Num> {
      */
     public IchimokuSenkouSpanAIndicator(BarSeries series, IchimokuTenkanSenIndicator conversionLine,
             IchimokuKijunSenIndicator baseLine, int offset) {
-
         super(series);
         this.conversionLine = conversionLine;
         this.baseLine = baseLine;
@@ -106,7 +104,6 @@ public class IchimokuSenkouSpanAIndicator extends CachedIndicator<Num> {
 
     @Override
     protected Num calculate(int index) {
-
         // at index=7 we need index=3 when offset=5
         // 在 index=7 时，当 offset=5 时我们需要 index=3
         int spanIndex = index - offset + 1;
@@ -115,5 +112,10 @@ public class IchimokuSenkouSpanAIndicator extends CachedIndicator<Num> {
         } else {
             return NaN.NaN;
         }
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return 0;
     }
 }

@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -80,25 +80,24 @@ import org.ta4j.core.num.Num;
  *
  * ### 总结
  * %B 指标通过衡量当前价格相对于布林带的位置，帮助交易者识别超买和超卖状态，确认趋势，并提供交易信号。它是一个有效的工具，尤其在结合其他技术分析工具使用时，可以为交易决策提供有价值的参考。
- * 
+ *
  * @see <a
  *      href="http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:bollinger_band_perce>
+ *
+ * @see <a href=
+ *      "http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:bollinger_band_perce">
  *      http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:bollinger_band_perce</a>
  */
 public class PercentBIndicator extends CachedIndicator<Num> {
 
     private final Indicator<Num> indicator;
-
     private final BollingerBandsUpperIndicator bbu;
-
     private final BollingerBandsLowerIndicator bbl;
 
     /**
      * Constructor.
-     * 构造器
-     * 
-     * @param indicator an indicator (usually close price)
-     *                  一个指标（通常是收盘价）
+     *
+     * @param indicator the {@link Indicator} (usually {@code ClosePriceIndicator})
      * @param barCount  the time frame
      *                  时间框架
      * @param k         the K multiplier (usually 2.0)
@@ -119,5 +118,10 @@ public class PercentBIndicator extends CachedIndicator<Num> {
         Num upValue = bbu.getValue(index);
         Num lowValue = bbl.getValue(index);
         return value.minus(lowValue).dividedBy(upValue.minus(lowValue));
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return 0;
     }
 }

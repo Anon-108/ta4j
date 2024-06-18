@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -33,7 +33,7 @@ import org.ta4j.core.BarSeries;
 import org.ta4j.core.BaseBar;
 import org.ta4j.core.BaseBarSeries;
 import org.ta4j.core.BaseBarSeriesBuilder;
-import org.ta4j.core.ConvertibleBaseBarBuilder;
+import org.ta4j.core.BaseBarConvertibleBuilder;
 import org.ta4j.core.num.DecimalNum;
 import org.ta4j.core.num.DoubleNum;
 
@@ -50,7 +50,7 @@ public class BuildBarSeries {
     public static void main(String[] args) {
         BarSeries a = buildAndAddData();
         System.out.println("a: " + a.getBar(0).getClosePrice().getName());
-        BaseBarSeriesBuilder.setDefaultFunction(DoubleNum::valueOf);
+        BaseBarSeriesBuilder.setDefaultNum(DoubleNum::valueOf);
         a = buildAndAddData();
         System.out.println("a: " + a.getBar(0).getClosePrice().getName());
         BarSeries b = buildWithDouble();
@@ -59,6 +59,9 @@ public class BuildBarSeries {
         BarSeries e = buildManuallyDoubleNum();
         BarSeries f = buildManuallyAndAddBarManually();
         BarSeries g = buildAndAddBarsFromList();
+        // Fix: Reset default function, such that this test case does not influence the
+        // following test cases in a combined test run
+        BaseBarSeriesBuilder.setDefaultNum(DecimalNum::valueOf);
     }
 
     private static BarSeries buildAndAddData() {
@@ -109,7 +112,7 @@ public class BuildBarSeries {
     }
 
     private static BarSeries buildManuallyDoubleNum() {
-        BarSeries series = new BaseBarSeries("mySeries", DoubleNum::valueOf); // uses DoubleNum // 使用双数
+        BarSeries series = new BaseBarSeries("mySeries", DoubleNum.ZERO); // uses DoubleNum
         ZonedDateTime endTime = ZonedDateTime.now();
         series.addBar(endTime, 105.42, 112.99, 104.01, 111.42, 1337);
         series.addBar(endTime.plusDays(1), 111.43, 112.83, 107.77, 107.99, 1234);
@@ -120,19 +123,38 @@ public class BuildBarSeries {
     }
 
     private static BarSeries buildManuallyAndAddBarManually() {
-        BarSeries series = new BaseBarSeries("mySeries", DoubleNum::valueOf); // uses DoubleNum // 使用双数
+        BarSeries series = new BaseBarSeries("mySeries", DoubleNum.ZERO); // uses DoubleNum
 
         // create bars and add them to the series. The bars must have the same Num type as the series
         // 创建条形并将它们添加到系列中。 条形必须具有与系列相同的 Num 类型
         ZonedDateTime endTime = ZonedDateTime.now();
-        Bar b1 = BaseBar.builder(DoubleNum::valueOf, Double.class).timePeriod(Duration.ofDays(1)).endTime(endTime)
-                .openPrice(105.42).highPrice(112.99).lowPrice(104.01).closePrice(111.42).volume(1337.0).build();
-        Bar b2 = BaseBar.builder(DoubleNum::valueOf, Double.class).timePeriod(Duration.ofDays(1))
-                .endTime(endTime.plusDays(1)).openPrice(111.43).highPrice(112.83).lowPrice(107.77).closePrice(107.99)
-                .volume(1234.0).build();
-        Bar b3 = BaseBar.builder(DoubleNum::valueOf, Double.class).timePeriod(Duration.ofDays(1))
-                .endTime(endTime.plusDays(2)).openPrice(107.90).highPrice(117.50).lowPrice(107.90).closePrice(115.42)
-                .volume(4242.0).build();
+        Bar b1 = BaseBar.builder(DoubleNum::valueOf, Double.class)
+                .timePeriod(Duration.ofDays(1))
+                .endTime(endTime)
+                .openPrice(105.42)
+                .highPrice(112.99)
+                .lowPrice(104.01)
+                .closePrice(111.42)
+                .volume(1337.0)
+                .build();
+        Bar b2 = BaseBar.builder(DoubleNum::valueOf, Double.class)
+                .timePeriod(Duration.ofDays(1))
+                .endTime(endTime.plusDays(1))
+                .openPrice(111.43)
+                .highPrice(112.83)
+                .lowPrice(107.77)
+                .closePrice(107.99)
+                .volume(1234.0)
+                .build();
+        Bar b3 = BaseBar.builder(DoubleNum::valueOf, Double.class)
+                .timePeriod(Duration.ofDays(1))
+                .endTime(endTime.plusDays(2))
+                .openPrice(107.90)
+                .highPrice(117.50)
+                .lowPrice(107.90)
+                .closePrice(115.42)
+                .volume(4242.0)
+                .build();
         // ...
 
         series.addBar(b1);
@@ -146,19 +168,40 @@ public class BuildBarSeries {
         // Store Bars in a list and add them later. The bars must have the same Num type as the series
         // 将 Bars 存储在列表中并稍后添加。 条形必须具有与系列相同的 Num 类型
         ZonedDateTime endTime = ZonedDateTime.now();
-        Bar b1 = barBuilderFromString().timePeriod(Duration.ofDays(1)).endTime(endTime).openPrice("105.42")
-                .highPrice("112.99").lowPrice("104.01").closePrice("111.42").volume("1337").build();
-        Bar b2 = barBuilderFromString().timePeriod(Duration.ofDays(1)).endTime(endTime.plusDays(1)).openPrice("111.43")
-                .highPrice("112.83").lowPrice("107.77").closePrice("107.99").volume("1234").build();
-        Bar b3 = barBuilderFromString().timePeriod(Duration.ofDays(1)).endTime(endTime.plusDays(2)).openPrice("107.90")
-                .highPrice("117.50").lowPrice("107.90").closePrice("115.42").volume("4242").build();
+        Bar b1 = barBuilderFromString().timePeriod(Duration.ofDays(1))
+                .endTime(endTime)
+                .openPrice("105.42")
+                .highPrice("112.99")
+                .lowPrice("104.01")
+                .closePrice("111.42")
+                .volume("1337")
+                .build();
+        Bar b2 = barBuilderFromString().timePeriod(Duration.ofDays(1))
+                .endTime(endTime.plusDays(1))
+                .openPrice("111.43")
+                .highPrice("112.83")
+                .lowPrice("107.77")
+                .closePrice("107.99")
+                .volume("1234")
+                .build();
+        Bar b3 = barBuilderFromString().timePeriod(Duration.ofDays(1))
+                .endTime(endTime.plusDays(2))
+                .openPrice("107.90")
+                .highPrice("117.50")
+                .lowPrice("107.90")
+                .closePrice("115.42")
+                .volume("4242")
+                .build();
         List<Bar> bars = Arrays.asList(b1, b2, b3);
 
-        return new BaseBarSeriesBuilder().withName("mySeries").withNumTypeOf(DoubleNum::valueOf).withMaxBarCount(5)
-                .withBars(bars).build();
+        return new BaseBarSeriesBuilder().withName("mySeries")
+                .withNumTypeOf(DoubleNum::valueOf)
+                .withMaxBarCount(5)
+                .withBars(bars)
+                .build();
     }
 
-    private static ConvertibleBaseBarBuilder<String> barBuilderFromString() {
+    private static BaseBarConvertibleBuilder<String> barBuilderFromString() {
         return BaseBar.builder(DoubleNum::valueOf, String.class);
     }
 }

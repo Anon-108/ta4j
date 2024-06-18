@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -58,6 +58,9 @@ import org.ta4j.core.num.Num;
  * - 下影线高度指标通常结合其他技术指标和图表模式一起使用，以提高分析的准确性。
  * - 单独使用下影线高度指标可能会产生假信号，因此需要谨慎对待，并结合其他技术分析方法进行确认。
  *
+ * <p>
+ * Provides the (absolute) difference between the low price and the lowest price
+ * of the candle body. I.e.: low price - min(open price, close price)
  * ### 示例
  * 假设某个交易日的蜡烛图有较长的下影线，表明市场在最低价附近遇到了买盘支撑，这可能会导致价格的反弹。如果该交易日的下影线高度显著超过了前几个交易日的下影线高度，这可能表明买方力量在增强，进一步支持了价格反弹的可能性。
  *
@@ -73,7 +76,7 @@ public class LowerShadowIndicator extends CachedIndicator<Num> {
     /**
      * Constructor.
      *
-     * @param series a bar series
+     * @param series the bar series
      */
     public LowerShadowIndicator(BarSeries series) {
         super(series);
@@ -93,5 +96,10 @@ public class LowerShadowIndicator extends CachedIndicator<Num> {
             //看跌
             return closePrice.minus(t.getLowPrice());
         }
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return 0;
     }
 }

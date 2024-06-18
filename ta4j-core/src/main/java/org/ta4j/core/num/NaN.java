@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -45,19 +45,19 @@ import java.util.function.Function;
  */
 public class NaN implements Num {
 
-    private static final long serialVersionUID = 9161474401436305600L;
+    private static final long serialVersionUID = 1L;
 
-    /** static Not-a-Number instance
-     * 静态非数字实例 */
-
+    /** A static Not-a-Number instance. */
     public static final Num NaN = new NaN();
 
     private NaN() {
     }
 
     /**
-     * Returns a {@code Num} version of the given {@code Number}. Warning: This method turns the number into NaN.
-     * * 返回给定 {@code Number} 的 {@code Num} 版本。 警告：此方法将数字转换为 NaN。
+     * Returns a {@code Num} version of the given {@code Number}.
+     *
+     * <p>
+     * <b>Warning:</b> This method returns {@link NaN} regardless of {@link val}.
      *
      * @param val the number  号码
      * @return {@link #NaN}
@@ -202,14 +202,11 @@ public class NaN implements Num {
     }
 
     /**
-     * NaN.isEqual(NaN) -> true
-     * NaN.isEqual(NaN) -> 真
-     * 
-     * @param other the other value, not null
-     *              另一个值，不为空
+     * <b>Warning:</b> This method returns {@code true} if {@code this} and
+     * {@code obj} are both {@link #NaN}.
      *
-     * @return flase if both values are not NaN
-     *              如果两个值都不是 NaN，则为 false
+     * @param other the other value, not null
+     * @return false if both values are not {@link #NaN}; true otherwise.
      */
     @Override
     public boolean isEqual(Num other) {

@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -45,7 +45,7 @@ import org.ta4j.core.num.Num;
 
 public class EMAIndicatorTest extends AbstractIndicatorTest<Indicator<Num>, Num> {
 
-    private ExternalIndicatorTest xls;
+    private final ExternalIndicatorTest xls;
 
     public EMAIndicatorTest(Function<Number, Num> numFunction) throws Exception {
         super((data, params) -> new EMAIndicator(data, (int) params[0]), numFunction);

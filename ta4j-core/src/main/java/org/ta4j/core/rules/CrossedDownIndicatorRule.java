@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -30,11 +30,8 @@ import org.ta4j.core.indicators.helpers.CrossIndicator;
 import org.ta4j.core.num.Num;
 
 /**
- * Crossed-down indicator rule.
- * * 划线指标规则。
- *
- * Satisfied when the value of the first {@link Indicator indicator} crosses-down the value of the second one.
- * * 当第一个 {@link Indicator indicator} 的值与第二个的值交叉时满足。
+ * Satisfied when the value of the first {@link Indicator indicator}
+ * crosses-down the value of the second one.
  */
 public class CrossedDownIndicatorRule extends AbstractRule {
 
@@ -44,7 +41,7 @@ public class CrossedDownIndicatorRule extends AbstractRule {
 
     /**
      * Constructor.
-     * 
+     *
      * @param indicator the indicator
      *                  指标
      * @param threshold a threshold
@@ -56,7 +53,7 @@ public class CrossedDownIndicatorRule extends AbstractRule {
 
     /**
      * Constructor.
-     * 
+     *
      * @param indicator the indicator
      *                  指標
      * @param threshold a threshold
@@ -68,7 +65,7 @@ public class CrossedDownIndicatorRule extends AbstractRule {
 
     /**
      * Constructor.
-     * 
+     *
      * @param first  the first indicator
      *               第一个指标
      * @param second the second indicator
@@ -78,6 +75,7 @@ public class CrossedDownIndicatorRule extends AbstractRule {
         this.cross = new CrossIndicator(first, second);
     }
 
+    /** This rule does not use the {@code tradingRecord}. */
     @Override
     public boolean isSatisfied(int index, TradingRecord tradingRecord) {
         final boolean satisfied = cross.getValue(index);
@@ -85,18 +83,12 @@ public class CrossedDownIndicatorRule extends AbstractRule {
         return satisfied;
     }
 
-    /**
-     * @return the initial lower indicator
-     * @return 初始下限指标
-     */
+    /** @return the initial lower indicator */
     public Indicator<Num> getLow() {
         return cross.getLow();
     }
 
-    /**
-     * @return the initial upper indicator
-     * * @return 初始上限指标
-     */
+    /** @return the initial upper indicator */
     public Indicator<Num> getUp() {
         return cross.getUp();
     }

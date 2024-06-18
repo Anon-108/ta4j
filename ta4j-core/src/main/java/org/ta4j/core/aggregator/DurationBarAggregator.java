@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -33,37 +33,32 @@ import org.ta4j.core.BaseBar;
 import org.ta4j.core.num.Num;
 
 /**
- * Bar aggregator basing on duration.
- * 基于持续时间的条形聚合器。
+ * Aggregates a list of {@link BaseBar bars} into another one by
+ * {@link BaseBar#timePeriod duration}.
  */
 public class DurationBarAggregator implements BarAggregator {
 
-    /**
-     * Target time period to aggregate
-     * 要聚合的目标时间段
-     */
+    /** The target time period that aggregated bars should have. */
     private final Duration timePeriod;
+
     private final boolean onlyFinalBars;
 
     /**
-     * Duration basing bar aggregator. Only bars with elapsed time (final bars) will be created.
-     * 基于持续时间的条形聚合器。 只会创建经过时间的柱（最终柱）。
+     * Duration based bar aggregator. Only bars with elapsed time (final bars) will
+     * be created.
      *
-     * @param timePeriod time period to aggregate
-     *                   @param timePeriod 要聚合的时间段
+     * @param timePeriod the target time period that aggregated bars should have
      */
     public DurationBarAggregator(Duration timePeriod) {
         this(timePeriod, true);
     }
 
     /**
-     * Duration basing bar aggregator
-     * 基于持续时间的条形聚合器
+     * Duration based bar aggregator.
      *
-     * @param timePeriod    time period to aggregate
-     *                      @param timePeriod 要聚合的时间段
-     * @param onlyFinalBars if true only bars with elapsed time (final bars) will be  created, otherwise also pending bars
-     *                      @param onlyFinalBars 如果为 true，则只会创建经过时间的柱（最终柱），否则也会创建待处理柱
+     * @param timePeriod    the target time period that aggregated bars should have
+     * @param onlyFinalBars if true, only bars with elapsed time (final bars) will
+     *                      be created, otherwise also pending bars
      */
     public DurationBarAggregator(Duration timePeriod, boolean onlyFinalBars) {
         this.timePeriod = timePeriod;
@@ -71,15 +66,12 @@ public class DurationBarAggregator implements BarAggregator {
     }
 
     /**
-     * Aggregates a list of bars by <code>timePeriod</code>.The new
-     * <code>timePeriod</code> must be a multiplication of the actual time period.
-     ** 按 <code>timePeriod</code> 聚合柱形列表。新的
-     *       * <code>timePeriod</code> 必须是实际时间段的乘积。
+     * Aggregates the {@code bars} into another one by {@link #timePeriod}.
      *
-     * @param bars the actual bars
-     *             @param 酒吧实际酒吧
-     * @return the aggregated bars with new <code>timePeriod</code>
-     * @return 带有新 <code>timePeriod</code> 的聚合柱
+     * @param bars the actual bars with actual {@code timePeriod}
+     * @return the aggregated bars with new {@link #timePeriod}
+     * @throws IllegalArgumentException if {@link #timePeriod} is not a
+     *                                  multiplication of actual {@code timePeriod}
      */
     @Override
     public List<Bar> aggregate(List<Bar> bars) {
@@ -100,7 +92,7 @@ public class DurationBarAggregator implements BarAggregator {
         }
 
         int i = 0;
-        final Num zero = firstBar.getOpenPrice().numOf(0);
+        final Num zero = firstBar.getOpenPrice().zero();
         while (i < bars.size()) {
             Bar bar = bars.get(i);
             final ZonedDateTime beginTime = bar.getBeginTime();
@@ -114,10 +106,12 @@ public class DurationBarAggregator implements BarAggregator {
             long trades = 0;
             Duration sumDur = Duration.ZERO;
 
-            while (sumDur.compareTo(timePeriod) < 0) {
+            while (isInDuration(sumDur)) {
                 if (i < bars.size()) {
+                    if (!beginTimesInDuration(beginTime, bars.get(i).getBeginTime())) {
+                        break;
+                    }
                     bar = bars.get(i);
-
                     if (high == null || bar.getHighPrice().isGreaterThan(high)) {
                         high = bar.getHighPrice();
                     }
@@ -135,8 +129,8 @@ public class DurationBarAggregator implements BarAggregator {
                     if (bar.getTrades() != 0) {
                         trades = trades + bar.getTrades();
                     }
-
                 }
+
                 sumDur = sumDur.plus(actualDur);
                 i++;
             }
@@ -149,5 +143,13 @@ public class DurationBarAggregator implements BarAggregator {
         }
 
         return aggregated;
+    }
+
+    private boolean beginTimesInDuration(ZonedDateTime startTime, ZonedDateTime endTime) {
+        return Duration.between(startTime, endTime).compareTo(timePeriod) < 0;
+    }
+
+    private boolean isInDuration(Duration duration) {
+        return duration.compareTo(timePeriod) < 0;
     }
 }

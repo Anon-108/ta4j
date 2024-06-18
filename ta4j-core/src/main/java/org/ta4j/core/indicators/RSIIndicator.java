@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -32,6 +32,7 @@ import org.ta4j.core.num.Num;
  * Relative strength index indicator.
  * 相对强弱指数指标。
  *
+ * <p>
  * Computed using original Welles Wilder formula.
  * 使用原始 Welles Wilder 公式计算。
  *
@@ -56,6 +57,12 @@ public class RSIIndicator extends CachedIndicator<Num> {
     private final MMAIndicator averageGainIndicator;
     private final MMAIndicator averageLossIndicator;
 
+    /**
+     * Constructor.
+     *
+     * @param indicator the {@link Indicator}
+     * @param barCount  the time frame
+     */
     public RSIIndicator(Indicator<Num> indicator, int barCount) {
         super(indicator);
         this.averageGainIndicator = new MMAIndicator(new GainIndicator(indicator), barCount);
@@ -69,15 +76,15 @@ public class RSIIndicator extends CachedIndicator<Num> {
         Num averageGain = averageGainIndicator.getValue(index);
         Num averageLoss = averageLossIndicator.getValue(index);
         if (averageLoss.isZero()) {
-            if (averageGain.isZero()) {
-                return numOf(0);
-            } else {
-                return numOf(100);
-            }
+            return averageGain.isZero() ? zero() : hundred();
         }
         Num relativeStrength = averageGain.dividedBy(averageLoss);
         // compute relative strength index
-        // 计算相对强度指数
-        return numOf(100).minus(numOf(100).dividedBy(numOf(1).plus(relativeStrength)));
+        return hundred().minus(hundred().dividedBy(one().plus(relativeStrength)));
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return 0;
     }
 }

@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -54,6 +54,11 @@ import org.ta4j.core.num.Num;
  */
 public class PVIIndicator extends RecursiveCachedIndicator<Num> {
 
+    /**
+     * Constructor.
+     * 
+     * @param series the bar series
+     */
     public PVIIndicator(BarSeries series) {
         super(series);
     }
@@ -75,6 +80,11 @@ public class PVIIndicator extends RecursiveCachedIndicator<Num> {
             return previousValue.plus(priceChangeRatio.multipliedBy(previousValue));
         }
         return previousValue;
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return 0;
     }
 
 }

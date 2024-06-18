@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -26,7 +26,7 @@ package org.ta4j.core.indicators;
 import org.ta4j.core.BarSeries;
 import org.ta4j.core.Indicator;
 import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
-import org.ta4j.core.indicators.helpers.DifferenceIndicator;
+import org.ta4j.core.indicators.helpers.CombineIndicator;
 import org.ta4j.core.indicators.helpers.PreviousValueIndicator;
 import org.ta4j.core.num.Num;
 
@@ -34,6 +34,7 @@ import org.ta4j.core.num.Num;
  * The Detrended Price Oscillator (DPO) indicator.
  * 去趋势价格振荡器 (DPO) 指标。
  *
+ * <p>
  * The Detrended Price Oscillator (DPO) is an indicator designed to remove trend
   from price and make it easier to identify cycles. DPO does not extend to the
   last date because it is based on a displaced moving average. However,
@@ -42,6 +43,7 @@ import org.ta4j.core.num.Num;
   cycle length.
  去趋势价格震荡指标 (DPO) 是一种旨在消除价格趋势并更容易识别周期的指标。 DPO 不会延续到最后日期，因为它基于移动平均线。然而，与最新的一致不是问题，因为 DPO 不是动量振荡器。相反，DPO 用于识别周期高低点并估计周期长度。
  *
+ * <p>
  * In short, DPO(20) equals price 11 days ago less the 20-day SMA.
  * 简而言之，DPO(20) 等于 11 天前的价格减去 20 天的 SMA。
  *
@@ -68,14 +70,14 @@ import org.ta4j.core.num.Num;
  */
 public class DPOIndicator extends CachedIndicator<Num> {
 
-    private final DifferenceIndicator indicatorMinusPreviousSMAIndicator;
+    private final CombineIndicator indicatorMinusPreviousSMAIndicator;
     private final String name;
 
     /**
      * Constructor.
      *
-     * @param series   the series  该系列
-     * @param barCount the time frame  时间范围
+     * @param series   the bar series
+     * @param barCount the time frame
      */
     public DPOIndicator(BarSeries series, int barCount) {
         this(new ClosePriceIndicator(series), barCount);
@@ -93,14 +95,18 @@ public class DPOIndicator extends CachedIndicator<Num> {
         final SMAIndicator simpleMovingAverage = new SMAIndicator(price, barCount);
         final PreviousValueIndicator previousSimpleMovingAverage = new PreviousValueIndicator(simpleMovingAverage,
                 timeFrame);
-
-        this.indicatorMinusPreviousSMAIndicator = new DifferenceIndicator(price, previousSimpleMovingAverage);
+        this.indicatorMinusPreviousSMAIndicator = CombineIndicator.minus(price, previousSimpleMovingAverage);
         this.name = String.format("%s barCount: %s", getClass().getSimpleName(), barCount);
     }
 
     @Override
     protected Num calculate(int index) {
         return indicatorMinusPreviousSMAIndicator.getValue(index);
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return 0;
     }
 
     @Override

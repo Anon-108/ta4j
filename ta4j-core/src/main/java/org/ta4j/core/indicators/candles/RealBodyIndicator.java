@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -61,6 +61,9 @@ import org.ta4j.core.num.Num;
  *
  * ### 总结
  * 实体高度指标是一种用于分析蜡烛图的技术指标，通过衡量蜡烛图实体部分的高度来评估市场的价格波动幅度和市场情绪。较长的实体可能预示着市场的波动较大，较短的实体可能表明市场的波动较小，但需要谨慎对待，并结合其他技术指标和图表模式进行分析和确认。
+ * <p>
+ * Provides the (relative) difference between the open price and the close price
+ * of a bar. I.e.: close price - open price
  *
  * @see <a href=
  *      "http://stockcharts.com/school/doku.php?id=chart_school:chart_analysis:introduction_to_candlesticks#formation">
@@ -71,7 +74,7 @@ public class RealBodyIndicator extends CachedIndicator<Num> {
     /**
      * Constructor.
      *
-     * @param series a bar series
+     * @param series the bar series
      */
     public RealBodyIndicator(BarSeries series) {
         super(series);
@@ -81,5 +84,10 @@ public class RealBodyIndicator extends CachedIndicator<Num> {
     protected Num calculate(int index) {
         Bar t = getBarSeries().getBar(index);
         return t.getClosePrice().minus(t.getOpenPrice());
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return 0;
     }
 }

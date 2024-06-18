@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -62,11 +62,12 @@ public class DeMarkReversalIndicator extends RecursiveCachedIndicator<Num> {
     /**
      * Constructor.
      *
-     * Calculates the DeMark reversal for the corresponding pivot level
-     * * 计算相应枢轴水平的 DeMark 反转
-     * 
-     * @param pivotPointIndicator the {@link DeMarkPivotPointIndicator} for this    reversal  此反转的 {@link DeMarkPivotPointIndicator}
-     * @param level               the {@link DeMarkPivotLevel} for this reversal   (RESISTANT, SUPPORT)  此逆转的 {@link DeMarkPivotLevel} (RESISTANT, SUPPORT)
+     * Calculates the DeMark reversal for the corresponding pivot level.
+     *
+     * @param pivotPointIndicator the {@link DeMarkPivotPointIndicator} for this
+     *                            reversal
+     * @param level               the {@link DeMarkPivotLevel} for this reversal
+     *                            (RESISTANT, SUPPORT)
      */
     public DeMarkReversalIndicator(DeMarkPivotPointIndicator pivotPointIndicator, DeMarkPivotLevel level) {
         super(pivotPointIndicator);
@@ -87,7 +88,11 @@ public class DeMarkReversalIndicator extends RecursiveCachedIndicator<Num> {
         }
 
         return result;
+    }
 
+    @Override
+    public int getUnstableBars() {
+        return 0;
     }
 
     private Num calculateResistance(Num x, int index) {

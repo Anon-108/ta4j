@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -27,7 +27,6 @@ import org.ta4j.core.BarSeries;
 import org.ta4j.core.indicators.ATRIndicator;
 import org.ta4j.core.indicators.CachedIndicator;
 import org.ta4j.core.indicators.MMAIndicator;
-import org.ta4j.core.indicators.helpers.PlusDMIndicator;
 import org.ta4j.core.num.Num;
 
 /**
@@ -72,29 +71,45 @@ import org.ta4j.core.num.Num;
  *
  * ### 总结
  * +DI 指标是技术分析中的一个重要工具，通过衡量市场上升趋势的强度，帮助交易者识别买入信号和确认市场趋势。结合 -DI 和 ADX，它可以为交易策略提供更全面的指导。在使用时，应注意其滞后性，并结合其他指标进行综合分析。
+ * +DI indicator.
+ *
+ * <p>
+ * Part of the Directional Movement System.
  *
  * @see <a href=
  *      "http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:average_directional_index_adx">
  *      http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:average_directional_index_adx</a>
- * @see <a
- *      href="https://www.investopedia.com/terms/a/adx.asp>https://www.investopedia.com/terms/a/adx.asp</a>
+ * @see <a href=
+ *      "https://www.investopedia.com/terms/a/adx.asp">https://www.investopedia.com/terms/a/adx.asp</a>
  */
 public class PlusDIIndicator extends CachedIndicator<Num> {
 
-    private final MMAIndicator avgPlusDMIndicator;
-    private final ATRIndicator atrIndicator;
     private final int barCount;
+    private final ATRIndicator atrIndicator;
+    private final MMAIndicator avgPlusDMIndicator;
 
+    /**
+     * Constructor.
+     *
+     * @param series   the bar series
+     * @param barCount the bar count for {@link #atrIndicator} and
+     *                 {@link #avgPlusDMIndicator}
+     */
     public PlusDIIndicator(BarSeries series, int barCount) {
         super(series);
-        this.avgPlusDMIndicator = new MMAIndicator(new PlusDMIndicator(series), barCount);
-        this.atrIndicator = new ATRIndicator(series, barCount);
         this.barCount = barCount;
+        this.atrIndicator = new ATRIndicator(series, barCount);
+        this.avgPlusDMIndicator = new MMAIndicator(new PlusDMIndicator(series), barCount);
     }
 
     @Override
     protected Num calculate(int index) {
         return avgPlusDMIndicator.getValue(index).dividedBy(atrIndicator.getValue(index)).multipliedBy(numOf(100));
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return barCount;
     }
 
     @Override

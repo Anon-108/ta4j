@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -79,15 +79,14 @@ public class DecimalNumTest {
             "1234567890"; // 120
     private static final Num FIRST_SUPER_PRECISION_NUM = DecimalNum.valueOf(SUPER_PRECISION_STRING);
 
-    // override the auto-precision based on length of SUPER_PRECISION_STRING by passing a precision to valueOf()
-    // 通过将精度传递给 valueOf() 来覆盖基于 SUPER_PRECISION_STRING 长度的自动精度
-    private Function<Number, Num> superPrecisionFunc = (number -> DecimalNum.valueOf(number.toString(), 256));
+    // override the auto-precision based on length of SUPER_PRECISION_STRING by
+    // passing a precision to valueOf()
+    private final Function<Number, Num> superPrecisionFunc = (number -> DecimalNum.valueOf(number.toString(), 256));
     // auto-set precision based on length of SUPER_PRECISION_STRING (120)
-    // 根据 SUPER_PRECISION_STRING (120) 的长度自动设置精度
-    private Function<Number, Num> precisionFunc = DecimalNum::valueOf;
-    private Function<Number, Num> precision32Func = (number -> DecimalNum.valueOf(number.toString(), 32));
-    private Function<Number, Num> doubleFunc = DoubleNum::valueOf;
-    private Function<Number, Num> lowPrecisionFunc = (number -> DecimalNum.valueOf(number.toString(), 3));
+    private final Function<Number, Num> precisionFunc = DecimalNum::valueOf;
+    private final Function<Number, Num> precision32Func = (number -> DecimalNum.valueOf(number.toString(), 32));
+    private final Function<Number, Num> doubleFunc = DoubleNum::valueOf;
+    private final Function<Number, Num> lowPrecisionFunc = (number -> DecimalNum.valueOf(number.toString(), 3));
 
     private BarSeries superPrecisionSeries;
     private BarSeries precisionSeries;
@@ -156,16 +155,26 @@ public class DecimalNumTest {
             endTime = endTime.plus(timePeriod);
             superPrecisionNum = superPrecisionNum.plus(DecimalNum.valueOf(deltas[i % 6]));
         }
-        superPrecisionSeries = new BaseBarSeriesBuilder().withName("superPrecision").withNumTypeOf(superPrecisionFunc)
-                .withBars(superPrecisionBarList).build();
-        precisionSeries = new BaseBarSeriesBuilder().withName("precision").withNumTypeOf(precisionFunc)
-                .withBars(precisionBarList).build();
-        precision32Series = new BaseBarSeriesBuilder().withName("precision32").withNumTypeOf(precision32Func)
-                .withBars(precision32BarList).build();
-        doubleSeries = new BaseBarSeriesBuilder().withName("double").withNumTypeOf(doubleFunc).withBars(doubleBarList)
+        superPrecisionSeries = new BaseBarSeriesBuilder().withName("superPrecision")
+                .withNumTypeOf(superPrecisionFunc)
+                .withBars(superPrecisionBarList)
                 .build();
-        lowPrecisionSeries = new BaseBarSeriesBuilder().withName("lowPrecision").withNumTypeOf(lowPrecisionFunc)
-                .withBars(lowPrecisionBarList).build();
+        precisionSeries = new BaseBarSeriesBuilder().withName("precision")
+                .withNumTypeOf(precisionFunc)
+                .withBars(precisionBarList)
+                .build();
+        precision32Series = new BaseBarSeriesBuilder().withName("precision32")
+                .withNumTypeOf(precision32Func)
+                .withBars(precision32BarList)
+                .build();
+        doubleSeries = new BaseBarSeriesBuilder().withName("double")
+                .withNumTypeOf(doubleFunc)
+                .withBars(doubleBarList)
+                .build();
+        lowPrecisionSeries = new BaseBarSeriesBuilder().withName("lowPrecision")
+                .withNumTypeOf(lowPrecisionFunc)
+                .withBars(lowPrecisionBarList)
+                .build();
     }
 
     public void test() {

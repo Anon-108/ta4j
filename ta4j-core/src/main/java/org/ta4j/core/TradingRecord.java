@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -32,15 +32,13 @@ import org.ta4j.core.Trade.TradeType;
 import org.ta4j.core.num.Num;
 
 /**
- * A history/record of a trading session.
- * * 交易时段的历史/记录。
- *
- * Holds the full trading record when running a {@link Strategy strategy}. It is used to:
- * * 在运行 {@link Strategy strategy} 时保持完整的交易记录。 它用于：
+ * A {@code TradingRecord} holds the full history/record of a trading session
+ * when running a {@link Strategy strategy}. It can be used to:
  *
  * <ul>
- * <li>check to satisfaction of some trading rules (when running a strategy) analyze the performance of a trading strategy
- * * <li>检查是否满足某些交易规则（在运行策略时）分析交易策略的表现
+ * <li>analyze the performance of a {@link Strategy strategy}
+ * <li>check whether some {@link Rule rules} are satisfied (while running a
+ * strategy)
  * </ul>
  */
 public interface TradingRecord extends Serializable {
@@ -59,8 +57,7 @@ public interface TradingRecord extends Serializable {
 
     /**
      * Places a trade in the trading record.
-     * * 在交易记录中进行交易。
-     * 
+     *
      * @param index the index to place the trade
      *              进行交易的指数
      */
@@ -70,14 +67,9 @@ public interface TradingRecord extends Serializable {
 
     /**
      * Places a trade in the trading record.
-     * * 在交易记录中进行交易。
-     * 
+     *
      * @param index  the index to place the trade
-     *               进行交易的指数
-     *
-     * @param price  the trade price
-     *               交易价格
-     *
+     * @param price  the trade price per asset
      * @param amount the trade amount
      *               交易金额
      */
@@ -85,8 +77,7 @@ public interface TradingRecord extends Serializable {
 
     /**
      * Places an entry trade in the trading record.
-     * * 在交易记录中放置一个入场交易。
-     * 
+     *
      * @param index the index to place the entry
      *              放置条目的索引
      *
@@ -99,14 +90,9 @@ public interface TradingRecord extends Serializable {
 
     /**
      * Places an entry trade in the trading record.
-     * * 在交易记录中放置一个入场交易。
-     * 
+     *
      * @param index  the index to place the entry
-     *               放置条目的索引
-     *
-     * @param price  the trade price
-     *               交易价格
-     *
+     * @param price  the trade price per asset
      * @param amount the trade amount
      *               交易金额
      *
@@ -117,8 +103,7 @@ public interface TradingRecord extends Serializable {
 
     /**
      * Places an exit trade in the trading record.
-     * * 在交易记录中放置退出交易。
-     * 
+     *
      * @param index the index to place the exit
      *              放置出口的索引
      *
@@ -132,13 +117,15 @@ public interface TradingRecord extends Serializable {
     /**
      * Places an exit trade in the trading record.
      * * 在交易记录中放置退出交易。
-     * 
+     *
+     *
      * @param index  the index to place the exit
      *               放置出口的索引
      *
      * @param price  the trade price
      *               交易价格
      *
+     * @param price  the trade price per asset
      * @param amount the trade amount
      *               交易金额
      *
@@ -156,28 +143,24 @@ public interface TradingRecord extends Serializable {
     }
 
     /**
-     * @return the recorded positions
-     * * @return 记录的位置
+     * @return the recorded closed positions
      */
     List<Position> getPositions();
 
     /**
-     * @return the number of recorded positions
-     * * @return 记录的位置数
+     * @return the number of recorded closed positions
      */
     default int getPositionCount() {
         return getPositions().size();
     }
 
     /**
-     * @return the current position
-     * * @return 当前位置
+     * @return the current (open) position
      */
     Position getCurrentPosition();
 
     /**
-     * @return the last position recorded
-     * * @return 最后记录的位置
+     * @return the last closed position recorded
      */
     default Position getLastPosition() {
         List<Position> positions = getPositions();
@@ -213,4 +196,34 @@ public interface TradingRecord extends Serializable {
      * * @return 记录的最后退出交易
      */
     Trade getLastExit();
+
+    /**
+     * @return the start of the recording (included)
+     */
+    Integer getStartIndex();
+
+    /**
+     * @return the end of the recording (included)
+     */
+    Integer getEndIndex();
+
+    /**
+     * @param series the bar series, not null
+     * @return the {@link #getStartIndex()} if not null and greater than
+     *         {@link BarSeries#getBeginIndex()}, otherwise
+     *         {@link BarSeries#getBeginIndex()}
+     */
+    default int getStartIndex(BarSeries series) {
+        return getStartIndex() == null ? series.getBeginIndex() : Math.max(getStartIndex(), series.getBeginIndex());
+    }
+
+    /**
+     * @param series the bar series, not null
+     * @return the {@link #getEndIndex()} if not null and less than
+     *         {@link BarSeries#getEndIndex()}, otherwise
+     *         {@link BarSeries#getEndIndex()}
+     */
+    default int getEndIndex(BarSeries series) {
+        return getEndIndex() == null ? series.getEndIndex() : Math.min(getEndIndex(), series.getEndIndex());
+    }
 }

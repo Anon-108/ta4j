@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -47,6 +47,8 @@ import org.ta4j.core.num.Num;
  交易者通常使用PPO来识别价格的趋势转折点和制定买卖信号。例如，当PPO线上穿信号线时，可能暗示着价格的上升趋势加强，为买入信号；相反，当PPO线下穿信号线时，可能暗示着价格的下跌趋势加强，为卖出信号。
 
  总的来说，PPO是一种用于识别价格趋势和买卖信号的常用技术指标，但仍建议将其与其他技术指标和价格模式结合使用，以增强交易决策的准确性。
+ * Percentage price oscillator (PPO) indicator (also called "MACD Percentage
+ * Price Oscillator (MACD-PPO)").
  *
  * @see <a href=
  *      "https://www.investopedia.com/terms/p/ppo.asp">https://www.investopedia.com/terms/p/ppo.asp</a>
@@ -57,8 +59,12 @@ public class PPOIndicator extends CachedIndicator<Num> {
     private final EMAIndicator longTermEma;
 
     /**
-     * Constructor with shortBarCount "12" and longBarCount "26".
-     * shortBarCount "12" 和 longBarCount "26" 的构造函数。
+     * Constructor with:
+     *
+     * <ul>
+     * <li>{@code shortBarCount} = 12
+     * <li>{@code longBarCount} = 26
+     * </ul>
      *
      * @param indicator the indicator
      *                  指标
@@ -80,7 +86,7 @@ public class PPOIndicator extends CachedIndicator<Num> {
     public PPOIndicator(Indicator<Num> indicator, int shortBarCount, int longBarCount) {
         super(indicator);
         if (shortBarCount > longBarCount) {
-            throw new IllegalArgumentException("Long term period count must be greater than short term period count 长期周期计数必须大于短期周期计数");
+            throw new IllegalArgumentException("Long term barCount must be greater than short term barCount");
         }
         this.shortTermEma = new EMAIndicator(indicator, shortBarCount);
         this.longTermEma = new EMAIndicator(indicator, longBarCount);
@@ -90,6 +96,11 @@ public class PPOIndicator extends CachedIndicator<Num> {
     protected Num calculate(int index) {
         Num shortEmaValue = shortTermEma.getValue(index);
         Num longEmaValue = longTermEma.getValue(index);
-        return shortEmaValue.minus(longEmaValue).dividedBy(longEmaValue).multipliedBy(numOf(100));
+        return shortEmaValue.minus(longEmaValue).dividedBy(longEmaValue).multipliedBy(hundred());
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return 0;
     }
 }

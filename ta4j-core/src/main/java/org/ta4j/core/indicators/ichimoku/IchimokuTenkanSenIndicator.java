@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -26,6 +26,7 @@ package org.ta4j.core.indicators.ichimoku;
 import org.ta4j.core.BarSeries;
 
 /**
+ * Ichimoku clouds: Tenkan-sen (Conversion line) indicator.
  * Ichimoku clouds: Tenkan-sen (Conversion line) indicator
  * Ichimoku 云： Tenkan-sen （转换线） 指标
  *
@@ -50,9 +51,9 @@ import org.ta4j.core.BarSeries;
 public class IchimokuTenkanSenIndicator extends IchimokuLineIndicator {
 
     /**
-     * Constructor.
-     * 
-     * @param series the series
+     * Constructor with {@code barCount} = 9.
+     *
+     * @param series the bar series
      */
     public IchimokuTenkanSenIndicator(BarSeries series) {
         this(series, 9);
@@ -60,8 +61,8 @@ public class IchimokuTenkanSenIndicator extends IchimokuLineIndicator {
 
     /**
      * Constructor.
-     * 
-     * @param series   the series
+     *
+     * @param series   the bar series
      * @param barCount the time frame (usually 9)
      *                 时间范围（通常为 9）
      */

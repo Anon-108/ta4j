@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -24,6 +24,7 @@
 package org.ta4j.core.indicators;
 
 import org.ta4j.core.Indicator;
+import org.ta4j.core.indicators.helpers.RunningTotalIndicator;
 import org.ta4j.core.num.Num;
 
 /**
@@ -49,25 +50,36 @@ import org.ta4j.core.num.Num;
  */
 public class SMAIndicator extends CachedIndicator<Num> {
 
-    private final Indicator<Num> indicator;
-
     private final int barCount;
+    private RunningTotalIndicator previousSum;
 
+    /**
+     * Constructor.
+     * 
+     * @param indicator the {@link Indicator}
+     * @param barCount  the time frame
+     */
     public SMAIndicator(Indicator<Num> indicator, int barCount) {
         super(indicator);
-        this.indicator = indicator;
+        this.previousSum = new RunningTotalIndicator(indicator, barCount);
         this.barCount = barCount;
     }
 
     @Override
     protected Num calculate(int index) {
-        Num sum = numOf(0);
-        for (int i = Math.max(0, index - barCount + 1); i <= index; i++) {
-            sum = sum.plus(indicator.getValue(i));
-        }
-
         final int realBarCount = Math.min(barCount, index + 1);
+        final var sum = partialSum(index);
         return sum.dividedBy(numOf(realBarCount));
+    }
+
+    private Num partialSum(int index) {
+        return this.previousSum.getValue(index);
+    }
+
+    /** @return {@link #barCount} */
+    @Override
+    public int getUnstableBars() {
+        return barCount;
     }
 
     @Override

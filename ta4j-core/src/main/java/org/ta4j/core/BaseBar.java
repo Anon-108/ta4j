@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -31,7 +31,6 @@ import java.util.Objects;
 import java.util.function.Function;
 
 import org.ta4j.core.num.DecimalNum;
-import org.ta4j.core.num.DoubleNum;
 import org.ta4j.core.num.Num;
 
 /**
@@ -41,40 +40,40 @@ import org.ta4j.core.num.Num;
 public class BaseBar implements Bar {
 
     private static final long serialVersionUID = 8038383777467488147L;
-    /** Time period (e.g. 1 day, 15 min, etc.) of the bar
-     * 柱形的时间段（例如 1 天、15 分钟等） */
-    private Duration timePeriod;
-    /** End time of the bar
-     * 酒吧/柱形结束时间 */
-    private ZonedDateTime endTime;
-    /** Begin time of the bar
-     * 酒吧的开始时间 */
-    private ZonedDateTime beginTime;
-    /** Open price of the period
-     * 本期开盘价 */
+
+    /** The time period (e.g. 1 day, 15 min, etc.) of the bar. */
+    private final Duration timePeriod;
+
+    /** The begin time of the bar period. */
+    private final ZonedDateTime beginTime;
+
+    /** The end time of the bar period. */
+    private final ZonedDateTime endTime;
+
+    /** The open price of the bar period. */
     private Num openPrice = null;
-    /** Close price of the period
-     * 期间收盘价 */
-    private Num closePrice = null;
-    /** High price of the period
-     * 期间高价 */
+
+    /** The high price of the bar period. */
     private Num highPrice = null;
-    /** Low price of the period
-     * 期间低价*/
+
+    /** The low price of the bar period. */
     private Num lowPrice = null;
-    /** Traded amount during the period
-     * 期间成交金额 */
-    private Num amount;
-    /** Volume of the period
-     * 本期成交量 */
+
+    /** The close price of the bar period. */
+    private Num closePrice = null;
+
+    /** The total traded volume of the bar period. */
     private Num volume;
-    /** Trade count
-     * 贸易计数 */
+
+    /** The total traded amount of the bar period. */
+    private Num amount;
+
+    /** The number of trades of the bar period. */
     private long trades = 0;
 
     /**
      * Constructor.
-     * 
+     *
      * @param timePeriod  the time period
      *                    时间段
      * @param endTime     the end time of the bar period
@@ -93,7 +92,7 @@ public class BaseBar implements Bar {
 
     /**
      * Constructor.
-     * 
+     *
      * @param timePeriod the time period
      *                   时间段
      *
@@ -110,9 +109,7 @@ public class BaseBar implements Bar {
      *                   柱期最低价
      *
      * @param closePrice the close price of the bar period
-     *                   柱周期的收盘价
-     * @param volume     the volume of the bar period
-     *                   柱周期的交易量
+     * @param volume     the total traded volume of the bar period
      */
     public BaseBar(Duration timePeriod, ZonedDateTime endTime, double openPrice, double highPrice, double lowPrice,
             double closePrice, double volume) {
@@ -121,7 +118,7 @@ public class BaseBar implements Bar {
 
     /**
      * Constructor.
-     * 
+     *
      * @param timePeriod the time period
      *                   时间段
      *
@@ -138,22 +135,17 @@ public class BaseBar implements Bar {
      *                   柱期最低价
      *
      * @param closePrice the close price of the bar period
-     *                   柱周期的收盘价
-     *
-     * @param volume     the volume of the bar period
-     *                   柱周期的交易量
-     *
-     * @param amount     the amount of the bar period
-     *                   酒吧期间的金额
+     * @param volume     the total traded volume of the bar period
+     * @param amount     the total traded amount of the bar period
      */
     public BaseBar(Duration timePeriod, ZonedDateTime endTime, double openPrice, double highPrice, double lowPrice,
             double closePrice, double volume, double amount) {
-        this(timePeriod, endTime, openPrice, highPrice, lowPrice, closePrice, volume, amount, 0, DoubleNum::valueOf);
+        this(timePeriod, endTime, openPrice, highPrice, lowPrice, closePrice, volume, amount, 0, DecimalNum::valueOf);
     }
 
     /**
      * Constructor.
-     * 
+     *
      * @param timePeriod  the time period
      *                    时间段
      *
@@ -169,17 +161,9 @@ public class BaseBar implements Bar {
      *                    柱期最低价
      *
      * @param closePrice  the close price of the bar period
-     *                    柱周期的收盘价
-     *
-     * @param volume      the volume of the bar period
-     *                    柱周期的交易量
-     *
-     * @param amount      the amount of the bar period
-     *                    酒吧期间的金额
-     *
-     * @param trades      the trades count of the bar period
-     *                    柱周期的交易计数
-     *
+     * @param volume      the total traded volume of the bar period
+     * @param amount      the total traded amount of the bar period
+     * @param trades      the number of trades of the bar period
      * @param numFunction the numbers precision
      *                    数字精度
      */
@@ -192,7 +176,7 @@ public class BaseBar implements Bar {
 
     /**
      * Constructor.
-     * 
+     *
      * @param timePeriod the time period
      *                   时间段
      *
@@ -209,10 +193,7 @@ public class BaseBar implements Bar {
      *                   柱期最低价
      *
      * @param closePrice the close price of the bar period
-     *                   柱周期的收盘价
-     *
-     * @param volume     the volume of the bar period
-     *                   柱周期的交易量
+     * @param volume     the total traded volume of the bar period
      */
     public BaseBar(Duration timePeriod, ZonedDateTime endTime, BigDecimal openPrice, BigDecimal highPrice,
             BigDecimal lowPrice, BigDecimal closePrice, BigDecimal volume) {
@@ -221,7 +202,7 @@ public class BaseBar implements Bar {
 
     /**
      * Constructor.
-     * 
+     *
      * @param timePeriod the time period
      *                   时间段
      *
@@ -238,13 +219,8 @@ public class BaseBar implements Bar {
      *                   柱期最低价
      *
      * @param closePrice the close price of the bar period
-     *                   柱周期的收盘价
-     *
-     * @param volume     the volume of the bar period
-     *                   柱周期的交易量
-     *
-     * @param amount     the amount of the bar period
-     *                   酒吧期间的金额
+     * @param volume     the total traded volume of the bar period
+     * @param amount     the total traded amount of the bar period
      */
     public BaseBar(Duration timePeriod, ZonedDateTime endTime, BigDecimal openPrice, BigDecimal highPrice,
             BigDecimal lowPrice, BigDecimal closePrice, BigDecimal volume, BigDecimal amount) {
@@ -253,7 +229,7 @@ public class BaseBar implements Bar {
 
     /**
      * Constructor.
-     * 
+     *
      * @param timePeriod  the time period
      *                    时间段
      *
@@ -270,17 +246,9 @@ public class BaseBar implements Bar {
      *                    柱期最低价
      *
      * @param closePrice  the close price of the bar period
-     *                    柱周期的收盘价
-     *
-     * @param volume      the volume of the bar period
-     *                    柱周期的交易量
-     *
-     * @param amount      the amount of the bar period
-     *                    酒吧期间的金额
-     *
-     * @param trades      the trades count of the bar period
-     *                    柱周期的交易计数
-     *
+     * @param volume      the total traded volume of the bar period
+     * @param amount      the total traded amount of the bar period
+     * @param trades      the number of trades of the bar period
      * @param numFunction the numbers precision
      *                    数字精度
      */
@@ -294,7 +262,7 @@ public class BaseBar implements Bar {
 
     /**
      * Constructor.
-     * 
+     *
      * @param timePeriod the time period
      *                   时间段
      *
@@ -311,10 +279,7 @@ public class BaseBar implements Bar {
      *                   柱期最低价
      *
      * @param closePrice the close price of the bar period
-     *                   柱周期的收盘价
-     *
-     * @param volume     the volume of the bar period
-     *                   柱周期的交易量
+     * @param volume     the total traded volume of the bar period
      */
     public BaseBar(Duration timePeriod, ZonedDateTime endTime, String openPrice, String highPrice, String lowPrice,
             String closePrice, String volume) {
@@ -323,7 +288,7 @@ public class BaseBar implements Bar {
 
     /**
      * Constructor.
-     * 
+     *
      * @param timePeriod the time period
      *                   时间段
      *
@@ -340,12 +305,8 @@ public class BaseBar implements Bar {
      *                   柱期最低价
      *
      * @param closePrice the close price of the bar period
-     *                   柱周期的收盘价
-     * @param volume     the volume of the bar period
-     *                   柱周期的交易量
-     *
-     * @param amount     the amount of the bar period
-     *                   酒吧期间的金额
+     * @param volume     the total traded volume of the bar period
+     * @param amount     the total traded amount of the bar period
      */
     public BaseBar(Duration timePeriod, ZonedDateTime endTime, String openPrice, String highPrice, String lowPrice,
             String closePrice, String volume, String amount) {
@@ -354,7 +315,7 @@ public class BaseBar implements Bar {
 
     /**
      * Constructor.
-     * 
+     *
      * @param timePeriod  the time period
      *                    时间段
      *
@@ -371,17 +332,9 @@ public class BaseBar implements Bar {
      *                    柱期最低价
      *
      * @param closePrice  the close price of the bar period
-     *                    柱周期的收盘价
-     *
-     * @param volume      the volume of the bar period
-     *                    柱周期的交易量
-     *
-     * @param amount      the amount of the bar period
-     *                    酒吧期间的金额
-     *
-     * @param trades      the trades count of the bar period
-     *                    柱周期的交易计数
-     *
+     * @param volume      the total traded volume of the bar period
+     * @param amount      the total traded amount of the bar period
+     * @param trades      the number of trades of the bar period
      * @param numFunction the numbers precision
      *                    数字精度
      */
@@ -390,12 +343,12 @@ public class BaseBar implements Bar {
         this(timePeriod, endTime, numFunction.apply(new BigDecimal(openPrice)),
                 numFunction.apply(new BigDecimal(highPrice)), numFunction.apply(new BigDecimal(lowPrice)),
                 numFunction.apply(new BigDecimal(closePrice)), numFunction.apply(new BigDecimal(volume)),
-                numFunction.apply(new BigDecimal(amount)), Integer.valueOf(trades));
+                numFunction.apply(new BigDecimal(amount)), Integer.parseInt(trades));
     }
 
     /**
      * Constructor.
-     * 
+     *
      * @param timePeriod the time period
      *                   时间段
      *
@@ -412,13 +365,8 @@ public class BaseBar implements Bar {
      *                   柱期最低价
      *
      * @param closePrice the close price of the bar period
-     *                   柱周期的收盘价
-     *
-     * @param volume     the volume of the bar period
-     *                   柱周期的交易量
-     *
-     * @param amount     the amount of the bar period
-     *                   酒吧期间的金额
+     * @param volume     the total traded volume of the bar period
+     * @param amount     the total traded amount of the bar period
      */
     public BaseBar(Duration timePeriod, ZonedDateTime endTime, Num openPrice, Num highPrice, Num lowPrice,
             Num closePrice, Num volume, Num amount) {
@@ -427,7 +375,7 @@ public class BaseBar implements Bar {
 
     /**
      * Constructor.
-     * 
+     *
      * @param timePeriod the time period
      *                   时间段
      *
@@ -444,16 +392,9 @@ public class BaseBar implements Bar {
      *                   柱期最低价
      *
      * @param closePrice the close price of the bar period
-     *                   柱周期的收盘价
-     *
-     * @param volume     the volume of the bar period
-     *                   柱周期的交易量
-     *
-     * @param amount     the amount of the bar period
-     *                   酒吧期间的金额
-     *
-     * @param trades     the trades count of the bar period
-     *                   柱周期的交易计数
+     * @param volume     the total traded volume of the bar period
+     * @param amount     the total traded amount of the bar period
+     * @param trades     the number of trades of the bar period
      */
     public BaseBar(Duration timePeriod, ZonedDateTime endTime, Num openPrice, Num highPrice, Num lowPrice,
             Num closePrice, Num volume, Num amount, long trades) {
@@ -471,117 +412,96 @@ public class BaseBar implements Bar {
     }
 
     /**
-     * Returns BaseBarBuilder
-     * 返回 BaseBarBuilder
-     * 
-     * @return builder of class BaseBarBuilder
-     * BaseBarBuilder 类的构建器
+     * @return the {@link BaseBarBuilder} to build a new {@code BaseBar}
      */
     public static BaseBarBuilder builder() {
         return new BaseBarBuilder();
     }
 
     /**
-     * Returns BaseBarBuilder
-     * 返回 BaseBarBuilder
-     * 
-     * @return builder of class BaseBarBuilder
-     *      BaseBarBuilder 类的构建器
+     * @param <T>   the type of the clazz
+     * @param num   any instance of Num to determine its Num function; with this, we
+     *              can convert a {@link Number} of type {@code T} to a {@link Num
+     *              Num implementation}
+     * @param clazz any type convertable to Num
+     * @return the {@link BaseBarConvertibleBuilder} to build a new {@code BaseBar}
      */
-    public static <T> ConvertibleBaseBarBuilder<T> builder(Function<T, Num> conversionFunction, Class<T> clazz) {
-        return new ConvertibleBaseBarBuilder<>(conversionFunction);
+    @SuppressWarnings("unchecked")
+    public static <T> BaseBarConvertibleBuilder<T> builder(Num num, Class<T> clazz) {
+        return new BaseBarConvertibleBuilder<>((Function<T, Num>) num.function());
     }
 
     /**
-     * @return the open price of the period
-     * * @return 期间的开盘价
+     * @param <T>                the type of the clazz
+     * @param conversionFunction any Num function; with this, we can convert a
+     *                           {@link Number} of type {@code T} to a {@link Num
+     *                           Num implementation}
+     * @param clazz              any type convertable to Num
+     * @return the {@link BaseBarConvertibleBuilder} to build a new {@code BaseBar}
      */
-    public Num getOpenPrice() {
-        return openPrice;
+    public static <T> BaseBarConvertibleBuilder<T> builder(Function<T, Num> conversionFunction, Class<T> clazz) {
+        return new BaseBarConvertibleBuilder<>(conversionFunction);
     }
 
     /**
-     * @return the low price of the period
-     * * @return 期间的最低价
+     * @return the time period of the bar (must be the same for all bars within the
+     *         same {@code BarSeries})
      */
-    public Num getLowPrice() {
-        return lowPrice;
-    }
-
-    /**
-     * @return the high price of the period
-     * * @return 期间的最高价
-     */
-    public Num getHighPrice() {
-        return highPrice;
-    }
-
-    /**
-     * @return the close price of the period
-     * * @return 期间的收盘价
-     */
-    public Num getClosePrice() {
-        return closePrice;
-    }
-
-    /**
-     * @return the whole traded volume in the period
-     * * @return 期间的全部交易量
-     */
-    public Num getVolume() {
-        return volume;
-    }
-
-    /**
-     * @return the number of trades in the period
-     * * @return 周期内的交易数量
-     */
-    public long getTrades() {
-        return trades;
-    }
-
-    /**
-     * @return the whole traded amount (tradePrice x tradeVolume) of the period
-     * * @return 整个期间的交易金额（tradePrice x tradeVolume）
-     */
-    public Num getAmount() {
-        return amount;
-    }
-
-    /**
-     * @return the time period of the bar
-     * * @return 柱的时间段
-     */
+    @Override
     public Duration getTimePeriod() {
         return timePeriod;
     }
 
     /**
-     * @return the begin timestamp of the bar period
-     * * @return 柱周期的开始时间戳
+     * @return the begin timestamp of the bar period (derived by {@link #endTime} -
+     *         {@link #timePeriod})
      */
+    @Override
     public ZonedDateTime getBeginTime() {
         return beginTime;
     }
 
-    /**
-     * @return the end timestamp of the bar period
-     * * @return 柱周期的结束时间戳
-     */
+    @Override
     public ZonedDateTime getEndTime() {
         return endTime;
     }
 
-    /**
-     * Adds a trade at the end of bar period.
-     * * 在柱周期结束时添加交易。
-     * 
-     * @param tradeVolume the traded volume
-     *                    成交量
-     *
-     * @param tradePrice  the price
-     *                    价格
-     */
+    @Override
+    public Num getOpenPrice() {
+        return openPrice;
+    }
+
+    @Override
+    public Num getHighPrice() {
+        return highPrice;
+    }
+
+    @Override
+    public Num getLowPrice() {
+        return lowPrice;
+    }
+
+    @Override
+    public Num getClosePrice() {
+        return closePrice;
+    }
+
+    @Override
+    public Num getVolume() {
+        return volume;
+    }
+
+    @Override
+    public Num getAmount() {
+        return amount;
+    }
+
+    @Override
+    public long getTrades() {
+        return trades;
+    }
+
+    @Override
     public void addTrade(Num tradeVolume, Num tradePrice) {
         addPrice(tradePrice);
 
@@ -617,18 +537,11 @@ public class BaseBar implements Bar {
      *                   时间段
      *
      * @param endTime    the end time of the bar
-     *                   酒吧的结束时间
-     *
-     * @throws IllegalArgumentException if one of the arguments is null
-     *                                  如果参数之一为空
+     * @throws NullPointerException if one of the arguments is null
      */
     private static void checkTimeArguments(Duration timePeriod, ZonedDateTime endTime) {
-        if (timePeriod == null) {
-            throw new IllegalArgumentException("Time period cannot be null 时间段不能为空");
-        }
-        if (endTime == null) {
-            throw new IllegalArgumentException("End time cannot be null 结束时间不能为空");
-        }
+        Objects.requireNonNull(timePeriod, "Time period cannot be null");
+        Objects.requireNonNull(endTime, "End time cannot be null");
     }
 
     @Override

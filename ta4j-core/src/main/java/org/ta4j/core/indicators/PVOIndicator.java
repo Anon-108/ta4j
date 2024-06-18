@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -48,6 +48,11 @@ import org.ta4j.core.indicators.helpers.VolumeIndicator;
  * 交易者通常使用PVO来识别成交量的趋势变化和制定买卖信号。例如，当PVO线上穿零线时，可能暗示着成交量的增加，为买入信号；相反，当PVO线下穿零线时，可能暗示着成交量的减少，为卖出信号。
  *
  * 总的来说，PVO是一种用于衡量成交量趋势和波动的技术指标，可以帮助交易者更好地理解市场的成交量动态，但仍建议将其与其他技术指标和价格模式结合使用，以增强交易决策的准确性。
+ * Percentage Volume Oscillator (PVO) indicator.
+ *
+ * <pre>
+ * ((12-day EMA of Volume - 26-day EMA of Volume) / 26-day EMA of Volume) x 100
+ * </pre>
  *
  * @see <a href=
  *      "https://school.stockcharts.com/doku.php?id=technical_indicators:percentage_volume_oscillator_pvo">
@@ -57,18 +62,29 @@ import org.ta4j.core.indicators.helpers.VolumeIndicator;
 public class PVOIndicator extends PPOIndicator {
 
     /**
-     * @param series the bar series {@link BarSeries}. Will use PPO default  constructor with shortBarCount "12" and longBarCount "26".
-     *               酒吧系列{@link BarSeries}。 将使用带有 shortBarCount "12" 和 longBarCount "26" 的 PPO 默认构造函数。
+     * Constructor with:
+     *
+     * <ul>
+     * <li>{@code shortBarCount} = 12
+     * <li>{@code longBarCount} = 26
+     * </ul>
+     *
+     * @param series the bar series {@link BarSeries}
      */
     public PVOIndicator(BarSeries series) {
         super(new VolumeIndicator(series));
     }
 
     /**
+     * Constructor with:
+     *
+     * <ul>
+     * <li>{@code shortBarCount} = 12
+     * <li>{@code longBarCount} = 26
+     * </ul>
+     *
      * @param series         the bar series {@link BarSeries}.
-     *                       酒吧系列{@link BarSeries}。
-     * @param volumeBarCount Volume Indicator bar count. Will use PPO default   constructor with shortBarCount "12" and longBarCount  "26".
-     *                       音量指示条计数。 将使用带有 shortBarCount "12" 和 longBarCount "26" 的 PPO 默认构造函数。
+     * @param volumeBarCount the bar count for the {@link VolumeIndicator}
      */
     public PVOIndicator(BarSeries series, int volumeBarCount) {
         super(new VolumeIndicator(series, volumeBarCount));

@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -30,13 +30,18 @@ import org.ta4j.core.BarSeries;
 import org.ta4j.core.BaseBarSeries;
 
 /**
- * Bar series aggregator based on provided bar aggregator.
- * 基于提供的酒吧聚合器的酒吧系列聚合器。
+ * Aggregates a {@link BaseBarSeries} into another one using a
+ * {@link BarAggregator}.
  */
 public class BaseBarSeriesAggregator implements BarSeriesAggregator {
 
     private final BarAggregator barAggregator;
 
+    /**
+     * Constructor.
+     * 
+     * @param barAggregator the {@link BarAggregator}
+     */
     public BaseBarSeriesAggregator(BarAggregator barAggregator) {
         this.barAggregator = barAggregator;
     }

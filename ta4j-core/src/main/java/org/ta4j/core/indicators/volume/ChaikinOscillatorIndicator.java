@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -66,11 +66,8 @@ public class ChaikinOscillatorIndicator extends CachedIndicator<Num> {
      * Constructor.
      *
      * @param series        the {@link BarSeries}
-     *                      {@link BarSeries}
-     * @param shortBarCount (usually 3)
-     *                      （通常是 3 个）
-     * @param longBarCount  (usually 10)
-     *                      （通常为 10 个）
+     * @param shortBarCount the bar count for {@link #emaShort} (usually 3)
+     * @param longBarCount  the bar count for {@link #emaLong} (usually 10)
      */
     public ChaikinOscillatorIndicator(BarSeries series, int shortBarCount, int longBarCount) {
         super(series);
@@ -79,7 +76,7 @@ public class ChaikinOscillatorIndicator extends CachedIndicator<Num> {
     }
 
     /**
-     * Constructor.
+     * Constructor with {@code shortBarCount} = 3 and {@code longBarCount} = 10.
      *
      * @param series the {@link BarSeries}
      *               {@link BarSeries}
@@ -91,5 +88,10 @@ public class ChaikinOscillatorIndicator extends CachedIndicator<Num> {
     @Override
     protected Num calculate(int index) {
         return emaShort.getValue(index).minus(emaLong.getValue(index));
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return 0;
     }
 }

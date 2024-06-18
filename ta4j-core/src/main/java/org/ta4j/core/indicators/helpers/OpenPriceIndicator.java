@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -23,11 +23,15 @@
  */
 package org.ta4j.core.indicators.helpers;
 
-import org.ta4j.core.Bar;
 import org.ta4j.core.BarSeries;
+import org.ta4j.core.indicators.AbstractIndicator;
+import org.ta4j.core.num.Num;
 
 /**
  * Open price indicator.
+ *
+ * <p>
+ * Returns the open price of a bar.
  * 打开价格指标。
  *
  * 开盘价指标通常是指用于分析金融市场中资产开盘价变化的指标。开盘价是某一交易周期（如一天、一周或一个月）的第一笔交易的价格，通常被视为市场情绪的一种体现，因为它反映了市场在新的交易周期开始时的买卖意愿和预期。
@@ -43,9 +47,25 @@ import org.ta4j.core.BarSeries;
  * 开盘价指标在技术分析和市场研究中经常用于衡量市场的情绪和预期，以及分析市场走势的起点。然而，需要注意的是，单独使用开盘价指标可能不足以提供全面的市场分析，通常需要结合其他指标和分析方法一起使用。
  *
  */
-public class OpenPriceIndicator extends PriceIndicator {
+public class OpenPriceIndicator extends AbstractIndicator<Num> {
 
+    /**
+     * Constructor.
+     *
+     * @param series the bar series
+     */
     public OpenPriceIndicator(BarSeries series) {
-        super(series, Bar::getOpenPrice);
+        super(series);
+    }
+
+    @Override
+    public Num getValue(int index) {
+        return getBarSeries().getBar(index).getOpenPrice();
+    }
+
+    /** @return {@code 0} */
+    @Override
+    public int getUnstableBars() {
+        return 0;
     }
 }

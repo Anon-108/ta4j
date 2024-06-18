@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -34,7 +34,7 @@ import java.util.function.Function;
 import org.ta4j.core.Bar;
 import org.ta4j.core.BarSeries;
 import org.ta4j.core.BaseBarSeries;
-import org.ta4j.core.ConvertibleBaseBarBuilder;
+import org.ta4j.core.BaseBarConvertibleBuilder;
 import org.ta4j.core.aggregator.BarAggregator;
 import org.ta4j.core.aggregator.BarSeriesAggregator;
 import org.ta4j.core.aggregator.BaseBarSeriesAggregator;
@@ -42,8 +42,7 @@ import org.ta4j.core.aggregator.DurationBarAggregator;
 import org.ta4j.core.num.Num;
 
 /**
- * Common utilities and helper methods for BarSeries.
- * * BarSeries 的常用实用程序和辅助方法。
+ * Common utilities and helper methods for {@link BarSeries}.
  */
 public final class BarSeriesUtils {
 
@@ -57,15 +56,12 @@ public final class BarSeriesUtils {
     }
 
     /**
-     * Aggregates a list of bars by <code>timePeriod</code>. The new <code>timePeriod</code> must be a multiplication of the actual time period.
-     * * 按 <code>timePeriod</code> 聚合柱形列表。 新的 <code>timePeriod</code> 必须是实际时间段的乘积。
-     * 
+     * Aggregates a list of bars by {@code timePeriod}. The new {@code timePeriod}
+     * must be a multiplication of the actual time period.
+     *
      * @param barSeries            the barSeries
-     *                             酒吧系列
-     *
-     * @param timePeriod           time period to aggregate
-     *                             汇总的时间段
-     *
+     * @param timePeriod           the target time period that aggregated bars
+     *                             should have
      * @param aggregatedSeriesName the name of the aggregated barSeries
      *                             聚合 barSeries 的名称
      * @return the aggregated barSeries
@@ -79,20 +75,13 @@ public final class BarSeriesUtils {
 
     /**
      * We can assume that finalized bar data will be never changed afterwards by the
-      marketdata provider. It is rare, but depending on the exchange, they reserve
-      the right to make updates to finalized bars. This method finds and replaces
-      potential bar data that was changed afterwards by the marketdata provider. It
-      can also be uses to check bar data equality over different marketdata
-      providers. This method does <b>not</b> add missing bars but replaces an
-      existing bar with its new bar.
-     我们可以假设最终的柱状数据将永远不会被
-     市场数据提供商。 很少见，但根据交易所，他们会保留
-     对最终酒吧进行更新的权利。 此方法查找并替换
-     之后由市场数据提供者更改的潜在柱数据。 它
-     也可用于检查不同市场数据的柱数据相等性
-     提供者。 此方法<b>不</b>添加缺失的条，但替换
-     现有酒吧及其新酒吧。
-     * 
+     * marketdata provider. It is rare, but depending on the exchange, they reserve
+     * the right to make updates to finalized bars. This method finds and replaces
+     * potential bar data that was changed afterwards by the marketdata provider. It
+     * can also be uses to check bar data equality over different marketdata
+     * providers. This method does <b>not</b> add missing bars but replaces an
+     * existing bar with its new bar.
+     *
      * @param barSeries the barSeries
      *                  酒吧系列
      * @param newBar    the bar which has precedence over the same existing bar
@@ -116,20 +105,14 @@ public final class BarSeriesUtils {
     }
 
     /**
-     * Finds possibly missing bars. The returned list contains the
-      <code>endTime</code> of each missing bar. A bar is possibly missing if: (1)
-      the subsequent bar starts not with the end time of the previous bar or (2) if
-      any open, high, low price is missing.
-     查找可能丢失的条形图。 返回的列表包含
-     <code>endTime</code> 每个缺失柱。 如果出现以下情况，则可能缺少条： (1)
-     下一个柱不以前一个柱的结束时间开始，或者 (2) 如果
-     缺少任何开盘价、最高价、最低价。
-     * 
+     * Finds possibly missing bars. The returned list contains the {@code endTime}
+     * of each missing bar. A bar is possibly missing if: (1) the subsequent bar
+     * starts not with the end time of the previous bar or (2) if any open, high,
+     * low price is missing.
+     *
      * <b>Note:</b> Market closing times (e.g., weekends, holidays) will lead to
-      wrongly detected missing bars and should be ignored by the client.
-     <b>注意：</b> 市场收盘时间（例如周末、节假日）将导致
-     错误地检测到缺失的柱线，客户应忽略。
-     * 
+     * wrongly detected missing bars and should be ignored by the client.
+     *
      * @param barSeries       the barSeries
      *                        酒吧系列
      * @param findOnlyNaNBars find only bars with undefined prices
@@ -168,39 +151,37 @@ public final class BarSeriesUtils {
 
     /**
      * Gets a new BarSeries cloned from the provided barSeries with bars converted
-      by conversionFunction. The returned barSeries inherits
-      <code>beginIndex</code>, <code>endIndex</code> and
-      <code>maximumBarCount</code> from the provided barSeries.
-     获取从提供的 barSeries 克隆的新 BarSeries，并转换了条形
-     通过转换函数。 返回的 barSeries 继承
-     <code>beginIndex</code>、<code>endIndex</code> 和
-     <code>maximumBarCount</code> 来自提供的 barSeries。
-     * 
-     * @param barSeries          the BarSeries
-     *                           酒吧系列
+     * by conversionFunction. The returned barSeries inherits {@code beginIndex},
+     * {@code endIndex} and {@code maximumBarCount} from the provided barSeries.
      *
-     * @param conversionFunction the conversionFunction
-     *                           转换函数
-     *
-     * @return new cloned BarSeries with bars converted by conversionFunction
-     * @return 新克隆的 BarSeries 以及由 conversionFunction 转换的条形
+     * @param barSeries the BarSeries
+     * @param num       any instance of Num to determine its Num function; with
+     *                  this, we can convert a {@link Number} to a {@link Num Num
+     *                  implementation}
+     * @return new cloned BarSeries with bars converted by the Num function of num
      */
-    public static BarSeries convertBarSeries(BarSeries barSeries, Function<Number, Num> conversionFunction) {
+    public static BarSeries convertBarSeries(BarSeries barSeries, Num num) {
         List<Bar> bars = barSeries.getBarData();
         if (bars == null || bars.isEmpty())
             return barSeries;
         List<Bar> convertedBars = new ArrayList<>();
         for (int i = barSeries.getBeginIndex(); i <= barSeries.getEndIndex(); i++) {
             Bar bar = bars.get(i);
-            Bar convertedBar = new ConvertibleBaseBarBuilder<Number>(conversionFunction::apply)
-                    .timePeriod(bar.getTimePeriod()).endTime(bar.getEndTime())
-                    .openPrice(bar.getOpenPrice().getDelegate()).highPrice(bar.getHighPrice().getDelegate())
-                    .lowPrice(bar.getLowPrice().getDelegate()).closePrice(bar.getClosePrice().getDelegate())
-                    .volume(bar.getVolume().getDelegate()).amount(bar.getAmount().getDelegate()).trades(bar.getTrades())
+            Function<Number, Num> conversionFunction = num.function();
+            Bar convertedBar = new BaseBarConvertibleBuilder<>(conversionFunction::apply)
+                    .timePeriod(bar.getTimePeriod())
+                    .endTime(bar.getEndTime())
+                    .openPrice(bar.getOpenPrice().getDelegate())
+                    .highPrice(bar.getHighPrice().getDelegate())
+                    .lowPrice(bar.getLowPrice().getDelegate())
+                    .closePrice(bar.getClosePrice().getDelegate())
+                    .volume(bar.getVolume().getDelegate())
+                    .amount(bar.getAmount().getDelegate())
+                    .trades(bar.getTrades())
                     .build();
             convertedBars.add(convertedBar);
         }
-        BarSeries convertedBarSeries = new BaseBarSeries(barSeries.getName(), convertedBars, conversionFunction);
+        BarSeries convertedBarSeries = new BaseBarSeries(barSeries.getName(), convertedBars, num);
         if (barSeries.getMaximumBarCount() > 0) {
             convertedBarSeries.setMaximumBarCount(barSeries.getMaximumBarCount());
         }
@@ -211,7 +192,7 @@ public final class BarSeriesUtils {
     /**
      * Finds overlapping bars within barSeries.
      * 查找 barSeries 中的重叠条。
-     * 
+     *
      * @param barSeries the bar series with bar data
      *                  带有条形数据的条形系列
      * @return overlapping bars
@@ -237,9 +218,8 @@ public final class BarSeriesUtils {
     }
 
     /**
-     * Adds <code>newBars</code> to <code>barSeries</code>.
-     * * 将 <code>newBars</code> 添加到 <code>barSeries</code>。
-     * 
+     * Adds {@code newBars} to {@code barSeries}.
+     *
      * @param barSeries the BarSeries
      *                  酒吧系列
      * @param newBars   the new bars to be added
@@ -257,9 +237,9 @@ public final class BarSeriesUtils {
     }
 
     /**
-     * Sorts the Bars by {@link Bar#getEndTime()} in ascending sequence (lower times before higher times).
-     * * 按 {@link Bar#getEndTime()} 升序（较低时间在较高时间之前）对条形图进行排序。
-     * 
+     * Sorts the Bars by {@link Bar#getEndTime()} in ascending sequence (lower times
+     * before higher times).
+     *
      * @param bars the bars
      *             酒吧
      * @return the sorted bars

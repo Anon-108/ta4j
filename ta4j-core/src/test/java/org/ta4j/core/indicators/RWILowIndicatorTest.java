@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -41,8 +41,7 @@ public class RWILowIndicatorTest extends AbstractIndicatorTest<BarSeries, Num> {
      * TODO: Just graphically Excel-Sheet validation with hard coded results. Excel formula needed
      * * TODO：只是图形化的 Excel 表格验证，带有硬编码的结果。 需要Excel公式
      */
-
-    private ExternalIndicatorTest xls;
+    private final ExternalIndicatorTest xls;
 
     public RWILowIndicatorTest(Function<Number, Num> numFunction) {
         super((data, params) -> new RWILowIndicator(data, (int) params[0]), numFunction);

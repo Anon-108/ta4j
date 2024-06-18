@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -27,6 +27,9 @@ import org.ta4j.core.BarSeries;
 
 /**
  * A fixed boolean indicator.
+ *
+ * <p>
+ * Returns constant {@link Boolean} values for a bar.
  * 一个固定的布尔指标。
  *
  * 固定布尔指标可能指的是一种技术分析指标，根据固定的规则或条件生成二元（布尔）信号。这些指标通常根据是否满足特定条件来产生买入或卖出信号。
@@ -42,8 +45,8 @@ public class FixedBooleanIndicator extends FixedIndicator<Boolean> {
 
     /**
      * Constructor.
-     * 构造函数
-     * 
+     *
+     * @param series the bar series
      * @param values the values to be returned by this indicator
      *               该指标要返回的值
      */

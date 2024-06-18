@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -29,14 +29,14 @@ import java.time.ZonedDateTime;
 
 import org.ta4j.core.AnalysisCriterion;
 import org.ta4j.core.BarSeries;
-import org.ta4j.core.BarSeriesManager;
 import org.ta4j.core.BaseBar;
 import org.ta4j.core.BaseBarSeries;
 import org.ta4j.core.BaseStrategy;
 import org.ta4j.core.Strategy;
 import org.ta4j.core.Trade;
 import org.ta4j.core.TradingRecord;
-import org.ta4j.core.analysis.criteria.pnl.GrossReturnCriterion;
+import org.ta4j.core.backtest.BarSeriesManager;
+import org.ta4j.core.criteria.pnl.ReturnCriterion;
 import org.ta4j.core.indicators.SMAIndicator;
 import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
 import org.ta4j.core.num.DecimalNum;
@@ -61,7 +61,7 @@ public class SimpleMovingAverageBacktest {
                 DecimalNum.valueOf(50));
         System.out.println(tradingRecord2DaySma);
 
-        AnalysisCriterion criterion = new GrossReturnCriterion();
+        AnalysisCriterion criterion = new ReturnCriterion();
         Num calculate3DaySma = criterion.calculate(series, tradingRecord3DaySma);
         Num calculate2DaySma = criterion.calculate(series, tradingRecord2DaySma);
 
@@ -84,8 +84,14 @@ public class SimpleMovingAverageBacktest {
 
     private static BaseBar createBar(ZonedDateTime endTime, Number openPrice, Number highPrice, Number lowPrice,
             Number closePrice, Number volume) {
-        return BaseBar.builder(DecimalNum::valueOf, Number.class).timePeriod(Duration.ofDays(1)).endTime(endTime)
-                .openPrice(openPrice).highPrice(highPrice).lowPrice(lowPrice).closePrice(closePrice).volume(volume)
+        return BaseBar.builder(DecimalNum::valueOf, Number.class)
+                .timePeriod(Duration.ofDays(1))
+                .endTime(endTime)
+                .openPrice(openPrice)
+                .highPrice(highPrice)
+                .lowPrice(lowPrice)
+                .closePrice(closePrice)
+                .volume(volume)
                 .build();
     }
 

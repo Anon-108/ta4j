@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -62,19 +62,37 @@ import org.ta4j.core.num.Num;
 
  */
 public class StochasticOscillatorKIndicator extends CachedIndicator<Num> {
+
     private final Indicator<Num> indicator;
-
     private final int barCount;
+    private final HighPriceIndicator highPriceIndicator;
+    private final LowPriceIndicator lowPriceIndicator;
 
-    private HighPriceIndicator highPriceIndicator;
-
-    private LowPriceIndicator lowPriceIndicator;
-
+    /**
+     * Constructor with:
+     *
+     * <ul>
+     * <li>{@code indicator} = {@link ClosePriceIndicator}
+     * <li>{@code highPriceIndicator} = {@link HighPriceIndicator}
+     * <li>{@code lowPriceIndicator} = {@link LowPriceIndicator}
+     * </ul>
+     *
+     * @param barSeries the bar series
+     * @param barCount  the time frame
+     */
     public StochasticOscillatorKIndicator(BarSeries barSeries, int barCount) {
         this(new ClosePriceIndicator(barSeries), barCount, new HighPriceIndicator(barSeries),
                 new LowPriceIndicator(barSeries));
     }
 
+    /**
+     * Constructor.
+     *
+     * @param indicator          the {@link Indicator}
+     * @param barCount           the time frame
+     * @param highPriceIndicator the {@link HighPriceIndicator}
+     * @param lowPriceIndicator  the {@link LowPriceIndicator}
+     */
     public StochasticOscillatorKIndicator(Indicator<Num> indicator, int barCount, HighPriceIndicator highPriceIndicator,
             LowPriceIndicator lowPriceIndicator) {
         super(indicator);
@@ -92,8 +110,15 @@ public class StochasticOscillatorKIndicator extends CachedIndicator<Num> {
         Num highestHighPrice = highestHigh.getValue(index);
         Num lowestLowPrice = lowestMin.getValue(index);
 
-        return indicator.getValue(index).minus(lowestLowPrice).dividedBy(highestHighPrice.minus(lowestLowPrice))
-                .multipliedBy(numOf(100));
+        return indicator.getValue(index)
+                .minus(lowestLowPrice)
+                .dividedBy(highestHighPrice.minus(lowestLowPrice))
+                .multipliedBy(hundred());
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return barCount;
     }
 
     @Override

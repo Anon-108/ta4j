@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -30,6 +30,13 @@ import org.ta4j.core.num.Num;
 
 /**
  * Average high-low indicator.
+ *
+ * <p>
+ * Returns the median price of a bar using the following formula:
+ *
+ * <pre>
+ * MedianPrice = (highPrice + lowPrice) / 2
+ * </pre>
  * 平均高低指标。
  *
  * 平均高低指标通常用于衡量资产在一段时间内的价格波动范围。这种指标可以帮助分析市场的波动性，并提供关于价格变化的平均幅度的信息。
@@ -49,6 +56,11 @@ import org.ta4j.core.num.Num;
  */
 public class MedianPriceIndicator extends CachedIndicator<Num> {
 
+    /**
+     * Constructor.
+     *
+     * @param series the bar series
+     */
     public MedianPriceIndicator(BarSeries series) {
         super(series);
     }
@@ -57,5 +69,11 @@ public class MedianPriceIndicator extends CachedIndicator<Num> {
     protected Num calculate(int index) {
         final Bar bar = getBarSeries().getBar(index);
         return bar.getHighPrice().plus(bar.getLowPrice()).dividedBy(numOf(2));
+    }
+
+    /** @return {@code 0} */
+    @Override
+    public int getUnstableBars() {
+        return 0;
     }
 }

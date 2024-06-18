@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -43,7 +43,7 @@ import org.ta4j.core.num.Num;
 public class RSIIndicatorTest extends AbstractIndicatorTest<Indicator<Num>, Num> {
 
     private BarSeries data;
-    private ExternalIndicatorTest xls;
+    private final ExternalIndicatorTest xls;
     // private ExternalIndicatorTest sql;
     // 私有 ExternalIndicatorTest sql;
 
@@ -63,21 +63,21 @@ public class RSIIndicatorTest extends AbstractIndicatorTest<Indicator<Num>, Num>
     @Test
     public void firstValueShouldBeZero() throws Exception {
         Indicator<Num> indicator = getIndicator(new ClosePriceIndicator(data), 14);
-        assertEquals(data.numOf(0), indicator.getValue(0));
+        assertEquals(data.zero(), indicator.getValue(0));
     }
 
     @Test
     public void hundredIfNoLoss() throws Exception {
         Indicator<Num> indicator = getIndicator(new ClosePriceIndicator(data), 1);
-        assertEquals(data.numOf(100), indicator.getValue(14));
-        assertEquals(data.numOf(100), indicator.getValue(15));
+        assertEquals(data.hundred(), indicator.getValue(14));
+        assertEquals(data.hundred(), indicator.getValue(15));
     }
 
     @Test
     public void zeroIfNoGain() throws Exception {
         Indicator<Num> indicator = getIndicator(new ClosePriceIndicator(data), 1);
-        assertEquals(data.numOf(0), indicator.getValue(1));
-        assertEquals(data.numOf(0), indicator.getValue(2));
+        assertEquals(data.zero(), indicator.getValue(1));
+        assertEquals(data.zero(), indicator.getValue(2));
     }
 
     @Test
@@ -159,13 +159,17 @@ public class RSIIndicatorTest extends AbstractIndicatorTest<Indicator<Num>, Num>
         // second online calculation uses MMAs
         //第二次在线计算使用 MMA
         // MMA of average gain
-        // 平均增益的 MMA
-        double dividend = avgGain.getValue(14).multipliedBy(series.numOf(13)).plus(gain.getValue(15))
-                .dividedBy(series.numOf(14)).doubleValue();
+        double dividend = avgGain.getValue(14)
+                .multipliedBy(series.numOf(13))
+                .plus(gain.getValue(15))
+                .dividedBy(series.numOf(14))
+                .doubleValue();
         // MMA of average loss
-        // 平均损失的 MMA
-        double divisor = avgLoss.getValue(14).multipliedBy(series.numOf(13)).plus(loss.getValue(15))
-                .dividedBy(series.numOf(14)).doubleValue();
+        double divisor = avgLoss.getValue(14)
+                .multipliedBy(series.numOf(13))
+                .plus(loss.getValue(15))
+                .dividedBy(series.numOf(14))
+                .doubleValue();
         onlineRs = dividend / divisor;
         assertEquals(0.9409, onlineRs, TestUtils.GENERAL_OFFSET);
         onlineRsi = 100d - (100d / (1d + onlineRs));

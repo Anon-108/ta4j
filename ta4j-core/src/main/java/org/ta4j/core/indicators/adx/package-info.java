@@ -2,8 +2,8 @@
  * The MIT License (MIT)
  * * 麻省理工学院许可证 (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective authors (see AUTHORS)
- * * 版权所有 (c) 2014-2017 Marc de Verdelhan，2017-2021 Ta4j 组织和各自的作者（见作者）
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
+ * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in

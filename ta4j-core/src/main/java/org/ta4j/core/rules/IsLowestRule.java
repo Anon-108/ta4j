@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -29,23 +29,15 @@ import org.ta4j.core.indicators.helpers.LowestValueIndicator;
 import org.ta4j.core.num.Num;
 
 /**
- * Indicator-lowest-indicator rule.
- * 指标-最低-指标规则。
- *
- * Satisfied when the value of the {@link Indicator indicator} is the lowest within the barCount.
- * * 当 {@link Indicator indicator} 的值在 barCount 内最低时满足。
+ * Satisfied when the value of the {@link Indicator indicator} is the lowest
+ * within the {@code barCount}.
  */
 public class IsLowestRule extends AbstractRule {
 
-    /**
-     * The actual indicator
-     * 实际指标
-     */
+    /** The actual indicator. */
     private final Indicator<Num> ref;
-    /**
-     * The barCount
-     * 酒吧计数
-     */
+
+    /** The barCount. */
     private final int barCount;
 
     /**
@@ -61,6 +53,7 @@ public class IsLowestRule extends AbstractRule {
         this.barCount = barCount;
     }
 
+    /** This rule does not use the {@code tradingRecord}. */
     @Override
     public boolean isSatisfied(int index, TradingRecord tradingRecord) {
         LowestValueIndicator lowest = new LowestValueIndicator(ref, barCount);

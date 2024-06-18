@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -32,28 +32,20 @@ import org.ta4j.core.num.Num;
  * A stop-loss rule.
  * * 止损规则。
  *
+ * <p>
  * Satisfied when the close price reaches the loss threshold.
  * * 当收盘价达到亏损阈值时满足。
  */
 public class StopLossRule extends AbstractRule {
 
-    /**
-     * Constant value for 100
-     * 100 的常数值
-     */
+    /** The constant value for 100. */
     private final Num HUNDRED;
 
-    /**
-     * The close price indicator
-     * 收盘价指标
-     */
+    /** The close price indicator. */
     private final ClosePriceIndicator closePrice;
 
-    /**
-     * The loss percentage
-     * 损失百分比
-     */
-    private Num lossPercentage;
+    /** The loss percentage. */
+    private final Num lossPercentage;
 
     /**
      * Constructor.
@@ -81,6 +73,7 @@ public class StopLossRule extends AbstractRule {
         this.HUNDRED = closePrice.numOf(100);
     }
 
+    /** This rule uses the {@code tradingRecord}. */
     @Override
     public boolean isSatisfied(int index, TradingRecord tradingRecord) {
         boolean satisfied = false;
@@ -104,15 +97,15 @@ public class StopLossRule extends AbstractRule {
         return satisfied;
     }
 
-    private boolean isSellStopSatisfied(Num entryPrice, Num currentPrice) {
-        Num lossRatioThreshold = HUNDRED.plus(lossPercentage).dividedBy(HUNDRED);
-        Num threshold = entryPrice.multipliedBy(lossRatioThreshold);
-        return currentPrice.isGreaterThanOrEqual(threshold);
-    }
-
     private boolean isBuyStopSatisfied(Num entryPrice, Num currentPrice) {
         Num lossRatioThreshold = HUNDRED.minus(lossPercentage).dividedBy(HUNDRED);
         Num threshold = entryPrice.multipliedBy(lossRatioThreshold);
         return currentPrice.isLessThanOrEqual(threshold);
+    }
+
+    private boolean isSellStopSatisfied(Num entryPrice, Num currentPrice) {
+        Num lossRatioThreshold = HUNDRED.plus(lossPercentage).dividedBy(HUNDRED);
+        Num threshold = entryPrice.multipliedBy(lossRatioThreshold);
+        return currentPrice.isGreaterThanOrEqual(threshold);
     }
 }

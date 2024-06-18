@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -33,6 +33,7 @@ import org.ta4j.core.rules.IsFallingRule;
 import org.ta4j.core.rules.IsRisingRule;
 
 /**
+ * Convergence-Divergence indicator.
  * Indicator-convergence-divergence.
  * * 指标-收敛-发散。  TODO ?? 是否为MACD??
  *
@@ -179,9 +180,8 @@ public class ConvergenceDivergenceIndicator extends CachedIndicator<Boolean> {
      *  严格收敛或严格发散的类型 **/
     private final ConvergenceDivergenceStrictType strictType;
 
-    /** The minimum strength for convergence or divergence.
-     * 收敛或发散的最小强度。 **/
-    private Num minStrength;
+    /** The minimum strength for convergence or divergence. **/
+    private final Num minStrength;
 
     /** The minimum slope for convergence or divergence.
      * 收敛或发散的最小斜率。 **/
@@ -190,23 +190,23 @@ public class ConvergenceDivergenceIndicator extends CachedIndicator<Boolean> {
     /**
      * Constructor. <br/>
      * <br/>
-     * 
-     * The <b>"minStrength"</b> is the minimum required strength for convergence or divergence and must be a number between "0.1" and "1.0": <br/>
-     * * <b>"minStrength"</b> 是收敛或发散所需的最小强度，必须是“0.1”和“1.0”之间的数字：<br/>
+     *
+     * The <b>"minStrength"</b> is the minimum required strength for convergence or
+     * divergence and must be a number between "0.1" and "1.0": <br/>
      * <br/>
      * 0.1: very weak <br/>
      * 0.8: strong (recommended) <br/>
      * 1.0: very strong <br/>
-     * 
+     *
      * <br/>
-     * 
-     * The <b>"minSlope"</b> is the minimum required slope for convergence or divergence and must be a number between "0.1" and "1.0": <br/>
-     * * <b>"minSlope"</b> 是收敛或发散所需的最小斜率，必须是“0.1”和“1.0”之间的数字：<br/>
+     *
+     * The <b>"minSlope"</b> is the minimum required slope for convergence or
+     * divergence and must be a number between "0.1" and "1.0": <br/>
      * <br/>
      * 0.1: very unstrict<br/>
      * 0.3: strict (recommended) <br/>
      * 1.0: very strict <br/>
-     * 
+     *
      * @param ref         the indicator
      *                    指标
      * @param other       the other indicator
@@ -228,14 +228,14 @@ public class ConvergenceDivergenceIndicator extends CachedIndicator<Boolean> {
         this.barCount = barCount;
         this.type = type;
         this.strictType = null;
-        this.minStrength = numOf(minStrength).abs();
+        this.minStrength = numOf(Math.min(1, Math.abs(minStrength)));
         this.minSlope = numOf(minSlope);
     }
 
     /**
      * Constructor for strong convergence or divergence.
      * 强收敛或发散的构造函数。
-     * 
+     *
      * @param ref      the indicator
      *                 指标
      * @param other    the other indicator
@@ -260,7 +260,7 @@ public class ConvergenceDivergenceIndicator extends CachedIndicator<Boolean> {
     /**
      * Constructor for strict convergence or divergence.
      * 严格收敛或发散的构造函数。
-     * 
+     *
      * @param ref        the indicator
      *                   指标
      * @param other      the other indicator
@@ -287,10 +287,6 @@ public class ConvergenceDivergenceIndicator extends CachedIndicator<Boolean> {
 
         if (minStrength != null && minStrength.isZero()) {
             return false;
-        }
-
-        if (minStrength != null && minStrength.isGreaterThan(numOf(1))) {
-            minStrength = numOf(1);
         }
 
         if (type != null) {
@@ -324,6 +320,12 @@ public class ConvergenceDivergenceIndicator extends CachedIndicator<Boolean> {
         }
 
         return false;
+    }
+
+    /** @return {@link #barCount} */
+    @Override
+    public int getUnstableBars() {
+        return barCount;
     }
 
     /**

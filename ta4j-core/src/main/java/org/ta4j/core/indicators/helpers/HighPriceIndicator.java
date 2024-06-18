@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -23,10 +23,15 @@
  */
 package org.ta4j.core.indicators.helpers;
 
-import org.ta4j.core.Bar;
 import org.ta4j.core.BarSeries;
+import org.ta4j.core.indicators.AbstractIndicator;
+import org.ta4j.core.num.Num;
 
 /**
+ * The high price indicator.
+ *
+ * <p>
+ * Returns the high price of a bar.
  * High price indicator.
  * 高价指标。
  *
@@ -41,9 +46,25 @@ import org.ta4j.core.BarSeries;
  *
  * 高价指标通常以数字形式表示，例如某个资产在一段时间内的最高交易价格。这些指标提供了有关市场价格走势和价格极值的重要信息，并且对于制定交易决策和进行市场分析非常有帮助。
  */
-public class HighPriceIndicator extends PriceIndicator {
+public class HighPriceIndicator extends AbstractIndicator<Num> {
 
+    /**
+     * Constructor.
+     *
+     * @param series the bar series
+     */
     public HighPriceIndicator(BarSeries series) {
-        super(series, Bar::getHighPrice);
+        super(series);
+    }
+
+    @Override
+    public Num getValue(int index) {
+        return getBarSeries().getBar(index).getHighPrice();
+    }
+
+    /** @return {@code 0} */
+    @Override
+    public int getUnstableBars() {
+        return 0;
     }
 }

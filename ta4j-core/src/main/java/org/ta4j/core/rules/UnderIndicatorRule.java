@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -29,32 +29,25 @@ import org.ta4j.core.indicators.helpers.ConstantIndicator;
 import org.ta4j.core.num.Num;
 
 /**
- * Indicator-under-indicator rule.
- * * 指标下指标规则。
+ * A rule that monitors when one {@link Indicator indicator} is below another.
  *
- * Satisfied when the value of the first {@link Indicator indicator} is strictly lesser than the value of the second one.
- * * 当第一个 {@link Indicator indicator} 的值严格小于第二个的值时满足。
+ * <p>
+ * Satisfied when the value of the first {@link Indicator indicator} is strictly
+ * less than the value of the second one.
  */
 public class UnderIndicatorRule extends AbstractRule {
 
-    /**
-     * The first indicator
-     * 第一个指标
-     */
+    /** The first indicator. */
     private final Indicator<Num> first;
-    /**
-     * The second indicator
-     * 第二个指标
-     */
+
+    /** The second indicator. */
     private final Indicator<Num> second;
 
     /**
      * Constructor.
      *
      * @param indicator the indicator
-     *                  指标
-     * @param threshold a threshold
-     *                  阈值
+     * @param threshold the threshold
      */
     public UnderIndicatorRule(Indicator<Num> indicator, Number threshold) {
         this(indicator, new ConstantIndicator<>(indicator.getBarSeries(), indicator.numOf(threshold)));
@@ -64,9 +57,7 @@ public class UnderIndicatorRule extends AbstractRule {
      * Constructor.
      *
      * @param indicator the indicator
-     *                  指標
-     * @param threshold a threshold
-     *                  閾值
+     * @param threshold the threshold
      */
     public UnderIndicatorRule(Indicator<Num> indicator, Num threshold) {
         this(indicator, new ConstantIndicator<>(indicator.getBarSeries(), threshold));
@@ -85,6 +76,7 @@ public class UnderIndicatorRule extends AbstractRule {
         this.second = second;
     }
 
+    /** This rule does not use the {@code tradingRecord}. */
     @Override
     public boolean isSatisfied(int index, TradingRecord tradingRecord) {
         final boolean satisfied = first.getValue(index).isLessThan(second.getValue(index));

@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -73,23 +73,14 @@ import org.ta4j.core.num.Num;
  */
 public class ThreeBlackCrowsIndicator extends CachedIndicator<Boolean> {
 
-    /**
-     * Lower shadow
-     * 下阴影
-     */
+    /** Lower shadow. */
     private final LowerShadowIndicator lowerShadowInd;
-    /**
-     * Average lower shadow
-     * 平均下影线
-     */
-    private final SMAIndicator averageLowerShadowInd;
-    /**
-     * Factor used when checking if a candle has a very short lower shadow
-     * 检查蜡烛是否有非常短的下影线时使用的因素
-     */
-    private final Num factor;
 
-    private int whiteCandleIndex = -1;
+    /** Average lower shadow. */
+    private final SMAIndicator averageLowerShadowInd;
+
+    /** Factor used when checking if a candle has a very short lower shadow. */
+    private final Num factor;
 
     /**
      * Constructor.
@@ -103,21 +94,26 @@ public class ThreeBlackCrowsIndicator extends CachedIndicator<Boolean> {
      */
     public ThreeBlackCrowsIndicator(BarSeries series, int barCount, double factor) {
         super(series);
-        lowerShadowInd = new LowerShadowIndicator(series);
-        averageLowerShadowInd = new SMAIndicator(lowerShadowInd, barCount);
+        this.lowerShadowInd = new LowerShadowIndicator(series);
+        this.averageLowerShadowInd = new SMAIndicator(lowerShadowInd, barCount);
         this.factor = numOf(factor);
     }
 
     @Override
     protected Boolean calculate(int index) {
-        if (index < 3) {
+        if (getBarSeries().getBeginIndex() > (index - 3)) {
             // We need 4 candles: 1 white, 3 black
             //我们需要 4 支蜡烛：1 支白色，3 支黑色
             return false;
         }
-        whiteCandleIndex = index - 3;
-        return getBarSeries().getBar(whiteCandleIndex).isBullish() && isBlackCrow(index - 2) && isBlackCrow(index - 1)
-                && isBlackCrow(index);
+        int whiteCandleIndex = index - 3;
+        return getBarSeries().getBar(whiteCandleIndex).isBullish() && isBlackCrow(index - 2, whiteCandleIndex)
+                && isBlackCrow(index - 1, whiteCandleIndex) && isBlackCrow(index, whiteCandleIndex);
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return 4;
     }
 
     /**
@@ -126,7 +122,7 @@ public class ThreeBlackCrowsIndicator extends CachedIndicator<Boolean> {
      * @return true if the bar/candle has a very short lower shadow, false otherwise
      *          如果柱/蜡烛的下影线很短，则为 true，否则为 false
      */
-    private boolean hasVeryShortLowerShadow(int index) {
+    private boolean hasVeryShortLowerShadow(int index, int whiteCandleIndex) {
         Num currentLowerShadow = lowerShadowInd.getValue(index);
         // We use the white candle index to remove to bias of the previous crows
         // 我们使用白色蜡烛指数来消除先前乌鸦的偏见
@@ -163,16 +159,16 @@ public class ThreeBlackCrowsIndicator extends CachedIndicator<Boolean> {
      * @return true if the current bar/candle is a black crow, false otherwise
      *          如果当前柱/蜡烛是黑色乌鸦，则为 true，否则为 false
      */
-    private boolean isBlackCrow(int index) {
+    private boolean isBlackCrow(int index, int whiteCandleIndex) {
         Bar prevBar = getBarSeries().getBar(index - 1);
         Bar currBar = getBarSeries().getBar(index);
         if (currBar.isBearish()) {
             if (prevBar.isBullish()) {
                 // First crow case
-                // 第一个乌鸦案例
-                return hasVeryShortLowerShadow(index) && currBar.getOpenPrice().isLessThan(prevBar.getHighPrice());
+                return hasVeryShortLowerShadow(index, whiteCandleIndex)
+                        && currBar.getOpenPrice().isLessThan(prevBar.getHighPrice());
             } else {
-                return hasVeryShortLowerShadow(index) && isDeclining(index);
+                return hasVeryShortLowerShadow(index, whiteCandleIndex) && isDeclining(index);
             }
         }
         return false;

@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -26,16 +26,30 @@ package org.ta4j.core.reports;
 import org.ta4j.core.num.Num;
 
 /**
- * This class represents report which contains performance statistics
- * * 此类表示包含性能统计信息的报告
+ * Represents a report that contains performance statistics.
  */
 public class PerformanceReport {
 
+    /** The total PnL. */
     private final Num totalProfitLoss;
+
+    /** The total PnL in percent. */
     private final Num totalProfitLossPercentage;
+
+    /** The total profit. */
     private final Num totalProfit;
+
+    /** The total loss. */
     private final Num totalLoss;
 
+    /**
+     * Constructor.
+     *
+     * @param totalProfitLoss           the total PnL
+     * @param totalProfitLossPercentage the total PnL in percent
+     * @param totalProfit               the total profit
+     * @param totalLoss                 the total loss
+     */
     public PerformanceReport(Num totalProfitLoss, Num totalProfitLossPercentage, Num totalProfit, Num totalLoss) {
         this.totalProfitLoss = totalProfitLoss;
         this.totalProfitLossPercentage = totalProfitLossPercentage;
@@ -43,20 +57,23 @@ public class PerformanceReport {
         this.totalLoss = totalLoss;
     }
 
+    /** @return {@link #totalProfitLoss} */
     public Num getTotalProfitLoss() {
         return totalProfitLoss;
     }
 
+    /** @return {@link #totalProfitLossPercentage} */
     public Num getTotalProfitLossPercentage() {
         return totalProfitLossPercentage;
     }
 
+    /** @return {@link #totalProfit} */
     public Num getTotalProfit() {
         return totalProfit;
     }
 
+    /** @return {@link #totalLoss} */
     public Num getTotalLoss() {
         return totalLoss;
     }
-
 }

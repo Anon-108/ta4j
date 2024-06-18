@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -29,23 +29,15 @@ import org.ta4j.core.indicators.helpers.ConstantIndicator;
 import org.ta4j.core.num.Num;
 
 /**
- * Indicator-equal-indicator rule.
- * 指标-等于-指标规则。
- *
- * Satisfied when the value of the first {@link Indicator indicator} is equal to the value of the second one.
- * * 当第一个 {@link Indicator indicator} 的值等于第二个的值时满足。
+ * Satisfied when the value of the first {@link Indicator indicator} is equal to
+ * the value of the second one.
  */
 public class IsEqualRule extends AbstractRule {
 
-    /**
-     * The first indicator
-     * 第一个指标
-     */
+    /** The first indicator. */
     private final Indicator<Num> first;
-    /**
-     * The second indicator
-     * 第二个指标
-     */
+
+    /** The second indicator. */
     private final Indicator<Num> second;
 
     /**
@@ -85,6 +77,7 @@ public class IsEqualRule extends AbstractRule {
         this.second = second;
     }
 
+    /** This rule does not use the {@code tradingRecord}. */
     @Override
     public boolean isSatisfied(int index, TradingRecord tradingRecord) {
         final boolean satisfied = first.getValue(index).isEqual(second.getValue(index));

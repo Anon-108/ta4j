@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -54,6 +54,12 @@ public class WMAIndicator extends CachedIndicator<Num> {
     private final int barCount;
     private final Indicator<Num> indicator;
 
+    /**
+     * Constructor.
+     * 
+     * @param indicator the {@link Indicator}
+     * @param barCount  the time frame
+     */
     public WMAIndicator(Indicator<Num> indicator, int barCount) {
         super(indicator);
         this.indicator = indicator;
@@ -66,7 +72,7 @@ public class WMAIndicator extends CachedIndicator<Num> {
             return indicator.getValue(0);
         }
 
-        Num value = numOf(0);
+        Num value = zero();
         int loopLength = (index - barCount < 0) ? index + 1 : barCount;
         int actualIndex = index;
         for (int i = loopLength; i > 0; i--) {
@@ -75,6 +81,11 @@ public class WMAIndicator extends CachedIndicator<Num> {
         }
 
         return value.dividedBy(numOf((loopLength * (loopLength + 1)) / 2));
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return barCount;
     }
 
     @Override

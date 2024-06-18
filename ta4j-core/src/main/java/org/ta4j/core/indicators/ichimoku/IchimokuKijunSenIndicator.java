@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -26,6 +26,7 @@ package org.ta4j.core.indicators.ichimoku;
 import org.ta4j.core.BarSeries;
 
 /**
+ * Ichimoku clouds: Kijun-sen (Base line) indicator.
  * Ichimoku clouds: Kijun-sen (Base line) indicator
  * Ichimoku clouds (Ichimoku云): Kijun-sen（基线）指标
  *
@@ -46,9 +47,9 @@ import org.ta4j.core.BarSeries;
 public class IchimokuKijunSenIndicator extends IchimokuLineIndicator {
 
     /**
-     * Constructor.
-     * 
-     * @param series the series
+     * Constructor with {@code barCount} = 26.
+     *
+     * @param series the bar series
      */
     public IchimokuKijunSenIndicator(BarSeries series) {
         super(series, 26);
@@ -56,8 +57,8 @@ public class IchimokuKijunSenIndicator extends IchimokuLineIndicator {
 
     /**
      * Constructor.
-     * 
-     * @param series   the series
+     *
+     * @param series   the bar series
      * @param barCount the time frame (usually 26)
      *                 时间范围（通常为 26）
      */

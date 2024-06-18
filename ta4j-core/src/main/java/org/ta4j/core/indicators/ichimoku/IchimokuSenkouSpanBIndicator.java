@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -29,6 +29,7 @@ import org.ta4j.core.num.NaN;
 import org.ta4j.core.num.Num;
 
 /**
+ * Ichimoku clouds: Senkou Span B (Leading Span B) indicator.
  * Ichimoku clouds: Senkou Span B (Leading Span B) indicator
  * Ichimoku 云： Senkou Span B （Leading Span B） 指标
  *
@@ -52,51 +53,44 @@ import org.ta4j.core.num.Num;
  */
 public class IchimokuSenkouSpanBIndicator extends CachedIndicator<Num> {
 
-    // ichimoku avg line indicator
-    // ichimoku 平均线指标
-    IchimokuLineIndicator lineIndicator;
+    /** Ichimoku avg line indicator. */
+    private final IchimokuLineIndicator lineIndicator;
 
-    /**
-     * Displacement on the chart (usually 26)
-     * 图表上的位移（通常为 26）
-     */
+    /** Displacement on the chart (usually 26). */
     private final int offset;
 
     /**
-     * Constructor.
-     * 
-     * @param series the series
+     * Constructor with {@code barCount} = 52 and {@code offset} = 26.
+     *
+     * @param series the bar series
      */
     public IchimokuSenkouSpanBIndicator(BarSeries series) {
-
         this(series, 52, 26);
     }
 
     /**
      * Constructor.
-     * 
-     * @param series   the series
+     *
+     * @param series   the bar series
      * @param barCount the time frame (usually 52)
      *                 时间范围（通常为 52）
      */
     public IchimokuSenkouSpanBIndicator(BarSeries series, int barCount) {
-
         this(series, barCount, 26);
     }
 
     /**
      * Constructor.
-     * 
-     * @param series   the series
+     *
+     * @param series   the bar series
      * @param barCount the time frame (usually 52)
      *                 时间范围（通常为 52）
      * @param offset   displacement on the chart
      *                 图表上的位移
      */
     public IchimokuSenkouSpanBIndicator(BarSeries series, int barCount, int offset) {
-
         super(series);
-        lineIndicator = new IchimokuLineIndicator(series, barCount);
+        this.lineIndicator = new IchimokuLineIndicator(series, barCount);
         this.offset = offset;
     }
 
@@ -108,5 +102,10 @@ public class IchimokuSenkouSpanBIndicator extends CachedIndicator<Num> {
         } else {
             return NaN.NaN;
         }
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return 0;
     }
 }

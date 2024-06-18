@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -33,25 +33,23 @@ import org.ta4j.core.Rule;
  */
 public abstract class AbstractRule implements Rule {
 
-    /** The logger
-     * 记录器*/
+    /** The logger */
     protected final transient Logger log = LoggerFactory.getLogger(getClass());
 
-    /** The class name
-     * 班级名称 */
+    /** The class name */
     private final String className = getClass().getSimpleName();
 
     /**
-     * Traces the isSatisfied() method calls.
-     * 跟踪 isSatisfied() 方法调用。
-     * 
-     * @param index       the bar index
-     *                    条形索引
+     * Traces the {@code isSatisfied()} method calls.
+     * 跟踪 {@code isSatisfied()} 方法调用。
      *
+     * @param index       the bar index
      * @param isSatisfied true if the rule is satisfied, false otherwise
      *                    如果满足规则，则为 true，否则为 false
      */
     protected void traceIsSatisfied(int index, boolean isSatisfied) {
-        log.trace("{}#isSatisfied({}): {}", className, index, isSatisfied);
+        if (log.isTraceEnabled()) {
+            log.trace("{}#isSatisfied({}): {}", className, index, isSatisfied);
+        }
     }
 }

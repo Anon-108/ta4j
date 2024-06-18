@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -54,14 +54,13 @@ public class CoppockCurveIndicator extends CachedIndicator<Num> {
     private final WMAIndicator wma;
 
     /**
-     * Constructor with default values: <br/>
-      - longRoCBarCount=14 <br/>
-      - shortRoCBarCount=11 <br/>
-      - wmaBarCount=10
-     具有默认值的构造函数：<br/>
-     - longRoCBarCount=14 <br/>
-     - shortRoCBarCount=11 <br/>
-     - wmaBarCount=10
+     * Constructor with:
+     *
+     * <ul>
+     * <li>{@code longRoCBarCount} = 14
+     * <li>{@code shortRoCBarCount} = 11
+     * <li>{@code wmaBarCount} = 10
+     * </ul>
      *
      * @param indicator the indicator 指标
      */
@@ -71,7 +70,7 @@ public class CoppockCurveIndicator extends CachedIndicator<Num> {
 
     /**
      * Constructor.
-     * 
+     *
      * @param indicator        the indicator (usually close price)
      *                         指标（通常是收盘价）
      * @param longRoCBarCount  the time frame for long term RoC
@@ -86,11 +85,16 @@ public class CoppockCurveIndicator extends CachedIndicator<Num> {
         super(indicator);
         SumIndicator sum = new SumIndicator(new ROCIndicator(indicator, longRoCBarCount),
                 new ROCIndicator(indicator, shortRoCBarCount));
-        wma = new WMAIndicator(sum, wmaBarCount);
+        this.wma = new WMAIndicator(sum, wmaBarCount);
     }
 
     @Override
     protected Num calculate(int index) {
         return wma.getValue(index);
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return 0;
     }
 }

@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -27,8 +27,7 @@ import org.ta4j.core.Indicator;
 import org.ta4j.core.num.Num;
 
 /**
- * Triple exponential moving average indicator.
- * 三重指数移动平均线指标。
+ * Triple exponential moving average indicator (also called "TRIX").
  *
  * a.k.a TRIX
  * 又名TRIX
@@ -53,6 +52,9 @@ import org.ta4j.core.num.Num;
  * 交易者通常使用TEMA指标来确认价格的长期趋势，并结合其他技术指标和价格模式来进行交易决策。例如，当价格上穿TEMA线时，可能暗示着价格的上升趋势开始，为买入信号；相反，当价格下穿TEMA线时，可能暗示着价格的下跌趋势开始，为卖出信号。
  *
  * 总的来说，TEMA指标是一种用于平滑价格数据并识别价格趋势的技术指标，可以帮助交易者更好地理解市场的价格动态并制定相应的交易策略。
+ * <p>
+ * TEMA needs "3 * period - 2" of data to start producing values in contrast to
+ * the period samples needed by a regular EMA.
  *
  * @see <a href=
  *      "https://en.wikipedia.org/wiki/Triple_exponential_moving_average">https://en.wikipedia.org/wiki/Triple_exponential_moving_average</a>
@@ -85,6 +87,11 @@ public class TripleEMAIndicator extends CachedIndicator<Num> {
         // trix = 3 * ( ema - emaEma ) + emaEmaEma
         // trix = 3 * ( ema - emaEma ) + emaEmaEma
         return numOf(3).multipliedBy(ema.getValue(index).minus(emaEma.getValue(index))).plus(emaEmaEma.getValue(index));
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return barCount;
     }
 
     @Override

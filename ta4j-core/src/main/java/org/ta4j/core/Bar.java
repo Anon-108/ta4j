@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -33,54 +33,10 @@ import java.util.function.Function;
 import org.ta4j.core.num.Num;
 
 /**
- * End bar of a time period.
- * 一个时间段的结束栏。
- *
- * Bar object is aggregated open/high/low/close/volume/etc. data over a time period.
- * * 柱形对象聚合开盘/高/低/收盘/成交量/等。 一段时间内的数据。
+ * A {@code Bar} is aggregated open/high/low/close/volume/etc. data over a time
+ * period. It represents the "end bar" of a time period.
  */
 public interface Bar extends Serializable {
-    /**
-     * @return the open price of the period
-     * * @return 期间的开盘价
-     */
-    Num getOpenPrice();
-
-    /**
-     * @return the low price of the period
-     *      * @return the low price of the period
-     */
-    Num getLowPrice();
-
-    /**
-     * @return the high price of the period
-     * * @return 期间的最高价
-     */
-    Num getHighPrice();
-
-    /**
-     * @return the close price of the period
-     * * @return 期间的收盘价
-     */
-    Num getClosePrice();
-
-    /**
-     * @return the whole tradeNum volume in the period
-     * * @return 整个期间的 tradeNum 交易量
-     */
-    Num getVolume();
-
-    /**
-     * @return the number of trades in the period
-     * * @return 周期内的交易数量
-     */
-    long getTrades();
-
-    /**
-     * @return the whole traded amount of the period
-     * * @return 期间的全部交易量
-     */
-    Num getAmount();
 
     /**
      * @return the time period of the bar
@@ -99,6 +55,41 @@ public interface Bar extends Serializable {
      * * @return 柱周期的结束时间戳
      */
     ZonedDateTime getEndTime();
+
+    /**
+     * @return the open price of the bar period
+     */
+    Num getOpenPrice();
+
+    /**
+     * @return the high price of the bar period
+     */
+    Num getHighPrice();
+
+    /**
+     * @return the low price of the bar period
+     */
+    Num getLowPrice();
+
+    /**
+     * @return the close price of the bar period
+     */
+    Num getClosePrice();
+
+    /**
+     * @return the total traded volume of the bar period
+     */
+    Num getVolume();
+
+    /**
+     * @return the total traded amount (tradePrice x tradeVolume) of the bar period
+     */
+    Num getAmount();
+
+    /**
+     * @return the number of trades of the bar period
+     */
+    long getTrades();
 
     /**
      * @param timestamp a timestamp
@@ -147,56 +138,40 @@ public interface Bar extends Serializable {
     }
 
     /**
-     * Adds a trade at the end of bar period.
-     * * 在柱周期结束时添加交易。
-     * 
-     * @param tradeVolume the traded volume
-     *                    成交量
-     * @param tradePrice  the price
-     *                    价格
-     * @deprecated use corresponding function of {@link BarSeries}
-     * * @deprecated 使用 {@link BarSeries} 的对应功能
+     * Adds a trade and updates the close price at the end of the bar period.
      *
-     */
-    @Deprecated
-    default void addTrade(double tradeVolume, double tradePrice, Function<Number, Num> numFunction) {
-        addTrade(numFunction.apply(tradeVolume), numFunction.apply(tradePrice));
-    }
-
-    /**
-     * Adds a trade at the end of bar period.
-     * 在柱周期结束时添加交易。
-     * 
      * @param tradeVolume the traded volume
-     *                    成交量
-     * @param tradePrice  the price
-     *                    价格
-     * @deprecated use corresponding function of {@link BarSeries}
-     * 使用 {@link BarSeries} 的相应功能
-     */
-    @Deprecated
-    default void addTrade(String tradeVolume, String tradePrice, Function<Number, Num> numFunction) {
-        addTrade(numFunction.apply(new BigDecimal(tradeVolume)), numFunction.apply(new BigDecimal(tradePrice)));
-    }
-
-    /**
-     * Adds a trade at the end of bar period.
-     * 在柱周期结束时添加交易。
-     * 
-     * @param tradeVolume the traded volume
-     *                    成交量
-     * @param tradePrice  the price
-     *                    价格
+     * @param tradePrice  the actual price per asset
      */
     void addTrade(Num tradeVolume, Num tradePrice);
 
+    /**
+     * Updates the close price at the end of the bar period. The open, high and low
+     * prices are also updated as needed.
+     *
+     * @param price       the actual price per asset
+     * @param numFunction the numbers precision
+     */
     default void addPrice(String price, Function<Number, Num> numFunction) {
         addPrice(numFunction.apply(new BigDecimal(price)));
     }
 
+    /**
+     * Updates the close price at the end of the bar period. The open, high and low
+     * prices are also updated as needed.
+     *
+     * @param price       the actual price per asset
+     * @param numFunction the numbers precision
+     */
     default void addPrice(Number price, Function<Number, Num> numFunction) {
         addPrice(numFunction.apply(price));
     }
 
+    /**
+     * Updates the close price at the end of the bar period. The open, high and low
+     * prices are also updated as needed.
+     *
+     * @param price the actual price per asset
+     */
     void addPrice(Num price);
 }

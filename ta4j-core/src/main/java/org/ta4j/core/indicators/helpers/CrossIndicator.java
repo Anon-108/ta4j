@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -31,6 +31,8 @@ import org.ta4j.core.num.Num;
  * Cross indicator.
  * 交叉指标。
  *
+ * <p>
+ * Boolean indicator that monitors the crossing of two indicators.
  * Boolean indicator which monitors two-indicators crossings.
  * 监控两个指标交叉点的布尔指标。
  *
@@ -67,15 +69,15 @@ public class CrossIndicator extends CachedIndicator<Boolean> {
 
     /** Upper indicator 上指标 */
     private final Indicator<Num> up;
-    /** Lower indicator 下指标 */
+
+    /** Lower indicator */
     private final Indicator<Num> low;
 
     /**
      * Constructor.
-     * 构造函数
      *
-     * @param up  the upper indicator 上指标
-     * @param low the lower indicator 较低的指标
+     * @param up  the upper indicator
+     * @param low the lower indicator
      */
     public CrossIndicator(Indicator<Num> up, Indicator<Num> low) {
         // TODO: check if up series is equal to low series
@@ -92,28 +94,24 @@ public class CrossIndicator extends CachedIndicator<Boolean> {
             return false;
         }
 
-        i--;
-        if (up.getValue(i).isGreaterThan(low.getValue(i))) {
-            return true;
-        }
-        while (i > 0 && up.getValue(i).isEqual(low.getValue(i))) {
+        do {
             i--;
-        }
-        return (i != 0) && (up.getValue(i).isGreaterThan(low.getValue(i)));
+        } while (i > 0 && up.getValue(i).isEqual(low.getValue(i)));
+
+        return up.getValue(i).isGreaterThan(low.getValue(i));
     }
 
-    /**
-     * @return the initial lower indicator
-     * @return 初始下限指标
-     */
+    @Override
+    public int getUnstableBars() {
+        return 0;
+    }
+
+    /** @return the initial lower indicator */
     public Indicator<Num> getLow() {
         return low;
     }
 
-    /**
-     * @return the initial upper indicator
-     * @return 初始上限指标
-     */
+    /** @return the initial upper indicator */
     public Indicator<Num> getUp() {
         return up;
     }

@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -28,6 +28,7 @@ import org.ta4j.core.num.Num;
 
 /**
  * The Kaufman's Adaptive Moving Average (KAMA) Indicator.
+ *
  * * 考夫曼的自适应移动平均线 (KAMA) 指标。
  *
  * 考夫曼自适应移动平均线（Kaufman's Adaptive Moving Average，KAMA）是一种技术指标，用于平滑资产的价格数据，并根据市场的波动性调整移动平均线的参数，以适应不同的市场条件。
@@ -44,7 +45,7 @@ import org.ta4j.core.num.Num;
  * KAMA指标的数值通常用于识别价格的趋势方向和市场的买卖信号。当KAMA值上升时，可能暗示着价格上升趋势的开始，为买入信号；当KAMA值下降时，可能暗示着价格下降趋势的开始，为卖出信号。
  *
  * 总的来说，KAMA是一种适应性强、对市场变化敏感的移动平均线指标，能够有效平滑价格数据并识别价格的趋势方向。交易者可以将KAMA与其他技术指标和价格模式结合使用，以制定更可靠的交易策略。
- * 
+ *
  * @see <a href=
  *      "http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:kaufman_s_adaptive_moving_average">
  *      http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:kaufman_s_adaptive_moving_average</a>
@@ -52,11 +53,8 @@ import org.ta4j.core.num.Num;
 public class KAMAIndicator extends RecursiveCachedIndicator<Num> {
 
     private final Indicator<Num> price;
-
     private final int barCountEffectiveRatio;
-
     private final Num fastest;
-
     private final Num slowest;
 
     /**
@@ -75,16 +73,18 @@ public class KAMAIndicator extends RecursiveCachedIndicator<Num> {
         super(price);
         this.price = price;
         this.barCountEffectiveRatio = barCountEffectiveRatio;
-        fastest = numOf(2).dividedBy(numOf(barCountFast + 1));
-        slowest = numOf(2).dividedBy(numOf(barCountSlow + 1));
+        this.fastest = numOf(2).dividedBy(numOf(barCountFast + 1));
+        this.slowest = numOf(2).dividedBy(numOf(barCountSlow + 1));
     }
 
     /**
-     * Constructor with default values: <br/>
-      具有默认值的构造函数：<br/>
-      - barCountEffectiveRatio=10 <br/>
-      - barCountFast=2 <br/>
-      - barCountSlow=30
+     * Constructor with:
+     *
+     * <ul>
+     * <li>{@code barCountEffectiveRatio} = 10
+     * <li>{@code barCountFast} = 2
+     * <li>{@code barCountSlow} = 30
+     * </ul>
      *
      * @param price the priceindicator
      *              价格指标
@@ -105,7 +105,7 @@ public class KAMAIndicator extends RecursiveCachedIndicator<Num> {
          */
         int startChangeIndex = Math.max(0, index - barCountEffectiveRatio);
         Num change = currentPrice.minus(price.getValue(startChangeIndex)).abs();
-        Num volatility = numOf(0);
+        Num volatility = zero();
         for (int i = startChangeIndex; i < index; i++) {
             volatility = volatility.plus(price.getValue(i + 1).minus(price.getValue(i)).abs());
         }
@@ -121,6 +121,11 @@ public class KAMAIndicator extends RecursiveCachedIndicator<Num> {
          */
         Num priorKAMA = getValue(index - 1);
         return priorKAMA.plus(sc.multipliedBy(currentPrice.minus(priorKAMA)));
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return 0;
     }
 
 }

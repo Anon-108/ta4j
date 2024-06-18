@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -58,8 +58,7 @@ public class RWIHighIndicator extends CachedIndicator<Num> {
     /**
      * Constructor.
      *
-     * @param series   the series
-     *                 该系列
+     * @param series   the bar series
      * @param barCount the time frame
      *                 时间范围
      */
@@ -80,6 +79,11 @@ public class RWIHighIndicator extends CachedIndicator<Num> {
         }
 
         return maxRWIH;
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return barCount;
     }
 
     private Num calcRWIHFor(final int index, final int n) {

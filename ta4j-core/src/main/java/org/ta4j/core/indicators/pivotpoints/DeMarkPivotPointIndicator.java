@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -60,6 +60,7 @@ public class DeMarkPivotPointIndicator extends RecursiveCachedIndicator<Num> {
 
     private final TimeLevel timeLevel;
     private final Num two;
+    private final Num four;
 
     /**
      * Constructor.
@@ -121,11 +122,17 @@ public class DeMarkPivotPointIndicator extends RecursiveCachedIndicator<Num> {
         super(series);
         this.timeLevel = timeLevelId;
         this.two = numOf(2);
+        this.four = numOf(4);
     }
 
     @Override
     protected Num calculate(int index) {
         return calcPivotPoint(getBarsOfPreviousPeriod(index));
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return 0;
     }
 
     private Num calcPivotPoint(List<Integer> barsOfPreviousPeriod) {
@@ -138,8 +145,9 @@ public class DeMarkPivotPointIndicator extends RecursiveCachedIndicator<Num> {
         Num low = bar.getLowPrice();
 
         for (int i : barsOfPreviousPeriod) {
-            high = (getBarSeries().getBar(i).getHighPrice()).max(high);
-            low = (getBarSeries().getBar(i).getLowPrice()).min(low);
+            Bar iBar = getBarSeries().getBar(i);
+            high = iBar.getHighPrice().max(high);
+            low = iBar.getLowPrice().min(low);
         }
 
         Num x;
@@ -151,7 +159,7 @@ public class DeMarkPivotPointIndicator extends RecursiveCachedIndicator<Num> {
             x = high.plus(low).plus(two.multipliedBy(close));
         }
 
-        return x.dividedBy(numOf(4));
+        return x.dividedBy(four);
     }
 
     /**
@@ -175,7 +183,6 @@ public class DeMarkPivotPointIndicator extends RecursiveCachedIndicator<Num> {
         }
 
         final Bar currentBar = getBarSeries().getBar(index);
-
         // step back while bar-1 in same period (day, week, etc):
         // 当 bar-1 在同一时期（日、周等）时后退：
         while (index - 1 > getBarSeries().getBeginIndex()

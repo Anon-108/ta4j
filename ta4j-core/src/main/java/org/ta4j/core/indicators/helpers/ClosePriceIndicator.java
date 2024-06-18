@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -23,11 +23,15 @@
  */
 package org.ta4j.core.indicators.helpers;
 
-import org.ta4j.core.Bar;
 import org.ta4j.core.BarSeries;
+import org.ta4j.core.indicators.AbstractIndicator;
+import org.ta4j.core.num.Num;
 
 /**
  * Close price indicator.
+ *
+ * <p>
+ * Returns the close price of a bar.
  * 收盘价指标。
  *
  * Close price indicator（收盘价指标）是一种简单而常用的技术分析指标，它基于资产在交易周期结束时的收盘价格。这个指标通常用于跟踪资产价格的变化，并作为其他技术指标的输入。
@@ -54,9 +58,25 @@ import org.ta4j.core.BarSeries;
  * 收盘价指标是一种简单但重要的技术分析指标，它提供了资产在每个交易周期结束时的价格水平。作为技术分析的基础，收盘价常被用于价格分析、指标计算和信号生成等方面。在使用时，应结合其他指标和分析方法，并考虑市场的整体环境和其他因素的影响。
  *
  */
-public class ClosePriceIndicator extends PriceIndicator {
+public class ClosePriceIndicator extends AbstractIndicator<Num> {
 
+    /**
+     * Constructor.
+     *
+     * @param series the bar series
+     */
     public ClosePriceIndicator(BarSeries series) {
-        super(series, Bar::getClosePrice);
+        super(series);
+    }
+
+    @Override
+    public Num getValue(int index) {
+        return getBarSeries().getBar(index).getClosePrice();
+    }
+
+    /** @return {@code 0} */
+    @Override
+    public int getUnstableBars() {
+        return 0;
     }
 }

@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -189,23 +189,13 @@ public class CachedIndicatorTest extends AbstractIndicatorTest<Indicator<Num>, N
     @Test
     public void leaveLastBarUncached() {
         BarSeries barSeries = new MockBarSeries(numFunction);
-        ClosePriceIndicator closePrice = new ClosePriceIndicator(barSeries);
-        assertNumEquals(5000, closePrice.getValue(barSeries.getEndIndex()));
+        SMAIndicator smaIndicator = new SMAIndicator(new ClosePriceIndicator(barSeries), 5);
+        assertNumEquals(4998.0, smaIndicator.getValue(barSeries.getEndIndex()));
         barSeries.getLastBar().addTrade(numOf(10), numOf(5));
-        assertNumEquals(5, closePrice.getValue(barSeries.getEndIndex()));
 
-    }
+        // (4996 + 4997 + 4998 + 4999 + 5) / 5
+        assertNumEquals(3999, smaIndicator.getValue(barSeries.getEndIndex()));
 
-    @Test
-    public void leaveBarsBeforeLastBarCached() {
-        BarSeries barSeries = new MockBarSeries(numFunction);
-        ClosePriceIndicator closePrice = new ClosePriceIndicator(barSeries);
-
-        // Add a forgotten trade, should be ignored in the cached indicator
-        // 添加一个被遗忘的交易，在缓存指标中应该被忽略
-        assertNumEquals(2, closePrice.getValue(1));
-        barSeries.getBar(1).addTrade(numOf(10), numOf(5));
-        assertNumEquals(2, closePrice.getValue(1));
     }
 
 }

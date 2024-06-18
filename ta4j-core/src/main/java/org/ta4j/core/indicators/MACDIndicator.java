@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -24,9 +24,12 @@
 package org.ta4j.core.indicators;
 
 import org.ta4j.core.Indicator;
+import org.ta4j.core.indicators.numeric.NumericIndicator;
 import org.ta4j.core.num.Num;
 
 /**
+ * Moving average convergence divergence (MACDIndicator) indicator (also called
+ * "MACD Absolute Price Oscillator (APO)").
  * Moving average convergence divergence (MACDIndicator) indicator. <br/>
  * 移动平均收敛散度 (MACDIndicator) 指标。 <br/>
  * Aka. MACD Absolute Price Oscillator (APO).
@@ -55,11 +58,14 @@ public class MACDIndicator extends CachedIndicator<Num> {
     private final EMAIndicator longTermEma;
 
     /**
-     * Constructor with shortBarCount "12" and longBarCount "26".
-     * shortBarCount "12" 和 longBarCount "26" 的构造函数。
+     * Constructor with:
      *
-     * @param indicator the indicator
-     *                  指标
+     * <ul>
+     * <li>{@code shortBarCount} = 12
+     * <li>{@code longBarCount} = 26
+     * </ul>
+     *
+     * @param indicator the {@link Indicator}
      */
     public MACDIndicator(Indicator<Num> indicator) {
         this(indicator, 12, 26);
@@ -68,8 +74,7 @@ public class MACDIndicator extends CachedIndicator<Num> {
     /**
      * Constructor.
      *
-     * @param indicator     the indicator
-     *                      指标
+     * @param indicator     the {@link Indicator}
      * @param shortBarCount the short time frame (normally 12)
      *                      短时间框架（通常为 12）
      * @param longBarCount  the long time frame (normally 26)
@@ -80,14 +85,11 @@ public class MACDIndicator extends CachedIndicator<Num> {
         if (shortBarCount > longBarCount) {
             throw new IllegalArgumentException("Long term period count must be greater than short term period count 长期周期计数必须大于短期周期计数");
         }
-        shortTermEma = new EMAIndicator(indicator, shortBarCount);
-        longTermEma = new EMAIndicator(indicator, longBarCount);
+        this.shortTermEma = new EMAIndicator(indicator, shortBarCount);
+        this.longTermEma = new EMAIndicator(indicator, longBarCount);
     }
 
     /**
-     * Short term EMA indicator
-     * * 短期 EMA 指标
-     *
      * @return the Short term EMA indicator
      * @return 短期 EMA 指标
      */
@@ -96,9 +98,6 @@ public class MACDIndicator extends CachedIndicator<Num> {
     }
 
     /**
-     * Long term EMA indicator
-     * 长期EMA指标
-     *
      * @return the Long term EMA indicator
      * @return 长期 EMA 指标
      */
@@ -106,8 +105,29 @@ public class MACDIndicator extends CachedIndicator<Num> {
         return longTermEma;
     }
 
+    /**
+     * @param barCount of signal line
+     * @return signal line for this MACD indicator
+     */
+    public EMAIndicator getSignalLine(int barCount) {
+        return new EMAIndicator(this, barCount);
+    }
+
+    /**
+     * @param barCount of signal line
+     * @return histogram of this MACD indicator
+     */
+    public NumericIndicator getHistogram(int barCount) {
+        return NumericIndicator.of(this).minus(getSignalLine(barCount));
+    }
+
     @Override
     protected Num calculate(int index) {
         return shortTermEma.getValue(index).minus(longTermEma.getValue(index));
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return 0;
     }
 }

@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -28,8 +28,7 @@ import org.ta4j.core.Strategy;
 import org.ta4j.core.TradingRecord;
 
 /**
- * Generic interface for generating trading reports
- * * 生成交易报告的通用接口
+ * Generic interface for generating trading reports.
  *
  * @param <T> type of report to be generated
  *           * @param <T> 要生成的报告类型
@@ -37,14 +36,10 @@ import org.ta4j.core.TradingRecord;
 public interface ReportGenerator<T> {
 
     /**
-     * Generate report
-     * 生成报告
+     * Generates a report based on the {@code tradingRecord}.
      *
-     * @param tradingRecord the trading record which is a source to generate report, not null
-     *                      作为生成报告来源的交易记录，不为空
-     * @param series        the bar series, not null
-     *                      酒吧系列，不为空
-     *
+     * @param tradingRecord the trading record (not null)
+     * @param series        the bar series (not null)
      * @return generated report
      *                  @return 生成的报告
      */

@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -29,6 +29,7 @@ import org.ta4j.core.indicators.helpers.MedianPriceIndicator;
 import org.ta4j.core.num.Num;
 
 /**
+ * Awesome oscillator (AO) indicator.
  * Awesome oscillator. (AO)
  * 很棒的振荡器。 (AO)
  *
@@ -54,12 +55,11 @@ import org.ta4j.core.num.Num;
  * 交易者通常将Awesome Oscillator与其他技术指标一起使用，例如移动平均线、MACD等，以确认价格趋势的方向和市场动能的强度，并据此制定交易策略。
  *
  *
- * see https://www.tradingview.com/wiki/Awesome_Oscillator_(AO)
+ * @see https://www.tradingview.com/wiki/Awesome_Oscillator_(AO)
  */
 public class AwesomeOscillatorIndicator extends CachedIndicator<Num> {
 
     private final SMAIndicator sma5;
-
     private final SMAIndicator sma34;
 
     /**
@@ -79,7 +79,12 @@ public class AwesomeOscillatorIndicator extends CachedIndicator<Num> {
     }
 
     /**
-     * Constructor.
+     * Constructor with:
+     *
+     * <ul>
+     * <li>{@code barCountSma1} = 5
+     * <li>{@code barCountSma2} = 34
+     * </ul>
      *
      * @param indicator (normally {@link MedianPriceIndicator})
      *                  （通常是 {@link MedianPriceIndicator}）
@@ -89,7 +94,13 @@ public class AwesomeOscillatorIndicator extends CachedIndicator<Num> {
     }
 
     /**
-     * Constructor.
+     * Constructor with:
+     *
+     * <ul>
+     * <li>{@code indicator} = {@link MedianPriceIndicator}
+     * <li>{@code barCountSma1} = 5
+     * <li>{@code barCountSma2} = 34
+     * </ul>
      *
      * @param series the bar series
      */
@@ -100,5 +111,10 @@ public class AwesomeOscillatorIndicator extends CachedIndicator<Num> {
     @Override
     protected Num calculate(int index) {
         return sma5.getValue(index).minus(sma34.getValue(index));
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return 0;
     }
 }

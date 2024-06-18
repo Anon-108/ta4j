@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -31,17 +31,15 @@ import org.ta4j.core.TradingRecord;
 import org.ta4j.core.rules.helper.ChainLink;
 
 /**
- * A chainrule has an initial rule that has to be satisfied before chain links
-  are evaluated. If the initial rule is satisfied every rule of chain link has
-  to be satisfied within a specified amount of bars (threshold).
- 链式规则有一个初始规则，必须在链式链接之前满足该规则
- 被评估。 如果满足初始规则，则链环的每个规则都有
- 在指定数量的柱（阈值）内得到满足。
- *
+ * A {@code ChainRule} has an initial rule that has to be satisfied before a
+ * list of {@link ChainLink chain links} are evaluated. If the initial rule is
+ * satisfied, each rule in {@link ChainRule#rulesInChain chain links} has to be
+ * satisfied within a specified "number of bars (= threshold)".
  */
 public class ChainRule extends AbstractRule {
+
     private final Rule initialRule;
-    LinkedList<ChainLink> rulesInChain = new LinkedList<>();
+    private LinkedList<ChainLink> rulesInChain = new LinkedList<>();
 
     /**
      * @param initialRule the first rule that has to be satisfied before  {@link ChainLink} are evaluated
@@ -52,7 +50,7 @@ public class ChainRule extends AbstractRule {
      */
     public ChainRule(Rule initialRule, ChainLink... chainLinks) {
         this.initialRule = initialRule;
-        rulesInChain.addAll(Arrays.asList(chainLinks));
+        this.rulesInChain.addAll(Arrays.asList(chainLinks));
     }
 
     @Override
@@ -79,7 +77,7 @@ public class ChainRule extends AbstractRule {
 
                 satisfiedWithinThreshold = link.getRule().isSatisfied(resultingIndex, tradingRecord);
 
-                if (satisfiedWithinThreshold == true) {
+                if (satisfiedWithinThreshold) {
                     break;
                 }
 

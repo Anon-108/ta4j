@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -28,6 +28,9 @@ import org.ta4j.core.indicators.AbstractIndicator;
 
 /**
  * Constant indicator.
+ *
+ * <p>
+ * Returns a constant value for a bar.
  * 恒定指标。
  *
  * "Constant indicator"（常数指标）并不是一个常见的技术分析指标，因为它不随市场价格的波动而变化。相反，它是一个静态值，通常在技术分析中用于设置阈值、参数或者作为其他指标的一部分。这种指标在定义时通常不依赖于价格数据，而是被固定在某个数值上。
@@ -45,6 +48,12 @@ public class ConstantIndicator<T> extends AbstractIndicator<T> {
 
     private final T value;
 
+    /**
+     * Constructor.
+     *
+     * @param series the bar series
+     * @param t      the constant value
+     */
     public ConstantIndicator(BarSeries series, T t) {
         super(series);
         this.value = t;
@@ -53,6 +62,12 @@ public class ConstantIndicator<T> extends AbstractIndicator<T> {
     @Override
     public T getValue(int index) {
         return value;
+    }
+
+    /** @return {@code 0} */
+    @Override
+    public int getUnstableBars() {
+        return 0;
     }
 
     @Override

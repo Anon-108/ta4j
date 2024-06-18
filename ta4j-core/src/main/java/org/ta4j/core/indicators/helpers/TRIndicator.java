@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -23,6 +23,7 @@
  */
 package org.ta4j.core.indicators.helpers;
 
+import org.ta4j.core.Bar;
 import org.ta4j.core.BarSeries;
 import org.ta4j.core.indicators.CachedIndicator;
 import org.ta4j.core.num.Num;
@@ -50,20 +51,43 @@ import org.ta4j.core.num.Num;
  * - \( C_{p} \) 是前一日的收盘价。
  *
  * 真实波幅指标的值代表了资产价格在一段时间内的波动范围，它可以帮助交易者和投资者更好地理解市场的波动性，并用于确定止损位、波动性的测量以及其他交易决策。
+ *
+ * <pre>
+ * TrueRange = MAX(high - low, high - previousClose, previousClose - low)
+ * </pre>
  */
 public class TRIndicator extends CachedIndicator<Num> {
 
+    /**
+     * Constructor.
+     *
+     * @param series the bar series
+     */
     public TRIndicator(BarSeries series) {
         super(series);
     }
 
     @Override
     protected Num calculate(int index) {
-        Num ts = getBarSeries().getBar(index).getHighPrice().minus(getBarSeries().getBar(index).getLowPrice());
-        Num ys = index == 0 ? numOf(0)
-                : getBarSeries().getBar(index).getHighPrice().minus(getBarSeries().getBar(index - 1).getClosePrice());
-        Num yst = index == 0 ? numOf(0)
-                : getBarSeries().getBar(index - 1).getClosePrice().minus(getBarSeries().getBar(index).getLowPrice());
-        return ts.abs().max(ys.abs()).max(yst.abs());
+        Bar bar = getBarSeries().getBar(index);
+        Num high = bar.getHighPrice();
+        Num low = bar.getLowPrice();
+        Num hl = high.minus(low);
+
+        if (index == 0) {
+            return hl.abs();
+        }
+
+        Num previousClose = getBarSeries().getBar(index - 1).getClosePrice();
+        Num hc = high.minus(previousClose);
+        Num cl = previousClose.minus(low);
+        return hl.abs().max(hc.abs()).max(cl.abs());
+
+    }
+
+    /** @return {@code 1} */
+    @Override
+    public int getUnstableBars() {
+        return 1;
     }
 }

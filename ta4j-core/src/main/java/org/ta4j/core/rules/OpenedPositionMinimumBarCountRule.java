@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -26,19 +26,26 @@ package org.ta4j.core.rules;
 import org.ta4j.core.TradingRecord;
 
 /**
- * Rule to specify minimum bar count for opened position. Using this rule makes sense only for exit rule (for entry rule
- * {@link OpenedPositionMinimumBarCountRule#isSatisfied(int, TradingRecord)} always return false.
- * 指定开仓的最小柱数的规则。 使用此规则仅对退出规则有意义（对于进入规则
- *   * {@link OpenedPositionMinimumBarCountRule#isSatisfied(int, TradingRecord)} 总是返回 false。
+ * A rule for setting the minimum number of bars up to which an open position
+ * should not be closed.
+ *
+ * <p>
+ * Using this rule only makes sense for exit rules. For entry rules,
+ * {@link OpenedPositionMinimumBarCountRule#isSatisfied(int, TradingRecord)}
+ * always returns {@code false}.
  */
 public class OpenedPositionMinimumBarCountRule extends AbstractRule {
 
     /**
-     * Minimum bar count for opened trade.
-     * 未平仓交易的最小柱数。
+     * The minimum number of bars up to which an open position should not be closed.
      */
     private final int barCount;
 
+    /**
+     * Constructor.
+     *
+     * @param barCount the {@link #barCount}
+     */
     public OpenedPositionMinimumBarCountRule(int barCount) {
         if (barCount < 1) {
             throw new IllegalArgumentException("Bar count must be positive 条数必须为正数");
@@ -47,15 +54,9 @@ public class OpenedPositionMinimumBarCountRule extends AbstractRule {
     }
 
     /**
-     * Returns true if opened trade reached minimum bar count specified in * {@link OpenedPositionMinimumBarCountRule#barCount}
-     * * 如果打开的交易达到了在 * {@link OpenedPositionMinimumBarCountRule#barCount} 中指定的最小柱数，则返回 true
-     *
      * @param index         the bar index
-     *                      条形索引
-     * @param tradingRecord the potentially needed trading history
-     *                      可能需要的交易历史
-     * @return true if opened trade reached minimum bar count specified in {@link OpenedPositionMinimumBarCountRule#barCount}, otherwise false
-     * * @return 如果开仓交易达到 {@link OpenedPositionMinimumBarCountRule#barCount} 中指定的最小柱数，则返回 true，否则返回 false
+     * @param tradingRecord the required trading history
+     * @return true if opened trade has reached {@link #barCount}, otherwise false
      */
     @Override
     public boolean isSatisfied(int index, TradingRecord tradingRecord) {
@@ -67,6 +68,7 @@ public class OpenedPositionMinimumBarCountRule extends AbstractRule {
         return false;
     }
 
+    /** @return the {@link #barCount} */
     public int getBarCount() {
         return barCount;
     }

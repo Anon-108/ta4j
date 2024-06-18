@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -30,8 +30,9 @@ import org.ta4j.core.TradingRecord;
  * A XOR combination of two {@link Rule rules}.
  * * 两个 {@link Rule 规则} 的 XOR 组合。
  *
- * Satisfied when only of the two provided rules is satisfied.
- * 仅满足两个提供的规则时满足。
+ * <p>
+ * Satisfied if only one of the two rules is satisfied. Not satisfied if no rule
+ * or both rules are satisfied.
  */
 public class XorRule extends AbstractRule {
 
@@ -58,10 +59,12 @@ public class XorRule extends AbstractRule {
         return satisfied;
     }
 
+    /** @return the first rule */
     public Rule getRule1() {
         return rule1;
     }
 
+    /** @return the second rule */
     public Rule getRule2() {
         return rule2;
     }

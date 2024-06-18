@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -85,9 +85,8 @@ public class BollingerBandWidthIndicator extends CachedIndicator<Num> {
      * 构造函数。
      *
      * @param bbu the upper band Indicator.
-     *            上带指标。
-     * @param bbm the middle band Indicator. Typically an SMAIndicator is used.
-     *            中带指标。 通常使用 SMAIndicator。
+     * @param bbm the middle band Indicator. Typically an {@code SMAIndicator} is
+     *            used.
      * @param bbl the lower band Indicator.
      *            低频段指标。
      */
@@ -97,11 +96,16 @@ public class BollingerBandWidthIndicator extends CachedIndicator<Num> {
         this.bbu = bbu;
         this.bbm = bbm;
         this.bbl = bbl;
-        this.hundred = bbm.getBarSeries().numOf(100);
+        this.hundred = bbm.getBarSeries().hundred();
     }
 
     @Override
     protected Num calculate(int index) {
         return bbu.getValue(index).minus(bbl.getValue(index)).dividedBy(bbm.getValue(index)).multipliedBy(hundred);
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return 0;
     }
 }

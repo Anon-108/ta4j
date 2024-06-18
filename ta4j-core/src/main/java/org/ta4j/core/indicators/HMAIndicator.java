@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -24,7 +24,7 @@
 package org.ta4j.core.indicators;
 
 import org.ta4j.core.Indicator;
-import org.ta4j.core.indicators.helpers.DifferenceIndicator;
+import org.ta4j.core.indicators.helpers.CombineIndicator;
 import org.ta4j.core.indicators.helpers.TransformIndicator;
 import org.ta4j.core.num.Num;
 
@@ -55,6 +55,12 @@ public class HMAIndicator extends CachedIndicator<Num> {
     private final int barCount;
     private final WMAIndicator sqrtWma;
 
+    /**
+     * Constructor.
+     * 
+     * @param indicator the {@link Indicator}
+     * @param barCount  the time frame
+     */
     public HMAIndicator(Indicator<Num> indicator, int barCount) {
         super(indicator);
         this.barCount = barCount;
@@ -62,13 +68,18 @@ public class HMAIndicator extends CachedIndicator<Num> {
         WMAIndicator halfWma = new WMAIndicator(indicator, barCount / 2);
         WMAIndicator origWma = new WMAIndicator(indicator, barCount);
 
-        Indicator<Num> indicatorForSqrtWma = new DifferenceIndicator(TransformIndicator.multiply(halfWma, 2), origWma);
-        sqrtWma = new WMAIndicator(indicatorForSqrtWma, numOf(barCount).sqrt().intValue());
+        Indicator<Num> indicatorForSqrtWma = CombineIndicator.minus(TransformIndicator.multiply(halfWma, 2), origWma);
+        this.sqrtWma = new WMAIndicator(indicatorForSqrtWma, numOf(barCount).sqrt().intValue());
     }
 
     @Override
     protected Num calculate(int index) {
         return sqrtWma.getValue(index);
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return barCount;
     }
 
     @Override

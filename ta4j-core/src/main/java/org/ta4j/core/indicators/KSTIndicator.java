@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -27,15 +27,17 @@ import org.ta4j.core.Indicator;
 import org.ta4j.core.num.Num;
 
 /**
- * Know Sure Thing (KST) RCMA1 = X1-Period SMA of Y1-Period Rate-of-Change RCMA2
- = X2-Period SMA of Y2-Period Rate-of-Change RCMA3 = X3-Period SMA of
-  Y3-Period Rate-of-Change RCMA4 = X4-Period SMA of Y4-Period Rate-of-Change
-  KST = (RCMA1 x 1) + (RCMA2 x 2) + (RCMA3 x 3) + (RCMA4 x 4)
+ * Know Sure Thing (KST) indicator.
+ *
+ * <pre>
+ * RCMA1 = X1-Period SMA of Y1-Period Rate-of-Change
+ * RCMA2 = X2-Period SMA of Y2-Period Rate-of-Change
+ * RCMA3 = X3-Period SMA of Y3-Period Rate-of-Change
+ * RCMA4 = X4-Period SMA of Y4-Period Rate-of-Change
+ *
+ * KST = (RCMA1 x 1) + (RCMA2 x 2) + (RCMA3 x 3) + (RCMA4 x 4)
+ * </pre>
 
- 知道确定的事情
- （KST） RCMA1 = Y1 周期变化率的 X1 周期 SMA RCMA2 = Y2 周期的 SMA 变化率 RCMA3 = Y3 周期的 X3 周期 SMA 变化率 RCMA4 = X4 周期 Y4 周期的 SMA 变化率 KST = （RCMA1 x 1） + （RCMA2 x 2） + （RCMA3 x 3） + （RCMA4 x 4）
- *
- *
  * KST指标（Know Sure Thing Indicator）是由马丁·普林斯（Martin Pring）于1992年开发的一种技术指标，旨在识别市场的趋势转折点。它是一种复合指标，通过结合四个不同周期的平滑移动平均线和变动率来分析价格数据。
  *
  * KST指标的计算过程相对复杂，通常分为以下几个步骤：
@@ -55,23 +57,27 @@ import org.ta4j.core.num.Num;
  *      </a>
  */
 public class KSTIndicator extends CachedIndicator<Num> {
-    private SMAIndicator RCMA1;
-    private SMAIndicator RCMA2;
-    private SMAIndicator RCMA3;
-    private SMAIndicator RCMA4;
+
+    private final SMAIndicator RCMA1;
+    private final SMAIndicator RCMA2;
+    private final SMAIndicator RCMA3;
+    private final SMAIndicator RCMA4;
+    private final Num RCMA1_Multiplier = one();
+    private final Num RCMA2_Multiplier = numOf(2);
+    private final Num RCMA3_Multiplier = numOf(3);
+    private final Num RCMA4_Multiplier = numOf(4);
 
     /**
+     * Constructor with:
      *
-     * @param indicator the indicator. Default parameters: RCMA1 = 10-Period SMA of
-                       10-Period Rate-of-Change RCMA2 = 10-Period SMA of 15-Period
-                      Rate-of-Change RCMA3 = 10-Period SMA of 20-Period
-                        Rate-of-Change RCMA4 = 15-Period SMA of 30-Period
-                       Rate-of-Change
-                指标。 默认参数：RCMA1 = 10-Period SMA
-                10 周期变化率 RCMA2 = 15 周期的 10 周期 SMA
-                变化率 RCMA3 = 20 周期的 10 周期 SMA
-                变化率 RCMA4 = 30 周期的 15 周期 SMA
-                变化率
+     * <ul>
+     * <li>RCMA1 = 10-Period SMA of 10-Period Rate-of-Change
+     * <li>RCMA2 = 10-Period SMA of 15-Period Rate-of-Change
+     * <li>RCMA3 = 10-Period SMA of 20-Period Rate-of-Change
+     * <li>RCMA4 = 15-Period SMA of 30-Period Rate-of-Change
+     * </ul>
+     *
+     * @param indicator the {@link Indicator}
      */
     public KSTIndicator(Indicator<Num> indicator) {
         super(indicator);
@@ -82,6 +88,7 @@ public class KSTIndicator extends CachedIndicator<Num> {
     }
 
     /**
+     * Constructor.
      *
      * @param indicator        the indicator.
      *                         指标。
@@ -122,14 +129,14 @@ public class KSTIndicator extends CachedIndicator<Num> {
 
     @Override
     protected Num calculate(int index) {
-        Num RCMA1Multiplier = numOf(1);
-        Num RCMA2Multiplier = numOf(2);
-        Num RCMA3Multiplier = numOf(3);
-        Num RCMA4Multiplier = numOf(4);
+        return ((RCMA1.getValue(index).multipliedBy(RCMA1_Multiplier))
+                .plus(RCMA2.getValue(index).multipliedBy(RCMA2_Multiplier))
+                .plus(RCMA3.getValue(index).multipliedBy(RCMA3_Multiplier))
+                .plus(RCMA4.getValue(index).multipliedBy(RCMA4_Multiplier)));
+    }
 
-        return ((RCMA1.getValue(index).multipliedBy(RCMA1Multiplier))
-                .plus(RCMA2.getValue(index).multipliedBy(RCMA2Multiplier))
-                .plus(RCMA3.getValue(index).multipliedBy(RCMA3Multiplier))
-                .plus(RCMA4.getValue(index).multipliedBy(RCMA4Multiplier)));
+    @Override
+    public int getUnstableBars() {
+        return 0;
     }
 }

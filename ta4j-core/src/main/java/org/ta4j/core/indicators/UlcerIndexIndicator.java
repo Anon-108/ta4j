@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -24,7 +24,6 @@
 package org.ta4j.core.indicators;
 
 import org.ta4j.core.Indicator;
-import org.ta4j.core.indicators.helpers.HighestValueIndicator;
 import org.ta4j.core.num.Num;
 
 /**
@@ -53,11 +52,11 @@ import org.ta4j.core.num.Num;
  */
 public class UlcerIndexIndicator extends CachedIndicator<Num> {
 
-    private Indicator<Num> indicator;
+    private final Num hundred;
+    private final Num zero;
 
-    private HighestValueIndicator highestValueInd;
-
-    private int barCount;
+    private final Indicator<Num> indicator;
+    private final int barCount;
 
     /**
      * Constructor.
@@ -69,22 +68,31 @@ public class UlcerIndexIndicator extends CachedIndicator<Num> {
         super(indicator);
         this.indicator = indicator;
         this.barCount = barCount;
-        highestValueInd = new HighestValueIndicator(indicator, barCount);
+        this.zero = zero();
+        this.hundred = hundred();
     }
 
     @Override
     protected Num calculate(int index) {
         final int startIndex = Math.max(0, index - barCount + 1);
         final int numberOfObservations = index - startIndex + 1;
-        Num squaredAverage = numOf(0);
+        Num squaredAverage = zero;
+        Num highestValue = indicator.getValue(startIndex);
         for (int i = startIndex; i <= index; i++) {
             Num currentValue = indicator.getValue(i);
-            Num highestValue = highestValueInd.getValue(i);
-            Num percentageDrawdown = currentValue.minus(highestValue).dividedBy(highestValue).multipliedBy(numOf(100));
+            if (currentValue.isGreaterThan(highestValue)) {
+                highestValue = currentValue;
+            }
+            Num percentageDrawdown = currentValue.minus(highestValue).dividedBy(highestValue).multipliedBy(hundred);
             squaredAverage = squaredAverage.plus(percentageDrawdown.pow(2));
         }
         squaredAverage = squaredAverage.dividedBy(numOf(numberOfObservations));
         return squaredAverage.sqrt();
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return barCount;
     }
 
     @Override

@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -26,15 +26,14 @@ package org.ta4j.core.reports;
 import org.ta4j.core.BarSeries;
 import org.ta4j.core.Strategy;
 import org.ta4j.core.TradingRecord;
-import org.ta4j.core.analysis.criteria.NumberOfBreakEvenPositionsCriterion;
-import org.ta4j.core.analysis.criteria.NumberOfLosingPositionsCriterion;
-import org.ta4j.core.analysis.criteria.NumberOfWinningPositionsCriterion;
+import org.ta4j.core.criteria.NumberOfBreakEvenPositionsCriterion;
+import org.ta4j.core.criteria.NumberOfLosingPositionsCriterion;
+import org.ta4j.core.criteria.NumberOfWinningPositionsCriterion;
 import org.ta4j.core.num.Num;
 
 /**
- * This class generates PositionStatsReport based on provided trading record and bar series.
- * 该类根据提供的交易记录和柱系列生成 PositionStatsReport。 *
- * @see PositionStatsReport
+ * Generates a {@link PositionStatsReport} based on provided trading record and
+ * bar series.
  */
 public class PositionStatsReportGenerator implements ReportGenerator<PositionStatsReport> {
 

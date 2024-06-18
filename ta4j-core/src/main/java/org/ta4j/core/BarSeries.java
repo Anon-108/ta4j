@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -34,14 +34,15 @@ import java.util.function.Function;
 import org.ta4j.core.num.Num;
 
 /**
- * Sequence of {@link Bar bars} separated by a predefined period (e.g. 15 minutes, 1 day, etc.)
- * * 由预定义时间段分隔的 {@link Bar bar} 序列（例如 15 分钟、1 天等）
- *
- * Notably, a {@link BarSeries bar series} can be:
- * * 值得注意的是，{@link BarSeries bar series} 可以是：
+ * A {@code BarSeries} is a sequence of {@link Bar bars} separated by a
+ * predefined period (e.g. 15 minutes, 1 day, etc.).
+ * 
+ * Notably, it can be:
+ * 
  * <ul>
  * <li>the base of {@link Indicator indicator} calculations
- * <li>constrained between begin and end indexes (e.g. for some backtesting cases)
+ * <li>constrained between beginning and ending indices (e.g. for some
+ * backtesting cases)
  * <li>limited to a fixed number of bars (e.g. for actual trading)
  * * <li>{@link Indicator indicator} 计算的基础
  *   * <li>限制在开始和结束索引之间（例如，对于一些回测案例）
@@ -57,8 +58,64 @@ public interface BarSeries extends Serializable {
     String getName();
 
     /**
-     * @param i an index
-     *          一个索引
+     * @return any instance of Num to determine its Num type and function.
+     */
+    Num num();
+
+    /**
+     * Returns the underlying function to transform a Number into the Num
+     * implementation used by this bar series
+     *
+     * @return a function Number -> Num
+     */
+    default Function<Number, Num> function() {
+        return num().function();
+    }
+
+    /**
+     * @return the Num of 0
+     */
+    default Num zero() {
+        return num().zero();
+    }
+
+    /**
+     * @return the Num of 1
+     */
+    default Num one() {
+        return num().one();
+    }
+
+    /**
+     * @return the Num of 100
+     */
+    default Num hundred() {
+        return num().hundred();
+    }
+
+    /**
+     * Transforms a {@link Number} into the {@link Num implementation} used by this
+     * bar series
+     *
+     * @param number a {@link Number} implementing object.
+     * @return the corresponding value as a Num implementing object
+     */
+    default Num numOf(Number number) {
+        return num().function().apply(number);
+    }
+
+    /**
+     * Gets the bar from {@link #getBarData()} with index {@code i}.
+     * 
+     * <p>
+     * The given {@code i} can return the same bar within the first range of indices
+     * due to {@link #setMaximumBarCount(int)}, for example: If you fill a BarSeries
+     * with 30 bars and then apply a {@code maximumBarCount} of 10 bars, the first
+     * 20 bars will be removed from the BarSeries. The indices going further from 0
+     * to 29 remain but return the same bar from 0 to 20. The remaining 9 bars are
+     * returned from index 21.
+     * 
+     * @param i the index
      * @return the bar at the i-th position
      * * @return 第 i 个位置的条形图
      */
@@ -95,17 +152,16 @@ public interface BarSeries extends Serializable {
     }
 
     /**
-     * Warning: should be used carefully!
-     * 警告：应谨慎使用！
+     * Returns the raw bar data, i.e. it returns the current list object, which is
+     * used internally to store the {@link Bar bars}. It may be:
      *
-     * Returns the raw bar data. It means that it returns the current List object
-      used internally to store the {@link Bar bars}. It may be: - a shortened bar
-      list if a maximum bar count has been set - an extended bar list if it is a
-      constrained bar series
-     返回原始柱数据。 这意味着它返回当前的List对象
-     在内部用于存储 {@link Bar bar}。 它可能是： - 缩短的条形图
-     如果设置了最大柱数，则列出 - 扩展柱列表，如果它是
-     约束杆系列
+     * <ul>
+     * <li>a shortened bar list if a {@code maximumBarCount} has been set.
+     * <li>an extended bar list if it is a constrained bar series.
+     * </ul>
+     * 
+     * <p>
+     * <b>Warning:</b> This method should be used carefully!
      *
      * @return the raw bar data
      * * @return 原始柱数据
@@ -133,7 +189,8 @@ public interface BarSeries extends Serializable {
         if (!getBarData().isEmpty()) {
             Bar firstBar = getFirstBar();
             Bar lastBar = getLastBar();
-            sb.append(firstBar.getEndTime().format(DateTimeFormatter.ISO_DATE_TIME)).append(" - ")
+            sb.append(firstBar.getEndTime().format(DateTimeFormatter.ISO_DATE_TIME))
+                    .append(" - ")
                     .append(lastBar.getEndTime().format(DateTimeFormatter.ISO_DATE_TIME));
         }
         return sb.toString();
@@ -150,12 +207,10 @@ public interface BarSeries extends Serializable {
      * * 设置将在系列中保留的最大柱数。
      *
      * If a new bar is added to the series such that the number of bars will exceed
-      the maximum bar count, then the FIRST bar in the series is automatically
-      removed, ensuring that the maximum bar count is not exceeded.
-     如果将新柱添加到系列中，柱的数量将超过
-     最大柱数，则系列中的第一个柱自动
-     移除，确保不超过最大柱数。
-     *
+     * the maximum bar count, then the FIRST bar in the series is automatically
+     * removed, ensuring that the maximum bar count is not exceeded. The indices of
+     * the bar series do not change.
+     * 
      * @param maximumBarCount the maximum bar count
      *                        最大条数
      */
@@ -168,22 +223,17 @@ public interface BarSeries extends Serializable {
     int getRemovedBarsCount();
 
     /**
-     * Adds a bar at the end of the series.
-     * 在系列末尾添加一个栏。
+     * Adds the {@code bar} at the end of the series.
      *
-     * Begin index set to 0 if it wasn't initialized.<br>
-      End index set to 0 if it wasn't initialized, or incremented if it matches the
-      end of the series.<br>
-      Exceeding bars are removed.
-     如果未初始化，则开始索引设置为 0。<br>
-     如果未初始化，结束索引设置为 0，如果匹配
-     系列结束。<br>
-     超出的条将被删除。
+     * <p>
+     * The {@code beginIndex} is set to {@code 0} if not already initialized.<br>
+     * The {@code endIndex} is set to {@code 0} if not already initialized, or
+     * incremented if it matches the end of the series.<br>
+     * Exceeding bars are removed.
      *
      * @param bar the bar to be added
-     *            要添加的栏
-     * @apiNote use #addBar(Duration, ZonedDateTime, Num, Num, Num, Num, Num) to add   bar data directly
-     * * @apiNote 使用#addBar(Duration, ZonedDateTime, Num, Num, Num, Num, Num) 直接添加柱数据
+     * @apiNote to add bar data directly you can use
+     *          {@link #addBar(Duration, ZonedDateTime, Num, Num, Num, Num, Num)}
      * @see BarSeries#setMaximumBarCount(int)
      */
     default void addBar(Bar bar) {
@@ -191,42 +241,44 @@ public interface BarSeries extends Serializable {
     }
 
     /**
-     * Adds a bar at the end of the series.
-     * * 在系列末尾添加一个栏。
+     * Adds the {@code bar} at the end of the series.
      *
-     * Begin index set to 0 if it wasn't initialized.<br>
-      End index set to 0 if it wasn't initialized, or incremented if it matches the
-      end of the series.<br>
-      Exceeding bars are removed.
-     如果未初始化，则开始索引设置为 0。<br>
-     如果未初始化，结束索引设置为 0，如果匹配
-     系列结束。<br>
-     超出的条将被删除。
+     * <p>
+     * The {@code beginIndex} is set to {@code 0} if not already initialized.<br>
+     * The {@code endIndex} is set to {@code 0} if not already initialized, or
+     * incremented if it matches the end of the series.<br>
+     * Exceeding bars are removed.
      *
      * @param bar     the bar to be added
-     *                要添加的栏
-     * @param replace true to replace the latest bar. Some exchange provide continuous new bar data in the time period. (eg. 1s in 1m  Duration)<br>
-     *                真要替换最新的吧。 一些交易所在该时间段内提供连续的新柱数据。 （例如，1m 持续时间中的 1 秒）<br>
-     * @apiNote use #addBar(Duration, ZonedDateTime, Num, Num, Num, Num, Num) to add  bar data directly
-     *      使用#addBar(Duration, ZonedDateTime, Num, Num, Num, Num, Num) 直接添加柱数据
-     * @see BarSeries#setMaximumBarCount(int) Maximum Bar Count 最大条数
+     * @param replace true to replace the latest bar. Some exchanges continuously
+     *                provide new bar data in the respective period, e.g. 1 second
+     *                in 1 minute duration.
+     * @apiNote to add bar data directly you can use
+     *          {@link #addBar(Duration, ZonedDateTime, Num, Num, Num, Num, Num)}
+     * @see BarSeries#setMaximumBarCount(int)
      */
     void addBar(Bar bar, boolean replace);
 
     /**
-     * Adds a bar at the end of the series.
-     * 在系列末尾添加一个栏。
+     * Adds the {@code bar} at the end of the series.
+     *
+     * <p>
+     * The {@code beginIndex} is set to {@code 0} if not already initialized.<br>
+     * The {@code endIndex} is set to {@code 0} if not already initialized, or
+     * incremented if it matches the end of the series.<br>
+     * Exceeding bars are removed.
      *
      * @param timePeriod the {@link Duration} of this bar
      *                   此栏的 {@link Duration}
      * @param endTime    the {@link ZonedDateTime end time} of this bar
-     *                   此栏的 {@link ZonedDateTime 结束时间}
+     * @apiNote to add bar data directly you can use
+     *          {@link #addBar(Duration, ZonedDateTime, Num, Num, Num, Num, Num)}
+     * @see BarSeries#setMaximumBarCount(int)
      */
     void addBar(Duration timePeriod, ZonedDateTime endTime);
 
     default void addBar(ZonedDateTime endTime, Number openPrice, Number highPrice, Number lowPrice, Number closePrice) {
-        this.addBar(endTime, numOf(openPrice), numOf(highPrice), numOf(lowPrice), numOf(closePrice), numOf(0),
-                numOf(0));
+        this.addBar(endTime, numOf(openPrice), numOf(highPrice), numOf(lowPrice), numOf(closePrice), zero(), zero());
     }
 
     default void addBar(ZonedDateTime endTime, Number openPrice, Number highPrice, Number lowPrice, Number closePrice,
@@ -243,7 +295,7 @@ public interface BarSeries extends Serializable {
     default void addBar(Duration timePeriod, ZonedDateTime endTime, Number openPrice, Number highPrice, Number lowPrice,
             Number closePrice, Number volume) {
         this.addBar(timePeriod, endTime, numOf(openPrice), numOf(highPrice), numOf(lowPrice), numOf(closePrice),
-                numOf(volume), numOf(0));
+                numOf(volume), zero());
     }
 
     default void addBar(Duration timePeriod, ZonedDateTime endTime, Number openPrice, Number highPrice, Number lowPrice,
@@ -254,14 +306,14 @@ public interface BarSeries extends Serializable {
 
     default void addBar(ZonedDateTime endTime, String openPrice, String highPrice, String lowPrice, String closePrice) {
         this.addBar(endTime, numOf(new BigDecimal(openPrice)), numOf(new BigDecimal(highPrice)),
-                numOf(new BigDecimal(lowPrice)), numOf(new BigDecimal(closePrice)), numOf(0), numOf(0));
+                numOf(new BigDecimal(lowPrice)), numOf(new BigDecimal(closePrice)), zero(), zero());
     }
 
     default void addBar(ZonedDateTime endTime, String openPrice, String highPrice, String lowPrice, String closePrice,
             String volume) {
         this.addBar(endTime, numOf(new BigDecimal(openPrice)), numOf(new BigDecimal(highPrice)),
                 numOf(new BigDecimal(lowPrice)), numOf(new BigDecimal(closePrice)), numOf(new BigDecimal(volume)),
-                numOf(0));
+                zero());
     }
 
     default void addBar(ZonedDateTime endTime, String openPrice, String highPrice, String lowPrice, String closePrice,
@@ -272,12 +324,11 @@ public interface BarSeries extends Serializable {
     }
 
     default void addBar(ZonedDateTime endTime, Num openPrice, Num highPrice, Num lowPrice, Num closePrice, Num volume) {
-        this.addBar(endTime, openPrice, highPrice, lowPrice, closePrice, volume, numOf(0));
+        this.addBar(endTime, openPrice, highPrice, lowPrice, closePrice, volume, zero());
     }
 
     /**
-     * Adds a new <code>Bar</code> to the bar series.
-     * * 将新的 <code>Bar</code> 添加到条形系列。
+     * Adds a new {@code Bar} to the bar series.
      *
      * @param endTime    end time of the bar
      *                   酒吧的结束时间
@@ -304,8 +355,7 @@ public interface BarSeries extends Serializable {
             Num amount);
 
     /**
-     * Adds a new <code>Bar</code> to the bar series.
-     * * 将新的 <code>Bar</code> 添加到条形系列。
+     * Adds a new {@code Bar} to the bar series.
      *
      * @param endTime    end time of the bar
      *                   酒吧的结束时间
@@ -329,8 +379,7 @@ public interface BarSeries extends Serializable {
             Num volume);
 
     /**
-     * Adds a new <code>Bar</code> to the bar series.
-     *      * Adds a new <code>Bar</code> to the bar series.
+     * Adds a new {@code Bar} to the bar series.
      *
      * @param timePeriod the time period of the bar
      *                   酒吧的时间段
@@ -360,80 +409,82 @@ public interface BarSeries extends Serializable {
             Num volume, Num amount);
 
     /**
-     * Adds a trade at the end of bar period.
-     * 在柱周期结束时添加交易。
+     * Adds a trade and updates the close price of the last bar.
      *
      * @param tradeVolume the traded volume
      *                    成交量
      *
      * @param tradePrice  the price
-     *                    价格
+     * @see Bar#addTrade(Num, Num)
      */
     default void addTrade(Number tradeVolume, Number tradePrice) {
         addTrade(numOf(tradeVolume), numOf(tradePrice));
     }
 
     /**
-     * Adds a trade at the end of bar period.
-     * 在柱周期结束时添加交易。
+     * Adds a trade and updates the close price of the last bar.
      *
      * @param tradeVolume the traded volume
      *                    成交量
      *
      * @param tradePrice  the price
-     *                    价格
+     * @see Bar#addTrade(Num, Num)
      */
     default void addTrade(String tradeVolume, String tradePrice) {
         addTrade(numOf(new BigDecimal(tradeVolume)), numOf(new BigDecimal(tradePrice)));
     }
 
     /**
-     * Adds a trade at the end of bar period.
-     * 在柱周期结束时添加交易。
+     * Adds a trade and updates the close price of the last bar.
      *
      * @param tradeVolume the traded volume
      *                    成交量
      * @param tradePrice  the price
-     *                    价格
+     * @see Bar#addTrade(Num, Num)
      */
     void addTrade(Num tradeVolume, Num tradePrice);
 
     /**
-     * Adds a price to the last bar
-     * * 将价格添加到最后一根柱
+     * Updates the close price of the last bar. The open, high and low prices are
+     * also updated as needed.
      *
      * @param price the price for the bar
-     *              * @param price 柱的价格
+     * @see Bar#addPrice(Num)
      */
     void addPrice(Num price);
 
+    /**
+     * Updates the close price of the last bar. The open, high and low prices are
+     * also updated as needed.
+     *
+     * @param price the price for the bar
+     * @see Bar#addPrice(Num)
+     */
     default void addPrice(String price) {
         addPrice(new BigDecimal(price));
     }
 
+    /**
+     * Updates the close price of the last bar. The open, high and low prices are
+     * also updated as needed.
+     *
+     * @param price the price for the bar
+     * @see Bar#addPrice(Num)
+     */
     default void addPrice(Number price) {
         addPrice(numOf(price));
     }
 
     /**
-     * Returns a new {@link BarSeries} instance that is a subset of this BarSeries
-      instance. It holds a copy of all {@link Bar bars} between <tt>startIndex</tt>
-      (inclusive) and <tt>endIndex</tt> (exclusive) of this BarSeries. The indices
-      of this BarSeries and the new subset BarSeries can be different. I. e. index
-      0 of the new BarSeries will be index <tt>startIndex</tt> of this BarSeries.
-      If <tt>startIndex</tt> < this.seriesBeginIndex the new BarSeries will start
-      with the first available Bar of this BarSeries. If <tt>endIndex</tt> >
-      this.seriesEndIndex the new BarSeries will end at the last available Bar of
-      this BarSeries
-     返回一个新的 {@link BarSeries} 实例，它是此 BarSeries 的子集
-     实例。 它包含 <tt>startIndex</tt> 之间所有 {@link Bar bar} 的副本
-     此 BarSeries 的（含）和 <tt>endIndex</tt>（不含）。 指数
-     这个 BarSeries 和新的子集 BarSeries 可以不同。 IE。 指数
-     新 BarSeries 的 0 将是此 BarSeries 的索引 <tt>startIndex</tt>。
-     如果 <tt>startIndex</tt> < this.seriesBeginIndex 新的 BarSeries 将开始
-     与此 BarSeries 的第一个可用酒吧。 如果 <tt>endIndex</tt> >
-     this.seriesEndIndex 新的 BarSeries 将在最后一个可用的 Bar 结束
-     这个酒吧系列
+     * Returns a new {@link BarSeries} instance (= "subseries") that is a subset of
+     * {@code this} BarSeries instance. It contains a copy of all {@link Bar bars}
+     * between {@code startIndex} (inclusive) and {@code endIndex} (exclusive) of
+     * {@code this} instance. The indices of {@code this} and its subseries can be
+     * different, i. e. index 0 of the subseries will be the {@code startIndex} of
+     * {@code this}. If {@code startIndex} < this.seriesBeginIndex, then the
+     * subseries will start with the first available bar of {@code this}. If
+     * {@code endIndex} > this.seriesEndIndex, then the subseries will end at the
+     * last available bar of {@code this}.
      *
      * @param startIndex the startIndex (inclusive)
      *                   startIndex（含）
@@ -448,26 +499,5 @@ public interface BarSeries extends Serializable {
      * * @throws IllegalArgumentException 如果 endIndex <= startIndex 或 startIndex < 0
      */
     BarSeries getSubSeries(int startIndex, int endIndex);
-
-    /**
-     * Transforms a {@link Number} into the {@link Num implementation} used by this bar series
-     * * 将 {@link Number} 转换为此栏系列使用的 {@link Num implementation}
-     *
-     * @param number a {@link Number} implementing object.
-     *               {@link Number} 实现对象。
-     *
-     * @return the corresponding value as a Num implementing object
-     * * @return 对应的值作为 Num 实现对象
-     */
-    Num numOf(Number number);
-
-    /**
-     * Returns the underlying function to transform a Number into the Num implementation used by this bar series
-     * * 返回底层函数，将 Number 转换为这个 bar 系列使用的 Num 实现
-     *
-     * @return a function Number -> Num
-     * @return 一个函数 Number -> Num
-     */
-    Function<Number, Num> function();
 
 }

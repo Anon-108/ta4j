@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -24,13 +24,12 @@
 package org.ta4j.core;
 
 /**
- * Interface to build a bar series
- * 界面搭建条形序列
+ * Interface to build a bar series.
  */
 public interface BarSeriesBuilder {
+
     /**
-     * Builds the bar series with corresponding parameters
-     * * 构建具有相应参数的条形系列
+     * Builds the bar series with corresponding parameters.
      *
      * @return bar series 條形序列
      */

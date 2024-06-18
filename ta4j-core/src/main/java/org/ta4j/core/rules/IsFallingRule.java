@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -28,11 +28,8 @@ import org.ta4j.core.TradingRecord;
 import org.ta4j.core.num.Num;
 
 /**
- * Indicator-falling-indicator rule.
- * * 指标下降指标规则。
- *
- * Satisfied when the values of the {@link Indicator indicator} decrease within the barCount.
- * * 当{@link Indicator indicator} 的值在 barCount 内减小时满足。
+ * Satisfied when the values of the {@link Indicator indicator} decrease within
+ * the {@code barCount}.
  */
 public class IsFallingRule extends AbstractRule {
 
@@ -40,15 +37,16 @@ public class IsFallingRule extends AbstractRule {
      * 实际指标*/
 
     private final Indicator<Num> ref;
-    /** The barCount 酒吧计数 */
+
+    /** The barCount */
     private final int barCount;
-    /** The minimum required strenght of the falling
-     * 下落所需的最低强度 */
-    private double minStrenght;
+
+    /** The minimum required strenght of the falling */
+    private final double minStrength;
 
     /**
      * Constructor.
-     * 
+     *
      * @param ref      the indicator
      *                 指标
      *
@@ -61,7 +59,7 @@ public class IsFallingRule extends AbstractRule {
 
     /**
      * Constructor.
-     * 
+     *
      * @param ref         the indicator
      *                    指标
      * @param barCount    the time frame
@@ -72,14 +70,12 @@ public class IsFallingRule extends AbstractRule {
     public IsFallingRule(Indicator<Num> ref, int barCount, double minStrenght) {
         this.ref = ref;
         this.barCount = barCount;
-        this.minStrenght = minStrenght;
+        this.minStrength = minStrenght >= 1 ? 0.99 : minStrenght;
     }
 
+    /** This rule does not use the {@code tradingRecord}. */
     @Override
     public boolean isSatisfied(int index, TradingRecord tradingRecord) {
-        if (minStrenght >= 1) {
-            minStrenght = 0.99;
-        }
 
         int count = 0;
         for (int i = Math.max(0, index - barCount + 1); i <= index; i++) {
@@ -90,7 +86,7 @@ public class IsFallingRule extends AbstractRule {
 
         double ratio = count / (double) barCount;
 
-        final boolean satisfied = ratio >= minStrenght;
+        final boolean satisfied = ratio >= minStrength;
         traceIsSatisfied(index, satisfied);
         return satisfied;
     }

@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -34,33 +34,34 @@ import org.ta4j.core.Indicator;
  * Cached {@link Indicator indicator}.
  * 缓存的 {@link Indicator Indicator}。
  *
- * Caches the constructor of the indicator. Avoid to calculate the same index of the indicator twice.
- * 缓存指标的构造函数。避免对指标的同一指标进行两次计算。
+ * <p>
+ * Caches the calculated results of the indicator to avoid calculating the same
+ * index of the indicator twice. The caching drastically speeds up access to
+ * indicator values. Caching is especially recommended when indicators calculate
+ * their values based on the values of other indicators. Such nested indicators
+ * can call {@link #getValue(int)} multiple times without the need to
+ * {@link #calculate(int)} again.
  */
 public abstract class CachedIndicator<T> extends AbstractIndicator<T> {
 
-    /**
-     * List of cached results
-     * 缓存结果列表
-     */
+    /** List of cached results. */
     private final List<T> results;
 
     /**
-     * Should always be the index of the last result in the results list. I.E. the last calculated result.
-     * * 应该始终是结果列表中最后一个结果的索引。 IE。 最后计算的结果。
+     * Should always be the index of the last (calculated) result in
+     * {@link #results}.
      */
     protected int highestResultIndex = -1;
 
     /**
      * Constructor.
      *
-     * @param series the related bar series
-     *               相关酒吧系列
+     * @param series the bar series
      */
     protected CachedIndicator(BarSeries series) {
         super(series);
         int limit = series.getMaximumBarCount();
-        results = limit == Integer.MAX_VALUE ? new ArrayList<>() : new ArrayList<>(limit);
+        this.results = limit == Integer.MAX_VALUE ? new ArrayList<>() : new ArrayList<>(limit);
     }
 
     /**
@@ -82,7 +83,7 @@ public abstract class CachedIndicator<T> extends AbstractIndicator<T> {
     protected abstract T calculate(int index);
 
     @Override
-    public T getValue(int index) {
+    public synchronized T getValue(int index) {
         BarSeries series = getBarSeries();
         if (series == null) {
             // Series is null; the indicator doesn't need cache.
@@ -92,7 +93,9 @@ public abstract class CachedIndicator<T> extends AbstractIndicator<T> {
             //（例如，简单的值计算）
             // --> 计算值
             T result = calculate(index);
-            log.trace("{}({}): {}", this, index, result);
+            if (log.isTraceEnabled()) {
+                log.trace("{}({}): {}", this, index, result);
+            }
             return result;
         }
 
@@ -104,9 +107,10 @@ public abstract class CachedIndicator<T> extends AbstractIndicator<T> {
         T result;
         if (index < removedBarsCount) {
             // Result already removed from cache
-            // 结果已经从缓存中删除
-            log.trace("{}: result from bar 酒吧的结果 {} already removed from cache 已从缓存中删除, use 利用 {}-th instead 而是",
-                    getClass().getSimpleName(), index, removedBarsCount);
+            if (log.isTraceEnabled()) {
+                log.trace("{}: result from bar {} already removed from cache, use {}-th instead",
+                        getClass().getSimpleName(), index, removedBarsCount);
+            }
             increaseLengthTo(removedBarsCount, maximumResultCount);
             highestResultIndex = removedBarsCount;
             result = results.get(0);
@@ -146,13 +150,14 @@ public abstract class CachedIndicator<T> extends AbstractIndicator<T> {
             }
 
         }
-        log.trace("{}({}): {}", this, index, result);
+        if (log.isTraceEnabled()) {
+            log.trace("{}({}): {}", this, index, result);
+        }
         return result;
     }
 
     /**
-     * Increases the size of cached results buffer.
-     * * 增加缓存结果缓冲区的大小。
+     * Increases the size of the cached results buffer.
      *
      * @param index     the index to increase length to
      *                  将长度增加到的索引
@@ -190,8 +195,10 @@ public abstract class CachedIndicator<T> extends AbstractIndicator<T> {
             // Removing old results
             // 删除旧结果
             final int nbResultsToRemove = resultCount - maximumResultCount;
-            for (int i = 0; i < nbResultsToRemove; i++) {
+            if (nbResultsToRemove == 1) {
                 results.remove(0);
+            } else {
+                results.subList(0, nbResultsToRemove).clear();
             }
         }
     }

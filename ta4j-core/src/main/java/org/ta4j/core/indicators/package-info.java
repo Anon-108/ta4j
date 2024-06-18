@@ -1,8 +1,8 @@
 /**
  * 麻省理工学院许可证 (MIT)
  *
- * 版权所有 (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j 组织及相关
- *作者（见作者）
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
+ * authors (see AUTHORS)
  *
  * 特此免费授予任何获得以下文件副本的人的许可
  * 本软件及相关文档文件（以下简称“软件”），用于处理
@@ -24,10 +24,11 @@
 /**
  * 技术指标。
  *
- * 市场指标是数学变换。他们被用来帮助
- * 评估资产是否有趋势，如果有，它的概率
- *方向和延续。
- * 
+ * <p>
+ * Market indicators are mathematical transformations. They are used to assess
+ * whether an asset is trending and, if so, the probability of its direction and
+ * continuation.
+ *
  * @see <a href=
  *      "http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators">http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators</a>
  */

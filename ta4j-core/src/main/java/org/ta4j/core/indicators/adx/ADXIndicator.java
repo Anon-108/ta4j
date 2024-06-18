@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -26,10 +26,13 @@ package org.ta4j.core.indicators.adx;
 import org.ta4j.core.BarSeries;
 import org.ta4j.core.indicators.CachedIndicator;
 import org.ta4j.core.indicators.MMAIndicator;
-import org.ta4j.core.indicators.helpers.DXIndicator;
 import org.ta4j.core.num.Num;
 
 /**
+ * ADX indicator.
+ *
+ * <p>
+ * Part of the Directional Movement System.
  * ADX indicator. Part of the Directional Movement System.
  * * ADX 指标。 定向运动系统的一部分。
  *
@@ -77,15 +80,22 @@ import org.ta4j.core.num.Num;
  *
  * 总结，ADX 指标是一个强大的工具，用于确认市场的趋势强度，帮助交易者在适当的时间点进入和退出市场。
  *
- * @see <a
- *      href="https://www.investopedia.com/terms/a/adx.asp>https://www.investopedia.com/terms/a/adx.asp</a>
+ * @see <a href=
+ *      "https://www.investopedia.com/terms/a/adx.asp">https://www.investopedia.com/terms/a/adx.asp</a>
  */
 public class ADXIndicator extends CachedIndicator<Num> {
 
-    private final MMAIndicator averageDXIndicator;
     private final int diBarCount;
     private final int adxBarCount;
+    private final MMAIndicator averageDXIndicator;
 
+    /**
+     * Constructor.
+     *
+     * @param series      the bar series
+     * @param diBarCount  the bar count for {@link DXIndicator}
+     * @param adxBarCount the bar count for {@link #averageDXIndicator}
+     */
     public ADXIndicator(BarSeries series, int diBarCount, int adxBarCount) {
         super(series);
         this.diBarCount = diBarCount;
@@ -93,6 +103,13 @@ public class ADXIndicator extends CachedIndicator<Num> {
         this.averageDXIndicator = new MMAIndicator(new DXIndicator(series, diBarCount), adxBarCount);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param series   the bar series
+     * @param barCount the bar count for {@link DXIndicator} and
+     *                 {@link #averageDXIndicator}
+     */
     public ADXIndicator(BarSeries series, int barCount) {
         this(series, barCount, barCount);
     }
@@ -100,6 +117,11 @@ public class ADXIndicator extends CachedIndicator<Num> {
     @Override
     protected Num calculate(int index) {
         return averageDXIndicator.getValue(index);
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return Math.max(diBarCount, adxBarCount);
     }
 
     @Override

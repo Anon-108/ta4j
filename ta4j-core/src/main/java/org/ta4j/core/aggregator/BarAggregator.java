@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -28,16 +28,14 @@ import java.util.List;
 import org.ta4j.core.Bar;
 
 /**
- * Bar aggregator interface to aggregate list of bars into another list of bars.
- * 条形聚合器接口将条形列表聚合到另一个条形列表中。
+ * Aggregates a list of {@link Bar bars} into another one.
  */
 public interface BarAggregator {
 
     /**
-     * Aggregate bars.
-     * 聚合条。
+     * Aggregates the {@code bars} into another one.
      *
-     * @param bars bars to aggregate bars
+     * @param bars the bars to be aggregated
      * @return aggregated bars
      * @param 条形条聚合条形
      *       * @return 聚合条形图

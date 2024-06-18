@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -25,13 +25,18 @@ package org.ta4j.core.num;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertFalse;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 import static org.ta4j.core.TestUtils.assertNumEquals;
 import static org.ta4j.core.TestUtils.assertNumNotEquals;
 import static org.ta4j.core.num.NaN.NaN;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
@@ -47,6 +52,39 @@ public class NumTest extends AbstractIndicatorTest<Object, Num> {
 
     public NumTest(Function<Number, Num> numFunction) {
         super(numFunction);
+    }
+
+    @Test
+    public void testZero() {
+        Num anyNaNNum = NaN;
+        Num anyDecimalNum = DecimalNum.valueOf(3);
+        Num anyDoubleNum = DoubleNum.valueOf(3);
+        assertNumEquals(NaN, anyNaNNum.zero());
+        assertNumEquals(0, numOf(3).zero());
+        assertNumEquals(0, anyDecimalNum.zero());
+        assertNumEquals(0, anyDoubleNum.zero());
+    }
+
+    @Test
+    public void testOne() {
+        Num anyNaNNum = NaN;
+        Num anyDecimalNum = DecimalNum.valueOf(3);
+        Num anyDoubleNum = DoubleNum.valueOf(3);
+        assertNumEquals(NaN, anyNaNNum.one());
+        assertNumEquals(1, numOf(3).one());
+        assertNumEquals(1, anyDecimalNum.one());
+        assertNumEquals(1, anyDoubleNum.one());
+    }
+
+    @Test
+    public void testHundred() {
+        Num anyNaNNum = NaN;
+        Num anyDecimalNum = DecimalNum.valueOf(3);
+        Num anyDoubleNum = DoubleNum.valueOf(3);
+        assertNumEquals(NaN, anyNaNNum.hundred());
+        assertNumEquals(100, numOf(3).hundred());
+        assertNumEquals(100, anyDecimalNum.hundred());
+        assertNumEquals(100, anyDoubleNum.hundred());
     }
 
     @Test(expected = AssertionError.class)
@@ -314,6 +352,31 @@ public class NumTest extends AbstractIndicatorTest<Object, Num> {
         BigDecimal numBD = BigDecimal.valueOf(Double.valueOf("3E11"));
         Num sqrt = numOf(numBD).sqrt();
         assertNumEquals("547722.55750516611345696978280080", sqrt);
+    }
+
+    @Test
+    public void testSerialization() throws Exception {
+        Num numVal = numFunction.apply(1.3);
+        serializeDeserialize(numVal);
+    }
+
+    private static void serializeDeserialize(Num o) throws IOException, ClassNotFoundException {
+        byte[] array;
+        try (var baos = new ByteArrayOutputStream()) {
+            try (var out = new ObjectOutputStream(baos)) {
+                out.writeObject(o);
+                array = baos.toByteArray();
+            }
+
+        }
+        try (var baos = new ByteArrayInputStream(array)) {
+            try (var out = new ObjectInputStream(baos)) {
+                var deserialized = (Num) out.readObject();
+                assertNotSame(o, deserialized);
+                assertEquals(deserialized.doubleValue(), o.doubleValue());
+            }
+
+        }
     }
 
 }

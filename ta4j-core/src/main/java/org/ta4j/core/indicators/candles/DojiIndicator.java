@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -61,6 +61,9 @@ import org.ta4j.core.num.Num;
  *     - **看涨信号**：在下降趋势末端出现 Doji 后，紧接着出现一根较大的阳线，可以确认看涨反转。
  *     - **看跌信号**：在上升趋势末端出现 Doji 后，紧接着出现一根较大的阴线，可以确认看跌反转。
  *
+ * <p>
+ * A candle/bar is considered Doji if its body height is lower than the average
+ * multiplied by a factor.
  * 3. **支撑和阻力**：Doji 形态常出现在重要的支撑或阻力位，结合这些水平可以提高信号的准确性。
  *
  * ### 示例
@@ -84,17 +87,13 @@ import org.ta4j.core.num.Num;
  */
 public class DojiIndicator extends CachedIndicator<Boolean> {
 
-    /**
-     * Body height
-     * 身高
-     */
+    /** Body height. */
     private final Indicator<Num> bodyHeightInd;
-    /**
-     * Average body height
-     * 平均身高
-     */
+
+    /** Average body height. */
     private final SMAIndicator averageBodyHeightInd;
 
+    /** The factor used when checking if a candle is Doji. */
     private final Num factor;
 
     /**
@@ -109,9 +108,9 @@ public class DojiIndicator extends CachedIndicator<Boolean> {
      */
     public DojiIndicator(BarSeries series, int barCount, double bodyFactor) {
         super(series);
-        bodyHeightInd = TransformIndicator.abs(new RealBodyIndicator(series));
-        averageBodyHeightInd = new SMAIndicator(bodyHeightInd, barCount);
-        factor = numOf(bodyFactor);
+        this.bodyHeightInd = TransformIndicator.abs(new RealBodyIndicator(series));
+        this.averageBodyHeightInd = new SMAIndicator(bodyHeightInd, barCount);
+        this.factor = numOf(bodyFactor);
     }
 
     @Override
@@ -124,5 +123,10 @@ public class DojiIndicator extends CachedIndicator<Boolean> {
         Num currentBodyHeight = bodyHeightInd.getValue(index);
 
         return currentBodyHeight.isLessThan(averageBodyHeight.multipliedBy(factor));
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return 0;
     }
 }

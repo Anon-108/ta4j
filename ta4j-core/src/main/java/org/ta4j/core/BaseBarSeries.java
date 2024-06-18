@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -31,7 +31,6 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,67 +39,45 @@ import org.ta4j.core.num.Num;
 
 /**
  * Base implementation of a {@link BarSeries}.
- * * {@link BarSeries} 的基本实现。
- * </p>
  */
 public class BaseBarSeries implements BarSeries {
 
     private static final long serialVersionUID = -1878027009398790126L;
-    /**
-     * Name for unnamed series
-     * * 未命名系列的名称
-     */
-    private static final String UNNAMED_SERIES_NAME = "unnamed_series";
-    /**
-     * Num type function
-     * * 数字类型函数
-     **/
-    protected final transient Function<Number, Num> numFunction;
-    /**
-     * The logger
-     * * 记录器
-     */
+
+    /** The logger. */
     private final transient Logger log = LoggerFactory.getLogger(getClass());
-    /**
-     * Name of the series
-     * * 系列名称
-     */
+
+    /** The {@link #name} for an unnamed bar series. */
+    private static final String UNNAMED_SERIES_NAME = "unnamed_series";
+
+    /** Any instance of Num to determine its Num type. */
+    protected final transient Num num;
+
+    /** The name of the bar series. */
     private final String name;
-    /**
-     * List of bars
-     * * 酒吧列表
-     */
+
+    /** The list of bars of the bar series. */
     private final List<Bar> bars;
-    /**
-     * Begin index of the bar series
-     * * 柱系列的开始索引
-     */
+
+    /** The begin index of the bar series */
     private int seriesBeginIndex;
-    /**
-     * End index of the bar series
-     * * 条形系列的结束索引
-     */
+
+    /** The end index of the bar series. */
     private int seriesEndIndex;
-    /**
-     * Maximum number of bars for the bar series
-     * * 条形系列的最大条数
-     */
+
+    /** The maximum number of bars for the bar series. */
     private int maximumBarCount = Integer.MAX_VALUE;
-    /**
-     * Number of removed bars
-     * * 删除的条数
-     */
+
+    /** The number of removed bars. */
     private int removedBarsCount = 0;
-    /**
-     * True if the current series is constrained (i.e. its indexes cannot change), false otherwise
-     * * 如果当前序列受到约束（即其索引不能更改）则为真，否则为假
-     */
-    private boolean constrained;
 
     /**
-     * Constructor of an unnamed series.
-     * * 一个未命名系列的构造函数。
+     * True if the current bar series is constrained (i.e. its indexes cannot
+     * change), false otherwise.
      */
+    private final boolean constrained;
+
+    /** Constructor with {@link #name} = {@link #UNNAMED_SERIES_NAME}. */
     public BaseBarSeries() {
         this(UNNAMED_SERIES_NAME);
     }
@@ -108,19 +85,16 @@ public class BaseBarSeries implements BarSeries {
     /**
      * Constructor.
      *
-     * @param name the name of the series
-     *             系列名称
+     * @param name the name of the bar series
      */
     public BaseBarSeries(String name) {
         this(name, new ArrayList<>());
     }
 
     /**
-     * Constructor of an unnamed series.
-     * 未命名系列的构造函数。
+     * Constructor with {@link #name} = {@link #UNNAMED_SERIES_NAME}.
      *
-     * @param bars the list of bars of the series
-     *             该系列的酒吧列表
+     * @param bars the list of bars of the bar series
      */
     public BaseBarSeries(List<Bar> bars) {
         this(UNNAMED_SERIES_NAME, bars);
@@ -129,11 +103,8 @@ public class BaseBarSeries implements BarSeries {
     /**
      * Constructor.
      *
-     * @param name the name of the series
-     *             系列名称
-     *
-     * @param bars the list of bars of the series
-     *             该系列的酒吧列表
+     * @param name the name of the bar series
+     * @param bars the list of bars of the bar series
      */
     public BaseBarSeries(String name, List<Bar> bars) {
         this(name, bars, 0, bars.size() - 1, false);
@@ -142,26 +113,24 @@ public class BaseBarSeries implements BarSeries {
     /**
      * Constructor.
      *
-     * @param name        the name of the series
-     *                    系列名称
-     * @param numFunction a {@link Function} to convert a {@link Number} to a  {@link Num Num implementation}
-     *                    * @param numFunction a {@link Function} 将 {@link Number} 转换为 {@link Num Num implementation}
+     * @param name the name of the bar series
+     * @param num  any instance of Num to determine its Num function; with this, we
+     *             can convert a {@link Number} to a {@link Num Num implementation}
      */
-    public BaseBarSeries(String name, Function<Number, Num> numFunction) {
-        this(name, new ArrayList<>(), numFunction);
+    public BaseBarSeries(String name, Num num) {
+        this(name, new ArrayList<>(), num);
     }
 
     /**
      * Constructor.
      *
-     * @param name the name of the series
-     *             系列名称
-     *
-     * @param bars the list of bars of the series
-     *             该系列的酒吧列表
+     * @param name the name of the bar series
+     * @param bars the list of bars of the bar series
+     * @param num  any instance of Num to determine its Num function; with this, we
+     *             can convert a {@link Number} to a {@link Num Num implementation}
      */
-    public BaseBarSeries(String name, List<Bar> bars, Function<Number, Num> numFunction) {
-        this(name, bars, 0, bars.size() - 1, false, numFunction);
+    public BaseBarSeries(String name, List<Bar> bars, Num num) {
+        this(name, bars, 0, bars.size() - 1, false, num);
     }
 
     /**
@@ -170,12 +139,8 @@ public class BaseBarSeries implements BarSeries {
      * Creates a BaseBarSeries with default {@link DecimalNum} as type for the data and all operations on it
      * * 创建一个 BaseBarSeries，默认 {@link DecimalNum} 作为数据类型和所有操作
      *
-     * @param name             the name of the series
-     *                         系列名称
-     *
-     * @param bars             the list of bars of the series
-     *                         该系列的酒吧列表
-     *
+     * @param name             the name of the bar series
+     * @param bars             the list of bars of the bar series
      * @param seriesBeginIndex the begin index (inclusive) of the bar series
      *                         条形系列的开始索引（包括）
      *
@@ -186,53 +151,45 @@ public class BaseBarSeries implements BarSeries {
      *                         true 约束条形系列（即索引不能改变），否则为 false
      */
     private BaseBarSeries(String name, List<Bar> bars, int seriesBeginIndex, int seriesEndIndex, boolean constrained) {
-        this(name, bars, seriesBeginIndex, seriesEndIndex, constrained, DecimalNum::valueOf);
+        this(name, bars, seriesBeginIndex, seriesEndIndex, constrained, DecimalNum.ZERO);
     }
 
     /**
      * Constructor.
      *
-     * @param name             the name of the series
-     *                         系列名称
-     *
-     * @param bars             the list of bars of the series
-     *                         该系列的酒吧列表
-     *
+     * @param name             the name of the bar series
+     * @param bars             the list of bars of the bar series
      * @param seriesBeginIndex the begin index (inclusive) of the bar series
      *                         条形系列的开始索引（包括）
      *
      * @param seriesEndIndex   the end index (inclusive) of the bar series
-     *                         bar系列的结束索引（包括）
-     *
-     * @param constrained      true to constrain the bar series (i.e. indexes cannot  change), false otherwise
-     *                         true 约束条形系列（即索引不能改变），否则为 false
-     *
-     * @param numFunction      a {@link Function} to convert a {@link Number} to a   {@link Num Num implementation}
-     *                         * @param numFunction a {@link Function} 将 {@link Number} 转换为 {@link Num Num implementation}
+     * @param constrained      true to constrain the bar series (i.e. indexes cannot
+     *                         change), false otherwise
+     * @param num              any instance of Num to determine its Num function;
+     *                         with this, we can convert a {@link Number} to a
+     *                         {@link Num Num implementation}
      */
-    BaseBarSeries(String name, List<Bar> bars, int seriesBeginIndex, int seriesEndIndex, boolean constrained,
-            Function<Number, Num> numFunction) {
+    BaseBarSeries(String name, List<Bar> bars, int seriesBeginIndex, int seriesEndIndex, boolean constrained, Num num) {
         this.name = name;
 
-        this.bars = bars;
+        this.bars = new ArrayList<>(bars);
         if (bars.isEmpty()) {
             // Bar list empty
             // 条形列表为空
             this.seriesBeginIndex = -1;
             this.seriesEndIndex = -1;
             this.constrained = false;
-            this.numFunction = numFunction;
+            this.num = num;
             return;
         }
         // Bar list not empty: take Function of first bar
-        // 柱列表非空：取第一个柱的函数
-        this.numFunction = bars.get(0).getClosePrice().function();
+        this.num = bars.get(0).getClosePrice();
         // Bar list not empty: checking num types
         // 条形列表不为空：检查 num 类型
         if (!checkBars(bars)) {
             throw new IllegalArgumentException(String.format(
-                    "Num implementation of bars num执行吧: %s" + " does not match to Num implementation of bar series 与 bar 系列的 Num 实现不匹配: %s",
-                    bars.get(0).getClosePrice().getClass(), numFunction));
+                    "Num implementation of bars: %s" + " does not match to Num implementation of bar series: %s",
+                    bars.get(0).getClosePrice().getClass(), num.function()));
         }
         // Bar list not empty: checking indexes
         // 柱状列表不为空：检查索引
@@ -248,8 +205,7 @@ public class BaseBarSeries implements BarSeries {
     }
 
     /**
-     * Cuts a list of bars into a new list of bars that is a subset of it
-     * * 将一个条形列表剪切成一个新的条形列表，它是它的一个子集
+     * Cuts a list of bars into a new list of bars that is a subset of it.
      *
      * @param bars       the list of {@link Bar bars}
      *                   {@link 酒吧列表}
@@ -282,39 +238,6 @@ public class BaseBarSeries implements BarSeries {
                 series.removedBarsCount, index);
     }
 
-    /**
-     * Returns a new BaseBarSeries that is a subset of this BaseBarSeries. The new
-      series holds a copy of all {@link Bar bars} between <tt>startIndex</tt>
-      (inclusive) and <tt>endIndex</tt> (exclusive) of this BaseBarSeries. The
-      indices of this BaseBarSeries and the new subset BaseBarSeries can be
-      different. I. e. index 0 of the new BaseBarSeries will be index
-      <tt>startIndex</tt> of this BaseBarSeries. If <tt>startIndex</tt> <
-      this.seriesBeginIndex the new BaseBarSeries will start with the first
-      available Bar of this BaseBarSeries. If <tt>endIndex</tt> >
-      this.seriesEndIndex+1 the new BaseBarSeries will end at the last available
-      Bar of this BaseBarSeries
-     * 返回一个新的 BaseBarSeries，它是此 BaseBarSeries 的子集。 新的
-     series 拥有 <tt>startIndex</tt> 之间所有 {@link Bar bar} 的副本
-     此 BaseBarSeries 的（含）和 <tt>endIndex</tt>（不含）。 这
-     此 BaseBarSeries 和新子集 BaseBarSeries 的索引可以是
-     不同的。 IE。 新 BaseBarSeries 的索引 0 将是索引
-     此 BaseBarSeries 的 <tt>startIndex</tt>。 如果 <tt>startIndex</tt> <
-     this.seriesBeginIndex 新的 BaseBarSeries 将从第一个开始
-     此 BaseBarSeries 的可用 Bar。 如果 <tt>endIndex</tt> >
-     this.seriesEndIndex+1 新的 BaseBarSeries 将在最后一个可用时结束
-     这个 BaseBarSeries 的酒吧
-     *
-     * @param startIndex the startIndex (inclusive)
-     *                   startIndex（含）
-     *
-     * @param endIndex   the endIndex (exclusive)
-     *                   endIndex（不包括）
-     *
-     * @return a new BarSeries with Bars from startIndex to endIndex-1
-     * 从 startIndex 到 endIndex-1 的新 BarSeries
-     * @throws IllegalArgumentException if endIndex <= startIndex or startIndex < 0
-     * * @throws IllegalArgumentException 如果 endIndex <= startIndex 或 startIndex < 0
-     */
     @Override
     public BaseBarSeries getSubSeries(int startIndex, int endIndex) {
         if (startIndex < 0) {
@@ -325,22 +248,17 @@ public class BaseBarSeries implements BarSeries {
                     String.format("the endIndex 结束索引: %s must be greater than startIndex 必须大于 startIndex: %s", endIndex, startIndex));
         }
         if (!bars.isEmpty()) {
-            int start = Math.max(startIndex - getRemovedBarsCount(), this.getBeginIndex());
+            int start = startIndex - getRemovedBarsCount();
             int end = Math.min(endIndex - getRemovedBarsCount(), this.getEndIndex() + 1);
-            return new BaseBarSeries(getName(), cut(bars, start, end), numFunction);
+            return new BaseBarSeries(getName(), cut(bars, start, end), num);
         }
-        return new BaseBarSeries(name, numFunction);
+        return new BaseBarSeries(name, num);
 
     }
 
     @Override
-    public Num numOf(Number number) {
-        return this.numFunction.apply(number);
-    }
-
-    @Override
-    public Function<Number, Num> function() {
-        return numFunction;
+    public Num num() {
+        return num;
     }
 
     /**
@@ -363,8 +281,8 @@ public class BaseBarSeries implements BarSeries {
     }
 
     /**
-     * Checks if the {@link Num} implementation of a {@link Bar} fits to the NumFunction used by bar series.
-     * * 检查 {@link Bar} 的 {@link Num} 实现是否适合 bar 系列使用的 NumFunction。
+     * Checks if the {@link Num} implementation of a {@link Bar} fits to the
+     * NumFunction used by this bar series.
      *
      * @param bar a Bar object.
      *            一个 Bar 对象。
@@ -380,9 +298,9 @@ public class BaseBarSeries implements BarSeries {
             return true; // bar has not been initialized with data (uses deprecated constructor) // bar 尚未使用数据初始化（使用不推荐使用的构造函数）
 
         }
-        // all other constructors initialize at least the close price, check if Num implementation fits to numFunction
-        // 所有其他构造函数至少初始化收盘价，检查 Num 实现是否适合 numFunction
-        Class<? extends Num> f = numOf(1).getClass();
+        // all other constructors initialize at least the close price, check if Num
+        // implementation fits to numFunction
+        Class<? extends Num> f = one().getClass();
         return f == bar.getClosePrice().getClass() || bar.getClosePrice().equals(NaN);
     }
 
@@ -400,8 +318,10 @@ public class BaseBarSeries implements BarSeries {
                 // 如果 i < 0，则无法返回第 i 个柱
                 throw new IndexOutOfBoundsException(buildOutOfBoundsMessage(this, i));
             }
-            log.trace("Bar series  酒吧系列`{}` ({} bars): bar {} already removed 已删除, use {}-th instead -th 而不是", name, bars.size(), i,
-                    removedBarsCount);
+            if (log.isTraceEnabled()) {
+                log.trace("Bar series `{}` ({} bars): bar {} already removed, use {}-th instead", name, bars.size(), i,
+                        removedBarsCount);
+            }
             if (bars.isEmpty()) {
                 throw new IndexOutOfBoundsException(buildOutOfBoundsMessage(this, removedBarsCount));
             }
@@ -461,19 +381,17 @@ public class BaseBarSeries implements BarSeries {
     }
 
     /**
-     * @param bar the <code>Bar</code> to be added
-     *            @param bar 要添加的 <code>Bar</code>
-     *
-     * @apiNote to add bar data directly use #addBar(Duration, ZonedDateTime, Num, Num, Num, Num, Num)
-     * * @apiNote 添加柱数据直接使用#addBar(Duration, ZonedDateTime, Num, Num, Num, Num, Num)
+     * @apiNote to add bar data direclty you can use
+     *          {@link #addBar(Duration, ZonedDateTime, Num, Num, Num, Num, Num)}
+     * @throws NullPointerException if {@code bar} is {@code null}
      */
     @Override
     public void addBar(Bar bar, boolean replace) {
-        Objects.requireNonNull(bar);
+        Objects.requireNonNull(bar, "bar must not be null");
         if (!checkBar(bar)) {
             throw new IllegalArgumentException(
-                    String.format("Cannot add Bar with data type: %s to series with data 无法将数据类型为 %s 的 Bar 添加到包含数据的系列" + "type: %s",
-                            bar.getClosePrice().getClass(), numOf(1).getClass()));
+                    String.format("Cannot add Bar with data type: %s to series with data" + "type: %s",
+                            bar.getClosePrice().getClass(), one().getClass()));
         }
         if (!bars.isEmpty()) {
             if (replace) {
@@ -491,8 +409,7 @@ public class BaseBarSeries implements BarSeries {
 
         bars.add(bar);
         if (seriesBeginIndex == -1) {
-            // Begin index set to 0 only if it wasn't initialized
-            // 仅当未初始化时才将开始索引设置为 0
+            // The begin index is set to 0 if not already initialized:
             seriesBeginIndex = 0;
         }
         seriesEndIndex++;
@@ -507,7 +424,7 @@ public class BaseBarSeries implements BarSeries {
     @Override
     public void addBar(ZonedDateTime endTime, Num openPrice, Num highPrice, Num lowPrice, Num closePrice, Num volume) {
         this.addBar(
-                new BaseBar(Duration.ofDays(1), endTime, openPrice, highPrice, lowPrice, closePrice, volume, numOf(0)));
+                new BaseBar(Duration.ofDays(1), endTime, openPrice, highPrice, lowPrice, closePrice, volume, zero()));
     }
 
     @Override
@@ -520,7 +437,7 @@ public class BaseBarSeries implements BarSeries {
     @Override
     public void addBar(Duration timePeriod, ZonedDateTime endTime, Num openPrice, Num highPrice, Num lowPrice,
             Num closePrice, Num volume) {
-        this.addBar(new BaseBar(timePeriod, endTime, openPrice, highPrice, lowPrice, closePrice, volume, numOf(0)));
+        this.addBar(new BaseBar(timePeriod, endTime, openPrice, highPrice, lowPrice, closePrice, volume, zero()));
     }
 
     @Override
@@ -530,13 +447,13 @@ public class BaseBarSeries implements BarSeries {
     }
 
     @Override
-    public void addTrade(Number amount, Number price) {
-        addTrade(numOf(amount), numOf(price));
+    public void addTrade(Number price, Number amount) {
+        addTrade(numOf(price), numOf(amount));
     }
 
     @Override
-    public void addTrade(String amount, String price) {
-        addTrade(numOf(new BigDecimal(amount)), numOf(new BigDecimal(price)));
+    public void addTrade(String price, String amount) {
+        addTrade(numOf(new BigDecimal(price)), numOf(new BigDecimal(amount)));
     }
 
     @Override
@@ -550,8 +467,7 @@ public class BaseBarSeries implements BarSeries {
     }
 
     /**
-     * Removes the N first bars which exceed the maximum bar count.
-     * * 删除超过最大柱数的前 N 个柱。
+     * Removes the first N bars that exceed the {@link #maximumBarCount}.
      */
     private void removeExceedingBars() {
         int barCount = bars.size();
@@ -559,12 +475,15 @@ public class BaseBarSeries implements BarSeries {
             // Removing old bars
             // 删除旧条
             int nbBarsToRemove = barCount - maximumBarCount;
-            for (int i = 0; i < nbBarsToRemove; i++) {
+            if (nbBarsToRemove == 1) {
                 bars.remove(0);
+            } else {
+                bars.subList(0, nbBarsToRemove).clear();
             }
             // Updating removed bars count
             // 更新移除的柱数
             removedBarsCount += nbBarsToRemove;
+            seriesBeginIndex = Math.max(seriesBeginIndex, removedBarsCount);
         }
     }
 

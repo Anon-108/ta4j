@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -29,6 +29,9 @@ import org.ta4j.core.num.Num;
 
 /**
  * Highest value indicator.
+ *
+ * <p>
+ * Returns the highest indicator value from the bar series within the bar count.
  * 最高价值指标。
  *
  * "最高值指标"通常是指用于确定在一段时间内资产或指标达到的最高水平的指标。这种指标可以帮助分析市场中的价格极值，并提供有关资产或指标在特定时间段内的最高价位的信息。
@@ -46,9 +49,14 @@ import org.ta4j.core.num.Num;
 public class HighestValueIndicator extends CachedIndicator<Num> {
 
     private final Indicator<Num> indicator;
-
     private final int barCount;
 
+    /**
+     * Constructor.
+     *
+     * @param indicator the {@link Indicator}
+     * @param barCount  the time frame
+     */
     public HighestValueIndicator(Indicator<Num> indicator, int barCount) {
         super(indicator);
         this.indicator = indicator;
@@ -68,6 +76,12 @@ public class HighestValueIndicator extends CachedIndicator<Num> {
             }
         }
         return highest;
+    }
+
+    /** @return {@link #barCount} */
+    @Override
+    public int getUnstableBars() {
+        return barCount;
     }
 
     @Override

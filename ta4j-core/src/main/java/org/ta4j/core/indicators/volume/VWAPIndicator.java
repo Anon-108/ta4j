@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -52,7 +52,8 @@ import org.ta4j.core.num.Num;
  * VWAP指标反映了整个交易时间段内的平均交易价格，并且由于其采用了成交量加权的方式，更好地反映了市场中实际发生的交易情况。
  *
  * VWAP指标常被用作参考，帮助交易者判断某一资产在特定时间段内的相对价值。例如，在交易过程中，交易者可能会将当前价格与VWAP进行比较，以判断当前价格是高于还是低于平均水平，从而做出买入或卖出的决策。此外，VWAP也经常被机构投资者用作衡量其交易绩效的指标之一。
- * 
+ *
+ *
  * @see <a href=
  *      "http://www.investopedia.com/articles/trading/11/trading-with-vwap-mvwap.asp">
  *      http://www.investopedia.com/articles/trading/11/trading-with-vwap-mvwap.asp</a>
@@ -71,16 +72,16 @@ public class VWAPIndicator extends CachedIndicator<Num> {
 
     /**
      * Constructor.
-     * 
-     * @param series   the series 系列
-     * @param barCount the time frame 時間範圍
+     *
+     * @param series   the bar series
+     * @param barCount the time frame
      */
     public VWAPIndicator(BarSeries series, int barCount) {
         super(series);
         this.barCount = barCount;
         this.typicalPrice = new TypicalPriceIndicator(series);
         this.volume = new VolumeIndicator(series);
-        this.zero = numOf(0);
+        this.zero = zero();
     }
 
     @Override
@@ -97,6 +98,11 @@ public class VWAPIndicator extends CachedIndicator<Num> {
             cumulativeVolume = cumulativeVolume.plus(currentVolume);
         }
         return cumulativeTPV.dividedBy(cumulativeVolume);
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return barCount;
     }
 
     @Override

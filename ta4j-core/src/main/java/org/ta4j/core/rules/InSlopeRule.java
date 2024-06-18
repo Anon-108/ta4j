@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -27,41 +27,35 @@ import static org.ta4j.core.num.NaN.NaN;
 
 import org.ta4j.core.Indicator;
 import org.ta4j.core.TradingRecord;
-import org.ta4j.core.indicators.helpers.DifferenceIndicator;
+import org.ta4j.core.indicators.helpers.CombineIndicator;
 import org.ta4j.core.indicators.helpers.PreviousValueIndicator;
 import org.ta4j.core.num.Num;
 
 /**
- * Indicator-in-slope rule.
- * 斜率指标规则。
+ * A rule that monitors when an {@link Indicator} shows a specified slope.
  *
+ * <p>
  * Satisfied when the difference of the value of the {@link Indicator indicator}
-  and the previous (n-th) value of the {@link Indicator indicator} is between
-  the values of maxSlope or/and minSlope. It can test both, positive and
-  negative slope.
- 当 {@link Indicator indicator} 的值的差异时满足
- {@link Indicator indicator} 的前一个（第 n 个）值介于
- maxSlope 或/和 minSlope 的值。 它可以同时测试，阳性和
- 负斜率。
+ * and its previous (n-th) value is between the values of {@code maxSlope}
+ * or/and {@code minSlope}. It can test both, positive and negative slope.
  */
 public class InSlopeRule extends AbstractRule {
 
-    /** The actual indicator
-     * 实际指标 */
-    private Indicator<Num> ref;
-    /** The previous n-th value of ref
-     * ref 的前 n 个值 */
-    private PreviousValueIndicator prev;
-    /** The minimum slope between ref and prev
-     * ref 和 prev 之间的最小斜率 */
-    private Num minSlope;
-    /** The maximum slope between ref and prev
-     * ref 和 prev 之间的最大斜率 */
-    private Num maxSlope;
+    /** The actual indicator. */
+    private final Indicator<Num> ref;
+
+    /** The previous n-th value of ref. */
+    private final PreviousValueIndicator prev;
+
+    /** The minimum slope between ref and prev. */
+    private final Num minSlope;
+
+    /** The maximum slope between ref and prev. */
+    private final Num maxSlope;
 
     /**
      * Constructor.
-     * 
+     *
      * @param ref      the reference indicator
      *                 参考指标
      * @param minSlope minumum slope between reference and previous indicator
@@ -73,7 +67,7 @@ public class InSlopeRule extends AbstractRule {
 
     /**
      * Constructor.
-     * 
+     *
      * @param ref      the reference indicator
      *                 参考指标
      * @param minSlope minumum slope between value of reference and previous    indicator
@@ -88,7 +82,7 @@ public class InSlopeRule extends AbstractRule {
 
     /**
      * Constructor.
-     * 
+     *
      * @param ref         the reference indicator
      *                    参考指标
      * @param nthPrevious defines the previous n-th indicator
@@ -102,7 +96,7 @@ public class InSlopeRule extends AbstractRule {
 
     /**
      * Constructor.
-     * 
+     *
      * @param ref         the reference indicator
      *                    参考指标
      * @param nthPrevious defines the previous n-th indicator
@@ -120,9 +114,10 @@ public class InSlopeRule extends AbstractRule {
         this.maxSlope = maxSlope;
     }
 
+    /** This rule does not use the {@code tradingRecord}. */
     @Override
     public boolean isSatisfied(int index, TradingRecord tradingRecord) {
-        DifferenceIndicator diff = new DifferenceIndicator(ref, prev);
+        CombineIndicator diff = CombineIndicator.minus(ref, prev);
         Num val = diff.getValue(index);
         boolean minSlopeSatisfied = minSlope.isNaN() || val.isGreaterThanOrEqual(minSlope);
         boolean maxSlopeSatisfied = maxSlope.isNaN() || val.isLessThanOrEqual(maxSlope);

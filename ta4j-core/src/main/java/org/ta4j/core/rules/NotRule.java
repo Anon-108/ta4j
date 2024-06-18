@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -27,23 +27,22 @@ import org.ta4j.core.Rule;
 import org.ta4j.core.TradingRecord;
 
 /**
- * An opposite (logical operator: NOT) rule.
- * * 相反（逻辑运算符：NOT）规则。
+ * An opposite (logical operator: NOT) rule (i.e. a rule that is the negation of
+ * another rule).
  *
- * Satisfied when provided rule is not satisfied.<br>
- * * 不满足提供的规则时满足。<br>
- * Not satisfied when provided rule is satisfied.
- * 满足提供的规则时不满足。
+ * <p>
+ * Satisfied when the rule is not satisfied.<br>
+ * Not satisfied when the rule is satisfied.
  */
 public class NotRule extends AbstractRule {
 
+    /** The trading rule to negate. */
     private final Rule ruleToNegate;
 
     /**
      * Constructor.
      *
-     * @param ruleToNegate a trading rule to negate
-     *                     否定的交易规则
+     * @param ruleToNegate the trading rule to negate
      */
     public NotRule(Rule ruleToNegate) {
         this.ruleToNegate = ruleToNegate;
@@ -56,6 +55,7 @@ public class NotRule extends AbstractRule {
         return satisfied;
     }
 
+    /** @return {@link #ruleToNegate} */
     public Rule getRuleToNegate() {
         return ruleToNegate;
     }

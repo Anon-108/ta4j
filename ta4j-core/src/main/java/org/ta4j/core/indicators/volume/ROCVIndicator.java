@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -28,6 +28,8 @@ import org.ta4j.core.indicators.CachedIndicator;
 import org.ta4j.core.num.Num;
 
 /**
+ * Rate of change of volume (ROCVIndicator) indicator (also called "Momentum of
+ * Volume").
  * Rate of change of volume (ROCVIndicator) indicator. Aka. Momentum of Volume
  * 成交量变化率 （ROCVIndicator） 指标。即。成交量动量
  *
@@ -52,6 +54,9 @@ import org.ta4j.core.num.Num;
  *
  * The ROCVIndicator calculation compares the current volume with the volume "n" periods ago.
  * * ROCVIndicator 计算将当前交易量与“n”个周期前的交易量进行比较。
+ * <p>
+ * The ROCVIndicator calculation compares the current volume with the volume "n"
+ * periods ago.
  */
 public class ROCVIndicator extends CachedIndicator<Num> {
 
@@ -69,7 +74,7 @@ public class ROCVIndicator extends CachedIndicator<Num> {
     public ROCVIndicator(BarSeries series, int barCount) {
         super(series);
         this.barCount = barCount;
-        this.hundred = numOf(100);
+        this.hundred = hundred();
     }
 
     @Override
@@ -78,6 +83,11 @@ public class ROCVIndicator extends CachedIndicator<Num> {
         Num nPeriodsAgoValue = getBarSeries().getBar(nIndex).getVolume();
         Num currentValue = getBarSeries().getBar(index).getVolume();
         return currentValue.minus(nPeriodsAgoValue).dividedBy(nPeriodsAgoValue).multipliedBy(hundred);
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return barCount;
     }
 
     @Override

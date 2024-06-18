@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -26,17 +26,14 @@ package org.ta4j.core.aggregator;
 import org.ta4j.core.BarSeries;
 
 /**
- * Bar aggregator interface to aggregate list of bars into another list of bars.
- * 条形聚合器接口将条形列表聚合到另一个条形列表中。
+ * Aggregates a {@link BarSeries} into another one.
  */
 public interface BarSeriesAggregator {
 
     /**
-     * Aggregates bar series.
-     * 聚合条系列。
+     * Aggregates the {@code series} into another one.
      *
-     * @param series series to aggregate
-     *               @param series 要聚合的系列
+     * @param series the series to be aggregated
      * @return aggregated series
      * @return 聚合系列
      */
@@ -45,13 +42,10 @@ public interface BarSeriesAggregator {
     }
 
     /**
-     * Aggregates bar series.
-     * 聚合条系列。
+     * Aggregates the {@code series} into another one.
      *
-     * @param series               series to aggregate
-     *                             要聚合的系列
-     * @param aggregatedSeriesName name for aggregated series
-     *                             聚合系列的名称
+     * @param series               the series to be aggregated
+     * @param aggregatedSeriesName the name for the aggregated series
      * @return aggregated series with specified name
      *                          具有指定名称的聚合系列
      */

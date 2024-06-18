@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -43,9 +43,17 @@ import org.ta4j.core.indicators.CachedIndicator;
  * 3. **市场趋势分析**：交易次数指标也可以用于分析市场的趋势。例如，如果交易次数在上升，则可能表示市场参与度增加，反之亦然。
  *
  * 总的来说，交易次数指标是一种重要的市场参与度指标，用于衡量特定时间段内完成的交易数量，从而提供有关市场流动性和交易活动水平的信息。
+ *
+ * <p>
+ * Returns the number of trades of a bar.
  */
 public class TradeCountIndicator extends CachedIndicator<Long> {
 
+    /**
+     * Constructor.
+     *
+     * @param series the bar series
+     */
     public TradeCountIndicator(BarSeries series) {
         super(series);
     }
@@ -53,5 +61,11 @@ public class TradeCountIndicator extends CachedIndicator<Long> {
     @Override
     protected Long calculate(int index) {
         return getBarSeries().getBar(index).getTrades();
+    }
+
+    /** @return {@code 0} */
+    @Override
+    public int getUnstableBars() {
+        return 0;
     }
 }

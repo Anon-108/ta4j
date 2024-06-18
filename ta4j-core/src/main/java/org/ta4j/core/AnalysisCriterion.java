@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -26,40 +26,37 @@ package org.ta4j.core;
 import java.util.List;
 
 import org.ta4j.core.Trade.TradeType;
+import org.ta4j.core.backtest.BarSeriesManager;
 import org.ta4j.core.num.Num;
 
 /**
- * An analysis criterion.
- * 分析标准。
- *
- * Can be used to:
- * * 可用于：
+ * An analysis criterion. It can be used to:
+ * 
  * <ul>
- * <li>Analyze the performance of a {@link Strategy strategy}
- * * <li>分析 {@link 策略策略} 的表现
- * <li>Compare several {@link Strategy strategies} together
- * * <li>比较几个{@link Strategy strategy}
+ * <li>analyze the performance of a {@link Strategy strategy}
+ * <li>compare several {@link Strategy strategies} together
  * </ul>
  */
 public interface AnalysisCriterion {
 
+    /** Filter to differentiate between winning or losing positions. */
+    public enum PositionFilter {
+        /** Consider only winning positions. */
+        PROFIT,
+        /** Consider only losing positions. */
+        LOSS;
+    }
+
     /**
-     * @param series   a bar series, not null
-     *                 一个酒吧系列，不为空
-     * @param position a position, not null
-     *                 一个位置，不为空
+     * @param series   the bar series, not null
+     * @param position the position, not null
      * @return the criterion value for the position
-     *              位置的标准值
      */
     Num calculate(BarSeries series, Position position);
 
     /**
-     * @param series        a bar series, not null
-     *                      一个酒吧系列，不为空
-     *
-     * @param tradingRecord a trading record, not null
-     *                      交易记录，不为空
-     *
+     * @param series        the bar series, not null
+     * @param tradingRecord the trading record, not null
      * @return the criterion value for the positions
      *          位置的标准值
      */
@@ -111,11 +108,10 @@ public interface AnalysisCriterion {
 
     /**
      * @param criterionValue1 the first value
-     *                        第一个值
-     * @param criterionValue2 the second value 第二个值
-     * 
-     * @return true if the first value is better than (according to the criterion)  the second one, false otherwise
-     * * @return 如果第一个值优于（根据标准）第二个值，则返回 true，否则返回 false
+     * @param criterionValue2 the second value
+     * @return true if the first value is better than (according to the criterion)
+     *         the second one, false otherwise
+     *  如果第一个值优于（根据标准）第二个值，则为 true，否则为 false
      */
     boolean betterThan(Num criterionValue1, Num criterionValue2);
 }

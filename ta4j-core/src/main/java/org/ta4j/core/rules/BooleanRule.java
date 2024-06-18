@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -26,24 +26,14 @@ package org.ta4j.core.rules;
 import org.ta4j.core.TradingRecord;
 
 /**
- * A simple boolean rule.
- * 一个简单的布尔规则。
- *
- * Satisfied when it has been initialized with true.
- * 当它被初始化为true时满足。
+ * Satisfied when the rule has been initialized with {@code true}.
  */
 public class BooleanRule extends AbstractRule {
 
-    /**
-     * An always-true rule
-     * 永远正确的规则
-     */
+    /** An always-true rule. */
     public static final BooleanRule TRUE = new BooleanRule(true);
 
-    /**
-     * An always-false rule
-     * 永远错误的规则
-     */
+    /** An always-false rule. */
     public static final BooleanRule FALSE = new BooleanRule(false);
 
     private final boolean satisfied;
@@ -58,6 +48,7 @@ public class BooleanRule extends AbstractRule {
         this.satisfied = satisfied;
     }
 
+    /** This rule does not use the {@code tradingRecord}. */
     @Override
     public boolean isSatisfied(int index, TradingRecord tradingRecord) {
         traceIsSatisfied(index, satisfied);

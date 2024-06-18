@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -27,6 +27,7 @@ import org.ta4j.core.Indicator;
 import org.ta4j.core.num.Num;
 
 /**
+ * Rate of change (ROCIndicator) indicator (also called "Momentum").
  * Rate of change (ROCIndicator) indicator. Aka. Momentum
  * 变化率 (ROCIndicator) 指标。 阿卡。 势头
  *
@@ -49,6 +50,9 @@ import org.ta4j.core.num.Num;
  * 交易者通常使用ROC指标来确认价格的趋势和判断市场的超买超卖情况。例如，当ROC指标为正且数值较大时，可能暗示价格上升趋势较为强劲；相反，当ROC指标为负且数值较大时，可能暗示价格下降趋势较为强劲。当ROC指标的数值超过一定阈值时，可能意味着市场处于超买或超卖状态。
  *
  * 总的来说，ROC指标是一种用于衡量价格变动速度和幅度的技术指标，可以帮助交易者更好地理解市场的价格动态和趋势变化。
+ * <p>
+ * The ROCIndicator calculation compares the current value with the value "n"
+ * periods ago.
  *
  * @see <a href=
  *      "https://www.investopedia.com/terms/p/pricerateofchange.asp">https://www.investopedia.com/terms/p/pricerateofchange.asp</a>
@@ -78,7 +82,12 @@ public class ROCIndicator extends CachedIndicator<Num> {
         int nIndex = Math.max(index - barCount, 0);
         Num nPeriodsAgoValue = indicator.getValue(nIndex);
         Num currentValue = indicator.getValue(index);
-        return currentValue.minus(nPeriodsAgoValue).dividedBy(nPeriodsAgoValue).multipliedBy(numOf(100));
+        return currentValue.minus(nPeriodsAgoValue).dividedBy(nPeriodsAgoValue).multipliedBy(hundred());
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return barCount;
     }
 
     @Override

@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -26,28 +26,20 @@ package org.ta4j.core;
 import java.io.Serializable;
 import java.util.Objects;
 
-import org.ta4j.core.cost.CostModel;
-import org.ta4j.core.cost.ZeroCostModel;
+import org.ta4j.core.analysis.cost.CostModel;
+import org.ta4j.core.analysis.cost.ZeroCostModel;
 import org.ta4j.core.num.Num;
 
 /**
- * A trade.
- * 一笔交易。
+ * A {@code Trade} is defined by:
  *
- * The trade is defined by:
- * * 交易定义为：
  * <ul>
- * <li>the index (in the {@link BarSeries bar series}) it is executed
+ * <li>the index (in the {@link BarSeries bar series}) on which the trade is
+ * executed
  * <li>a {@link TradeType type} (BUY or SELL)
  * <li>a pricePerAsset (optional)
  * <li>a trade amount (optional)
  * </ul>
- * * <ul>
- *   * <li>执行的索引（在 {@link BarSeries bar series} 中）
- *   * <li>a {@link TradeType type}（买入或卖出）
- *   * <li>pricePerAsset（可选）
- *   * <li>交易金额（可选）
- *   * </ul>
  *
  * A {@link Position position} is a pair of complementary trades.
  * * {@link Position position} 是一对互补交易。
@@ -56,21 +48,18 @@ public class Trade implements Serializable {
 
     private static final long serialVersionUID = -905474949010114150L;
 
-    /**
-     * The type of an {@link Trade trade}.
-     * {@link Trade trade} 的类型。
-     *
-     * A BUY corresponds to a BID trade. A SELL corresponds to an ASK  trade.
-     * * 买入对应于买入交易。 SELL 对应于 ASK 交易。
-     */
+    /** The type of a {@link Trade trade}. */
     public enum TradeType {
 
+        /** A BUY corresponds to a <i>BID</i> trade. */
         BUY {
             @Override
             public TradeType complementType() {
                 return SELL;
             }
         },
+
+        /** A SELL corresponds to an <i>ASK</i> trade. */
         SELL {
             @Override
             public TradeType complementType() {
@@ -85,47 +74,29 @@ public class Trade implements Serializable {
         public abstract TradeType complementType();
     }
 
-    /**
-     * Type of the trade
-     * * 交易类型
-     */
-    private TradeType type;
+    /** The type of the trade. */
+    private final TradeType type;
 
-    /**
-     * The index the trade was executed
-     * * 交易执行的指数
-     */
-    private int index;
+    /** The index the trade was executed. */
+    private final int index;
 
-    /**
-     * the trade price per asset
-     * * 每项资产的交易价格
-     */
+    /** The trade price per asset. */
     private Num pricePerAsset;
 
     /**
-     * The net price for the trade, net transaction costs
-     * * 交易的净价，净交易成本
+     * The net price per asset for the trade (i.e. {@link #pricePerAsset} with
+     * {@link #cost}).
      */
     private Num netPrice;
 
-    /**
-     * the trade amount
-     * * 交易金额
-     */
-    private Num amount;
+    /** The trade amount. */
+    private final Num amount;
 
-    /**
-     * The cost for executing the trade
-     * * 执行交易的成本
-     */
+    /** The cost for executing the trade. */
     private Num cost;
 
-    /**
-     * The cost model for trade execution
-     * * 交易执行的成本模型
-     */
-    private CostModel costModel;
+    /** The cost model for trade execution. */
+    private transient CostModel costModel;
 
     /**
      * Constructor.
@@ -139,7 +110,7 @@ public class Trade implements Serializable {
      *               交易类型
      */
     protected Trade(int index, BarSeries series, TradeType type) {
-        this(index, series, type, series.numOf(1));
+        this(index, series, type, series.one());
     }
 
     /**
@@ -163,7 +134,7 @@ public class Trade implements Serializable {
 
     /**
      * Constructor.
-     * 
+     *
      * @param index                the index the trade is executed
      *                             交易执行的指数
      *
@@ -199,7 +170,7 @@ public class Trade implements Serializable {
      *                      每项资产的交易价格
      */
     protected Trade(int index, TradeType type, Num pricePerAsset) {
-        this(index, type, pricePerAsset, pricePerAsset.numOf(1));
+        this(index, type, pricePerAsset, pricePerAsset.one());
     }
 
     /**
@@ -280,8 +251,8 @@ public class Trade implements Serializable {
     }
 
     /**
-     * @return the trade price per asset, or, if <code>NaN</code>, the close price  from the supplied {@link BarSeries}.
-     * * @return 每个资产的交易价格，或者，如果是 <code>NaN</code>，则返回提供的 {@link BarSeries} 的收盘价。
+     * @return the trade price per asset, or, if {@code NaN}, the close price from
+     *         the supplied {@link BarSeries}.
      */
     public Num getPricePerAsset(BarSeries barSeries) {
         if (pricePerAsset.isNaN()) {
@@ -291,8 +262,8 @@ public class Trade implements Serializable {
     }
 
     /**
-     * @return the trade price per asset, net transaction costs
-     * * @return 每个资产的交易价格，净交易成本
+     * @return the net price per asset for the trade (i.e. {@link #pricePerAsset}
+     *         with {@link #cost})
      */
     public Num getNetPrice() {
         return netPrice;
@@ -315,8 +286,7 @@ public class Trade implements Serializable {
     }
 
     /**
-     * Sets the raw and net prices of the trade
-     * * 设置交易的原始价格和净价格
+     * Sets the raw and net prices of the trade.
      *
      * @param pricePerAsset        the raw price of the asset
      *                             资产的原始价格
@@ -395,11 +365,7 @@ public class Trade implements Serializable {
 
     /**
      * @param index                the index the trade is executed
-     *                             交易执行的指数
-     *
-     * @param price                the trade price
-     *                             交易价格
-     *
+     * @param price                the trade price per asset
      * @param amount               the trade amount
      *                             交易金额
      *
@@ -414,11 +380,7 @@ public class Trade implements Serializable {
 
     /**
      * @param index  the index the trade is executed
-     *               交易执行的指数
-     *
-     * @param price  the trade price
-     *               交易价格
-     *
+     * @param price  the trade price per asset
      * @param amount the trade amount
      *               交易金额
      *
@@ -481,11 +443,7 @@ public class Trade implements Serializable {
 
     /**
      * @param index  the index the trade is executed
-     *               交易执行的指数
-     *
-     * @param price  the trade price
-     *               交易价格
-     *
+     * @param price  the trade price per asset
      * @param amount the trade amount
      *               交易金额
      *
@@ -498,11 +456,7 @@ public class Trade implements Serializable {
 
     /**
      * @param index                the index the trade is executed
-     *                             交易执行的指数
-     *
-     * @param price                the trade price
-     *                             交易价格
-     *
+     * @param price                the trade price per asset
      * @param amount               the trade amount
      *                             交易金额
      *

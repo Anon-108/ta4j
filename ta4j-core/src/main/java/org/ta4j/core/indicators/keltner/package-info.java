@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -43,7 +43,7 @@
  *  * 与软件或软件中的使用或其他交易的连接。
  */
 /**
- * Indicators for the realization of the 'Keltner Channel'
+ * Indicators for the realization of the 'Keltner Channel'.
  * 实现“Keltner Channel”的指标
  */
 package org.ta4j.core.indicators.keltner;

@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -30,8 +30,8 @@ import org.ta4j.core.TradingRecord;
  * A one-shot rule.
  * 一次性规则。
  *
- * Satisfied the first time it's checked then never again.
- * 第一次检查满意，以后再也不满意了。
+ * <p>
+ * Satisfied when the rule is satisfied for the first time, then never again.
  */
 public class JustOnceRule extends AbstractRule {
 
@@ -41,8 +41,9 @@ public class JustOnceRule extends AbstractRule {
     /**
      * Constructor.
      *
-     * Satisfied the first time the inner rule is satisfied then never again.
-     * * 第一次满足内在规则，然后再也不会满足。
+     * <p>
+     * Satisfied when the given {@code rule} is satisfied the first time, then never
+     * again.
      *
      * @param rule the rule that should be satisfied only the first time
      *             * @param rule 应该只在第一次满足的规则
@@ -54,8 +55,8 @@ public class JustOnceRule extends AbstractRule {
     /**
      * Constructor.
      *
-     * Satisfied the first time it's checked then never again.
-     * *第一次检查时满意，以后再也不满意了。
+     * <p>
+     * Satisfied at the first check, then never again.
      */
     public JustOnceRule() {
         this.rule = null;

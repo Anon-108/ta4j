@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -24,6 +24,9 @@
 package org.ta4j.core.indicators;
 
 import static org.ta4j.core.num.NaN.NaN;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.ta4j.core.BarSeries;
 import org.ta4j.core.indicators.helpers.HighPriceIndicator;
@@ -61,32 +64,40 @@ import org.ta4j.core.num.Num;
  */
 public class ParabolicSarIndicator extends RecursiveCachedIndicator<Num> {
 
+    private final LowPriceIndicator lowPriceIndicator;
+    private final HighPriceIndicator highPriceIndicator;
+
     private final Num maxAcceleration;
-    private final Num accelerationIncrement;
     private final Num accelerationStart;
-    private Num accelerationFactor;
-    private boolean currentTrend; // true if uptrend, false otherwise // 如果上升趋势为真，否则为假
-    private int startTrendIndex = 0; // index of start bar of the current trend // 当前趋势起始柱的索引
-    private LowPriceIndicator lowPriceIndicator;
-    private HighPriceIndicator highPriceIndicator;
-    private Num currentExtremePoint; // the extreme point of the current calculation  // 当前计算的极值点
-    private Num minMaxExtremePoint; // depending on trend the maximum or minimum extreme point value of trend  // 根据趋势趋势的最大或最小极值点
+    private final Num accelerationIncrement;
+
+    private final Map<Integer, Boolean> isUpTrendMap = new HashMap<>();
+    private final Map<Integer, Num> lastExtreme = new HashMap<>();
+    private final Map<Integer, Num> lastAf = new HashMap<>();
 
     /**
-     * Constructor with default parameters
-     * * 带默认参数的构造函数
+     * If series have removed bars, first actual bar won't have 0 index.
+     */
+    private int seriesStartIndex = getBarSeries().getBeginIndex();
+
+    /**
+     * Constructor with:
+     *
+     * <ul>
+     * <li>{@code aF} = 0.02
+     * <li>{@code maxA} = 0.2
+     * <li>{@code increment} = 0.02
+     * </ul>
      *
      * @param series the bar series for this indicator
      *               该指标的柱线系列
      */
     public ParabolicSarIndicator(BarSeries series) {
         this(series, series.numOf(0.02), series.numOf(0.2), series.numOf(0.02));
-
     }
 
     /**
-     * Constructor with custom parameters and default increment value
-     * * 具有自定义参数和默认增量值的构造函数
+     * Constructor with {@code increment} = 0.02.
      *
      * @param series the bar series for this indicator
      *               该指标的柱线系列
@@ -100,117 +111,161 @@ public class ParabolicSarIndicator extends RecursiveCachedIndicator<Num> {
     }
 
     /**
-     * Constructor with custom parameters
-     * * 带有自定义参数的构造函数
+     * Constructor.
      *
      * @param series    the bar series for this indicator
-     *                  该指标的柱线系列
-     *
-     * @param aF        acceleration factor
-     *                  加速因子
-     *
-     * @param maxA      maximum acceleration
-     *                  最大加速度
-     *
-     * @param increment the increment step
-     *                  增量步骤
+     * @param aF        acceleration factor (usually 0.02)
+     * @param maxA      maximum acceleration (usually 0.2)
+     * @param increment the increment step (usually 0.02)
      */
     public ParabolicSarIndicator(BarSeries series, Num aF, Num maxA, Num increment) {
         super(series);
-        highPriceIndicator = new HighPriceIndicator(series);
-        lowPriceIndicator = new LowPriceIndicator(series);
-        maxAcceleration = maxA;
-        accelerationFactor = aF;
-        accelerationIncrement = increment;
-        accelerationStart = aF;
+        this.lowPriceIndicator = new LowPriceIndicator(series);
+        this.highPriceIndicator = new HighPriceIndicator(series);
+        this.maxAcceleration = maxA;
+        this.accelerationStart = aF;
+        this.accelerationIncrement = increment;
     }
 
     @Override
     protected Num calculate(int index) {
-        Num sar = NaN;
-        if (index == getBarSeries().getBeginIndex()) {
-            return sar; // no trend detection possible for the first value // 第一个值不能进行趋势检测
-        } else if (index == getBarSeries().getBeginIndex() + 1) {// start trend detection  // 开始趋势检测
-            currentTrend = getBarSeries().getBar(getBarSeries().getBeginIndex()).getClosePrice()
-                    .isLessThan(getBarSeries().getBar(index).getClosePrice());
-            if (!currentTrend) { // down trend
-                sar = new HighestValueIndicator(highPriceIndicator, 2).getValue(index); // put the highest high value of // 放最高的值
-                                                                                        // two first bars  // 前两个柱
-                currentExtremePoint = sar;
-                minMaxExtremePoint = currentExtremePoint;
-            } else { // up trend
-                sar = new LowestValueIndicator(lowPriceIndicator, 2).getValue(index); // put the lowest low value of two  // 放两个的最低值
-                                                                                      // first bars  // 第一个柱
-                currentExtremePoint = sar;
-                minMaxExtremePoint = currentExtremePoint;
+        lastExtreme.clear();
+        lastAf.clear();
+        isUpTrendMap.clear();
 
+        // Caching of this indicator value calculation is essential for performance!
+        //
+        // clear the maps and recalculate the values for start to index
+        // the internal calculations until the previous index will fill the
+        // required maps for the acceleration factor, the trend direction and the
+        // last extreme value.
+        // Cache doesn't require more than current and previous values.
+        if (index < getBarSeries().getBeginIndex()) {
+            return NaN;
+        }
+
+        seriesStartIndex = getBarSeries().getRemovedBarsCount();
+        if (index < seriesStartIndex) {
+            index = seriesStartIndex;
+        }
+
+        for (int i = seriesStartIndex; i < index; i++) {
+            calculateInternal(i);
+        }
+
+        return calculateInternal(index);
+    }
+
+    private Num calculateInternal(int index) {
+        Num sar = NaN;
+        boolean is_up_trend;
+
+        if (index == seriesStartIndex) {
+            lastExtreme.put(index, getBarSeries().getBar(index).getClosePrice());
+            lastAf.put(index, zero());
+            isUpTrendMap.put(index, false);
+            return sar; // no trend detection possible for the first value
+        } else if (index == seriesStartIndex + 1) { // start trend detection
+            is_up_trend = defineUpTrend(index);
+            lastAf.put(index, accelerationStart);
+            isUpTrendMap.put(index, is_up_trend);
+
+            if (is_up_trend) { // up trend
+                sar = new LowestValueIndicator(lowPriceIndicator, 2).getValue(index - 1); // put the lowest low value of
+                // two
+                lastExtreme.put(index, new HighestValueIndicator(highPriceIndicator, 2).getValue(index - 1));
+            } else { // down trend
+                sar = new HighestValueIndicator(highPriceIndicator, 2).getValue(index - 1); // put the highest high
+                // value of
+                lastExtreme.put(index, new LowestValueIndicator(lowPriceIndicator, 2).getValue(index - 1));
             }
             return sar;
         }
 
         Num priorSar = getValue(index - 1);
-        if (currentTrend) { // if up trend  // 如果上升趋势
-            sar = priorSar.plus(accelerationFactor.multipliedBy((currentExtremePoint.minus(priorSar))));
-            currentTrend = lowPriceIndicator.getValue(index).isGreaterThan(sar);
-            if (!currentTrend) { // check if sar touches the low price  // 检查 sar 是否触及低价
-                if (minMaxExtremePoint.isGreaterThan(highPriceIndicator.getValue(index)))
-                    sar = minMaxExtremePoint; // sar starts at the highest extreme point of previous up trend // sar 开始于上一个上升趋势的最高极值点
-                else
-                    sar = highPriceIndicator.getValue(index);
-                currentTrend = false; // switch to down trend and reset values  // 切换到下降趋势并重置值
-                startTrendIndex = index;
-                accelerationFactor = accelerationStart;
-                currentExtremePoint = getBarSeries().getBar(index).getLowPrice(); // put point on max  // 把点放在最大值上
-                minMaxExtremePoint = currentExtremePoint;
-            } else { // up trend is going on  // 上升趋势正在发生
-                Num lowestPriceOfTwoPreviousBars = new LowestValueIndicator(lowPriceIndicator,
-                        Math.min(2, index - startTrendIndex)).getValue(index - 1);
-                if (sar.isGreaterThan(lowestPriceOfTwoPreviousBars))
-                    sar = lowestPriceOfTwoPreviousBars;
-                currentExtremePoint = new HighestValueIndicator(highPriceIndicator, index - startTrendIndex + 1)
-                        .getValue(index);
-                if (currentExtremePoint.isGreaterThan(minMaxExtremePoint)) {
-                    incrementAcceleration();
-                    minMaxExtremePoint = currentExtremePoint;
+
+        is_up_trend = isUpTrendMap.get(index - 1);
+
+        Num currentExtremePoint = lastExtreme.get(index - 1);
+        Num cur_high = highPriceIndicator.getValue(index);
+        Num cur_low = lowPriceIndicator.getValue(index);
+        Num cur_af = lastAf.get(index - 1);
+        sar = priorSar.plus(cur_af.multipliedBy((currentExtremePoint.minus(priorSar))));
+
+        if (is_up_trend) { // if up trend
+            if (cur_low.isLessThan(sar)) { // check if sar touches the low price
+                sar = currentExtremePoint;
+
+                lastAf.put(index, accelerationStart);
+                lastExtreme.put(index, cur_low);
+                is_up_trend = false;
+
+            } else { // up trend is going on
+                if (cur_high.isGreaterThan(currentExtremePoint)) {
+                    currentExtremePoint = cur_high;
+                    cur_af = incrementAcceleration(index);
                 }
+                lastExtreme.put(index, currentExtremePoint);
+                lastAf.put(index, cur_af);
+            }
+        } else { // downtrend
+            if (cur_high.isGreaterThanOrEqual(sar)) { // check if switch to up trend
+                sar = currentExtremePoint;
+
+                lastAf.put(index, accelerationStart);
+                lastExtreme.put(index, cur_high);
+                is_up_trend = true;
+
+            } else { // down trend io going on
+                if (cur_low.isLessThan(currentExtremePoint)) {
+                    currentExtremePoint = cur_low;
+                    cur_af = incrementAcceleration(index);
+                }
+                lastExtreme.put(index, currentExtremePoint);
+                lastAf.put(index, cur_af);
 
             }
-        } else { // downtrend  // 下降趋势
-            sar = priorSar.minus(accelerationFactor.multipliedBy(((priorSar.minus(currentExtremePoint)))));
-            currentTrend = highPriceIndicator.getValue(index).isGreaterThanOrEqual(sar);
-            if (currentTrend) { // check if switch to up trend  // 检查是否切换到上升趋势
-                if (minMaxExtremePoint.isLessThan(lowPriceIndicator.getValue(index)))
-                    sar = minMaxExtremePoint; // sar starts at the lowest extreme point of previous down trend  // sar 开始于之前下降趋势的最低极值点
-                else
-                    sar = lowPriceIndicator.getValue(index);
-                accelerationFactor = accelerationStart;
-                startTrendIndex = index;
-                currentExtremePoint = getBarSeries().getBar(index).getHighPrice();
-                minMaxExtremePoint = currentExtremePoint;
-            } else { // down trend io going on  // 下降趋势 io 继续
-                Num highestPriceOfTwoPreviousBars = new HighestValueIndicator(highPriceIndicator,
-                        Math.min(2, index - startTrendIndex)).getValue(index - 1);
-                if (sar.isLessThan(highestPriceOfTwoPreviousBars))
-                    sar = highestPriceOfTwoPreviousBars;
-                currentExtremePoint = new LowestValueIndicator(lowPriceIndicator, index - startTrendIndex + 1)
-                        .getValue(index);
-                if (currentExtremePoint.isLessThan(minMaxExtremePoint)) {
-                    incrementAcceleration();
-                    minMaxExtremePoint = currentExtremePoint;
-                }
+        }
+
+        if (is_up_trend) {
+            Num lowestPriceOfTwoPreviousBars = new LowestValueIndicator(lowPriceIndicator, 2).getValue(index - 1);
+            if (sar.isGreaterThan(lowestPriceOfTwoPreviousBars)) {
+                sar = lowestPriceOfTwoPreviousBars;
+            }
+        } else {
+            Num highestPriceOfTwoPreviousBars = new HighestValueIndicator(highPriceIndicator, 2).getValue(index - 1);
+            if (sar.isLessThan(highestPriceOfTwoPreviousBars)) {
+                sar = highestPriceOfTwoPreviousBars;
             }
         }
+        isUpTrendMap.put(index, is_up_trend);
         return sar;
     }
 
-    /**
-     * Increments the acceleration factor.  增加加速因子。
-     */
-    private void incrementAcceleration() {
-        if (accelerationFactor.isGreaterThanOrEqual(maxAcceleration)) {
-            accelerationFactor = maxAcceleration;
+    @Override
+    public int getUnstableBars() {
+        return 0;
+    }
+
+    private boolean defineUpTrend(final int barIndex) {
+        if (barIndex - 1 < seriesStartIndex) {
+            return false;
         } else {
-            accelerationFactor = accelerationFactor.plus(accelerationIncrement);
+            return getBarSeries().getBar(barIndex - 1)
+                    .getClosePrice()
+                    .isLessThan(getBarSeries().getBar(barIndex).getClosePrice());
         }
+    }
+
+    /**
+     * Increments the acceleration factor.
+     */
+    private Num incrementAcceleration(int index) {
+        Num cur_af = lastAf.get(index - 1);
+        cur_af = cur_af.plus(accelerationIncrement);
+        if (cur_af.isGreaterThan(maxAcceleration)) {
+            cur_af = maxAcceleration;
+        }
+        return cur_af;
     }
 }

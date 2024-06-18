@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -30,10 +30,12 @@ import org.ta4j.core.TradingRecord;
  * An OR combination of two {@link Rule rules}.
  * * 两个 {@link Rule 规则} 的 OR 组合。
  *
- * Satisfied when one of the two provided rules is satisfied.<br>
- * * 满足两个提供的规则之一时满足。<br>
- * Warning: the second rule is not tested if the first rule is satisfied.
- * * 警告：如果满足第一条规则，则不测试第二条规则。
+ * <p>
+ * Satisfied when one of the two rules is satisfied. It doesn't matter which
+ * one.
+ *
+ * <p>
+ * <b>Warning:</b> The second rule is not tested if the first rule is satisfied.
  */
 public class OrRule extends AbstractRule {
 
@@ -42,7 +44,7 @@ public class OrRule extends AbstractRule {
 
     /**
      * Constructor.
-     * 
+     *
      * @param rule1 a trading rule
      *              交易规则
      * @param rule2 another trading rule
@@ -60,18 +62,12 @@ public class OrRule extends AbstractRule {
         return satisfied;
     }
 
-    /**
-     * @return first trading rule
-     * @return 第一交易规则
-     */
+    /** @return the first rule */
     public Rule getRule1() {
         return rule1;
     }
 
-    /**
-     * @return second trading rule
-     * @return 第二条交易规则
-     */
+    /** @return the second rule */
     public Rule getRule2() {
         return rule2;
     }

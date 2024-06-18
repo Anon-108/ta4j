@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Marc de Verdelhan, 2017-2021 Ta4j Organization & respective
+ * Copyright (c) 2017-2023 Ta4j Organization & respective
  * authors (see AUTHORS)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -33,7 +33,9 @@ import org.ta4j.core.num.Num;
 /**
  * Transform indicator.
  * 变换指标。
+ * 
  * <p>
+ * Transforms the {@link Num} of any indicator by using common math operations.
  * Transforms the Num of any indicator by using common math operations.
  * 使用常用数学运算转换任何指标的 Num。
  *
@@ -65,10 +67,8 @@ public class TransformIndicator extends CachedIndicator<Num> {
 
     /**
      * Constructor.
-     * 构造函数
-     * 
-     * @param indicator      the indicator
-     *                       指标
+     *
+     * @param indicator      the {@link Indicator}
      * @param transformation a {@link Function} describing the transformation
      *                       描述转换的 {@link Function}
      */
@@ -81,6 +81,11 @@ public class TransformIndicator extends CachedIndicator<Num> {
     @Override
     protected Num calculate(int index) {
         return transformationFunction.apply(indicator.getValue(index));
+    }
+
+    @Override
+    public int getUnstableBars() {
+        return 0;
     }
 
     /**
@@ -147,6 +152,14 @@ public class TransformIndicator extends CachedIndicator<Num> {
     }
 
     /**
+     * Transforms the input indicator by indicator.pow(coefficient).
+     */
+    public static TransformIndicator pow(Indicator<Num> indicator, Number coefficient) {
+        Num numCoefficient = indicator.numOf(coefficient);
+        return new TransformIndicator(indicator, val -> val.pow(numCoefficient));
+    }
+
+    /**
      * Transforms the input indicator by indicator.sqrt().
      * 通过 indicator.sqrt() 转换输入指标。
      */
@@ -156,10 +169,9 @@ public class TransformIndicator extends CachedIndicator<Num> {
 
     /**
      * Transforms the input indicator by indicator.log().
-     * 通过 indicator.log() 转换输入指标。
      *
-     * @apiNote precision may be lost, because this implementation is using the  underlying doubleValue method
-     * * @apiNote 精度可能会丢失，因为这个实现是使用底层的 doubleValue 方法
+     * @apiNote precision may be lost, because this implementation is using the
+     *          underlying doubleValue method
      */
     public static TransformIndicator log(Indicator<Num> indicator) {
         return new TransformIndicator(indicator, val -> val.numOf(Math.log(val.doubleValue())));
