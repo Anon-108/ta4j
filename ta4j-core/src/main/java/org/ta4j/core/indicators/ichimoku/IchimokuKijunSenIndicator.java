@@ -38,6 +38,31 @@ import org.ta4j.core.BarSeries;
  * 此外，Kijun-sen 也可以用作支撑和阻力水平。当价格接近或穿过 Kijun-sen 时，Kijun-sen 可能会提供支撑或阻力，从而影响价格的反弹或突破。
  *
  * 总的来说，Kijun-sen 是一目均衡云中的一个重要指标，它可以帮助交易者识别趋势的方向，并提供支撑和阻力水平，有助于制定更有效的交易策略。
+ * ============================================================
+ * Kijun-sen，也称为基准线或标准线，是一目均衡表（Ichimoku Kinko Hyo）中的一个重要指标。它通过计算过去特定时间段内的中间点（即最高价和最低价的平均值）来帮助交易者识别支撑和阻力水平以及潜在的市场趋势。
+ *
+ * Kijun-sen 的计算方法
+ * Kijun-sen 的计算公式如下：
+ * Kijun-sen =  Highest High + Lowest Low / 2
+ *
+ * 其中，Highest High 是过去 N 个周期中的最高价，Lowest Low 是过去 N 个周期中的最低价。常用的周期数为 26 个周期。
+ *
+ * Kijun-sen 的应用
+ * 趋势识别：Kijun-sen 可以用来识别当前的市场趋势。如果价格在 Kijun-sen 之上，则表明市场处于上升趋势；如果价格在 Kijun-sen 之下，则表明市场处于下降趋势。
+ * 支撑和阻力：Kijun-sen 可以用作动态支撑和阻力水平。当价格接近 Kijun-sen 时，它可能会遇到支撑或阻力。
+ * 交易信号：当价格从下方突破 Kijun-sen 时，可能是一个买入信号；当价格从上方跌破 Kijun-sen 时，可能是一个卖出信号。
+ * 一目均衡表中的其他元素
+ * Kijun-sen 是一目均衡表中的五条线之一，其他四条线分别是：
+ *
+ * Tenkan-sen（转换线）：通常使用9个周期计算。
+ * Senkou Span A（领先A线）：由 Tenkan-sen 和 Kijun-sen 的平均值组成，并向前移动26个周期。
+ * Senkou Span B（领先B线）：通常使用52个周期计算，并向前移动26个周期。
+ * Chikou Span（滞后线）：当前收盘价向后移动26个周期。
+ * 这些元素共同构成了一目均衡表，用于提供综合的市场分析。
+ *
+ * 总结
+ * Kijun-sen（基准线）是技术分析中一目均衡表的一部分，通过计算过去26个周期的最高价和最低价的平均值，帮助交易者识别市场趋势、支撑和阻力水平。它在趋势分析和交易决策中起着重要作用。
+ *
  *
  * @see <a href=
  *      "http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:ichimoku_cloud">

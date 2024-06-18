@@ -27,10 +27,12 @@ import org.ta4j.core.Indicator;
 import org.ta4j.core.num.Num;
 
 /**
+ * TODO 快速
  * Linearly Weighted Moving Average (LWMA).
  * 线性加权移动平均线 (LWMA)。
  *
- * 线性加权移动平均线（Linearly Weighted Moving Average，LWMA）是一种基于线性加权的移动平均线指标，与简单移动平均线（SMA）和指数移动平均线（EMA）相比，它对最新的价格数据给予了更高的权重。
+ * 线性加权移动平均线（Linearly Weighted Moving Average，LWMA）是一种基于线性加权的移动平均线指标，与简单移动平均线（SMA）
+ *  和指数移动平均线（EMA）相比，它对最新的价格数据给予了更高的权重。
  *
  * LWMA的计算过程相对简单，但与SMA和EMA相比，更为复杂。它的计算步骤如下：
  *
@@ -40,9 +42,11 @@ import org.ta4j.core.num.Num;
  *
  * LWMA指标的主要特点是其更强的反应速度，对最新价格的变化更为敏感。因此，在价格快速变化的市场中，LWMA能够更快地反应价格趋势的变化。
  *
- * 交易者通常使用LWMA来识别价格的趋势方向和制定买卖信号。例如，当价格上穿LWMA时，可能暗示着上涨趋势的开始，为买入信号；相反，当价格下穿LWMA时，可能暗示着下跌趋势的开始，为卖出信号。
+ * 交易者通常使用LWMA来识别价格的趋势方向和制定买卖信号。例如，当价格上穿LWMA时，可能暗示着上涨趋势的开始，为买入信号；
+ *  相反，当价格下穿LWMA时，可能暗示着下跌趋势的开始，为卖出信号。
  *
- * 总的来说，LWMA是一种简单但有效的移动平均线指标，适用于快速市场和对价格变化更敏感的交易策略。然而，像所有技术指标一样，单独使用LWMA可能会导致误导，因此建议结合其他技术指标和价格模式进行综合分析。
+ * 总的来说，LWMA是一种简单但有效的移动平均线指标，适用于快速市场和对价格变化更敏感的交易策略。然而，
+ *  像所有技术指标一样，单独使用LWMA可能会导致误导，因此建议结合其他技术指标和价格模式进行综合分析。
  *
  * @see <a href=
  *      "https://www.investopedia.com/terms/l/linearlyweightedmovingaverage.asp">

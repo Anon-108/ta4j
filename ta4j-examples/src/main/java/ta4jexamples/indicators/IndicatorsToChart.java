@@ -32,6 +32,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.Day;
+import org.jfree.data.time.Hour;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
@@ -39,6 +40,7 @@ import org.ta4j.core.Bar;
 import org.ta4j.core.BarSeries;
 import org.ta4j.core.Indicator;
 import org.ta4j.core.indicators.EMAIndicator;
+import org.ta4j.core.indicators.adx.ADXIndicator;
 import org.ta4j.core.indicators.bollinger.BollingerBandsLowerIndicator;
 import org.ta4j.core.indicators.bollinger.BollingerBandsMiddleIndicator;
 import org.ta4j.core.indicators.bollinger.BollingerBandsUpperIndicator;
@@ -46,6 +48,7 @@ import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
 import org.ta4j.core.indicators.statistics.StandardDeviationIndicator;
 import org.ta4j.core.num.Num;
 
+import ta4jexamples.barSeries.BuildBarSeries;
 import ta4jexamples.loaders.CsvBarsLoader;
 
 /**
@@ -73,7 +76,8 @@ public class IndicatorsToChart {
         org.jfree.data.time.TimeSeries chartTimeSeries = new org.jfree.data.time.TimeSeries(name);
         for (int i = 0; i < barSeries.getBarCount(); i++) {
             Bar bar = barSeries.getBar(i);
-            chartTimeSeries.add(new Day(Date.from(bar.getEndTime().toInstant())), indicator.getValue(i).doubleValue());
+//            chartTimeSeries.add(new Day(Date.from(bar.getEndTime().toInstant())), indicator.getValue(i).doubleValue());
+            chartTimeSeries.add(new Hour(Date.from(bar.getEndTime().toInstant())), indicator.getValue(i).doubleValue());
         }
         return chartTimeSeries;
     }
@@ -106,7 +110,9 @@ public class IndicatorsToChart {
          * Getting bar series
          * * 获取酒吧系列
          */
-        BarSeries series = CsvBarsLoader.loadAppleIncSeries();
+//        BarSeries series = CsvBarsLoader.loadAppleIncSeries();
+        BarSeries series = BuildBarSeries.buildBinanceData(100);
+
 
         /*
          * Creating indicators
@@ -124,20 +130,26 @@ public class IndicatorsToChart {
         BollingerBandsLowerIndicator lowBBand = new BollingerBandsLowerIndicator(middleBBand, sd14);
         BollingerBandsUpperIndicator upBBand = new BollingerBandsUpperIndicator(middleBBand, sd14);
 
+        //adx indicator
+        ADXIndicator adxIndicator = new ADXIndicator(series, 13, 8);
+
         /*
          * Building chart dataset
          * * 构建图表数据集
          */
         TimeSeriesCollection dataset = new TimeSeriesCollection();
-        dataset.addSeries(buildChartBarSeries(series, closePrice, "Apple Inc. (AAPL) - NASDAQ GS 苹果公司 (AAPL) - 纳斯达克 GS"));
-        dataset.addSeries(buildChartBarSeries(series, lowBBand, "Low Bollinger Band 低布林带"));
-        dataset.addSeries(buildChartBarSeries(series, upBBand, "High Bollinger Band 高布林带"));
+        dataset.addSeries(buildChartBarSeries(series, closePrice, "Binance BTC/USDT"));
+//        dataset.addSeries(buildChartBarSeries(series, lowBBand, "Low Bollinger Band "));
+//        dataset.addSeries(buildChartBarSeries(series, middleBBand, "middleBBand Bollinger Band "));
+//        dataset.addSeries(buildChartBarSeries(series, upBBand, "High Bollinger Band "));
+
+        dataset.addSeries(buildChartBarSeries(series, adxIndicator, "adxIndicator "));
 
         /*
          * Creating the chart
          * * 创建图表
          */
-        JFreeChart chart = ChartFactory.createTimeSeriesChart("Apple Inc. 2013 Close Prices 苹果公司 2013 年收盘价", // title // 标题
+        JFreeChart chart = ChartFactory.createTimeSeriesChart("Binance BTC price", // title // 标题
                 "Date", // x-axis label // x轴标签
                 "Price Per Unit", // y-axis label // y轴标签
                 dataset, // data 數據

@@ -23,6 +23,6 @@
  */
 /**
  * Indicators for the realization of different 'Pivot Points'
- * 实现不同“支点”的指标
+ * 实现不同“枢轴点”的指标
  */
 package org.ta4j.core.indicators.pivotpoints;

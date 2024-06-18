@@ -23,11 +23,17 @@
  */
 package ta4jexamples.barSeries;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ta4j.core.Bar;
 import org.ta4j.core.BarSeries;
 import org.ta4j.core.BaseBar;
@@ -48,20 +54,81 @@ public class BuildBarSeries {
      */
     @SuppressWarnings("unused")
     public static void main(String[] args) {
-        BarSeries a = buildAndAddData();
-        System.out.println("a: " + a.getBar(0).getClosePrice().getName());
-        BaseBarSeriesBuilder.setDefaultFunction(DoubleNum::valueOf);
-        a = buildAndAddData();
-        System.out.println("a: " + a.getBar(0).getClosePrice().getName());
-        BarSeries b = buildWithDouble();
-        BarSeries c = buildWithBigDecimal();
-        BarSeries d = buildManually();
-        BarSeries e = buildManuallyDoubleNum();
-        BarSeries f = buildManuallyAndAddBarManually();
-        BarSeries g = buildAndAddBarsFromList();
+//        BarSeries a = buildAndAddData();
+//        System.out.println("a: " + a.getBar(0).getClosePrice().getName());
+//        BaseBarSeriesBuilder.setDefaultFunction(DoubleNum::valueOf);
+//        a = buildAndAddData();
+//        System.out.println("a: " + a.getBar(0).getClosePrice().getName());
+//        BarSeries b = buildWithDouble();
+//        BarSeries c = buildWithBigDecimal();
+//        BarSeries d = buildManually();
+//        BarSeries e = buildManuallyDoubleNum();
+//        BarSeries f = buildManuallyAndAddBarManually();
+//        BarSeries g = buildAndAddBarsFromList();
+        BarSeries barSeries = buildBinanceData(1000);
+        System.out.println(barSeries);
     }
 
-    private static BarSeries buildAndAddData() {
+    public static BarSeries buildBinanceData(int limit)  {
+        int num = 0;
+        BarSeries series = new BaseBarSeriesBuilder().withName("BTC/USDT").build();
+        String fileName = "2024-06-15_28_2000.json";
+//        String fileName = "2024-06-13_18.json";
+        String filePath = "D:\\Program Files\\Code\\XChange\\xchange-examples\\src\\main\\resources\\dataFile\\"+fileName; // 文件的路径
+        ObjectMapper objectMapper = new ObjectMapper(); // 可以重用此实例
+        try {
+            List<LinkedHashMap<String,Object>> klines = objectMapper.readValue(new File(filePath), List.class);
+            for (LinkedHashMap<String,Object> kline : klines) {
+                if (limit > 0 && num == limit){
+                    break;
+                }
+                num++;
+                String instrument = (String) kline.get("instrument");
+                String interval = (String) kline.get("interval");
+                ZonedDateTime openTime = timestampToZonedDateTime((long) kline.get("openTime"));
+                ZonedDateTime closeTime = timestampToZonedDateTime((long) kline.get("closeTime"));
+                double open = (double) kline.get("open");
+                double high = (double) kline.get("high");
+                double low = (double) kline.get("low");
+                double close = (double) kline.get("close");
+                double volume = (double) kline.get("volume");
+//                double quoteAssetVolume = (double) kline.get("quoteAssetVolume");
+//                long numberOfTrades = (long) kline.get("numberOfTrades");
+//                double takerBuyBaseAssetVolume = (double) kline.get("takerBuyBaseAssetVolume");
+//                double takerBuyQuoteAssetVolume = (double) kline.get("takerBuyQuoteAssetVolume");
+//                boolean closed = (boolean) kline.get("closed");
+
+                series.addBar(closeTime,open,high,low,close,volume);
+
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return series;
+    }
+
+    public static ZonedDateTime timestampToZonedDateTime( long timestamp) {
+            // 假设我们有一个时间戳，这里以毫秒为单位（从1970-01-01T00:00:00Z开始）
+//            long timestamp = 1609459200000L; // 例如，这是一个UTC时间戳
+
+            // 首先，我们将时间戳转换为Instant对象
+            Instant instant = Instant.ofEpochMilli(timestamp);
+
+            // 然后，我们可以将Instant转换为ZonedDateTime。这里我们使用UTC时区作为示例
+            ZonedDateTime zonedDateTime = instant.atZone(ZoneId.of("UTC"));
+
+//            // 如果你想要使用其他时区，只需更改ZoneId即可
+//            // 例如，使用纽约时区
+//            ZonedDateTime zonedDateTimeNewYork = instant.atZone(ZoneId.of("America/New_York"));
+//
+//            // 打印结果
+//            System.out.println("UTC Time: " + zonedDateTime);
+//            System.out.println("New York Time: " + zonedDateTimeNewYork);\
+        return zonedDateTime;
+        }
+
+        private static BarSeries buildAndAddData() {
         BarSeries series = new BaseBarSeriesBuilder().withName("mySeries").build();
 
         ZonedDateTime endTime = ZonedDateTime.now();

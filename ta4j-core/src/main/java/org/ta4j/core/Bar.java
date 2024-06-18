@@ -48,7 +48,7 @@ public interface Bar extends Serializable {
 
     /**
      * @return the low price of the period
-     *      * @return the low price of the period
+     *  期间的低价
      */
     Num getLowPrice();
 

@@ -67,7 +67,8 @@ import org.ta4j.core.num.Num;
  * - **市场环境**：不同市场和不同时间框架下，布林带的参数和表现可能有所不同，需要根据具体情况调整。
  *
  * ### 总结
- * Bollinger BandWidth 指标通过衡量布林带的宽度，帮助交易者识别市场波动性的变化和潜在的趋势变动。它是一个有效的工具，尤其是在布林带收缩或扩张时，可以为交易者提供有价值的交易信号。结合其他技术指标使用，可以提高交易决策的准确性。
+ * Bollinger BandWidth 指标通过衡量布林带的宽度，帮助交易者识别市场波动性的变化和潜在的趋势变动。它是一个有效的工具，尤其是在布林带收缩或扩张时，可以为交易者提供有价值的交易信号。结合其他技术指标使用，
+ *  可以提高交易决策的准确性。
  *
  * @see <a href=
  *      "http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:bollinger_band_width">

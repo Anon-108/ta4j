@@ -43,6 +43,46 @@ import org.ta4j.core.BarSeries;
  *
  * 总的来说，Tenkan-sen 是一目均衡云中的一个重要指标，它用于显示短期市场趋势的变化，并提供了一些未来价格走势的参考，有助于交易者更好地理解市场的动态并制定相应的交易策略。
  *
+ * =======================================================================
+ *
+ * Tenkan-Sen Indicator（转换线指标）是Ichimoku云图（Ichimoku Kinko Hyo）中的一个关键组成部分，用于确定市场的短期趋势。
+ *  Tenkan-Sen的计算基于一段时间内的最高价和最低价的平均值。它不仅帮助交易者了解当前趋势，还能提供潜在的交易信号和支撑/阻力水平。
+ *
+ * ### Tenkan-Sen的计算方法
+ *
+ * Tenkan-Sen的计算公式如下：
+ *
+ *  Tenkan-Sen  =  Highest High  +  Lowest Low / 2
+ *
+ * 其中，Highest High是指定周期内的最高价，Lowest Low是指定周期内的最低价。默认的计算周期为9个交易日。
+ *
+ * ### 应用
+ *
+ * 1. **趋势分析**：
+ *    - 当价格位于Tenkan-Sen上方时，表明市场处于上升趋势。
+ *    - 当价格位于Tenkan-Sen下方时，表明市场处于下降趋势。
+ *
+ * 2. **支撑和阻力**：
+ *    - 在上升趋势中，Tenkan-Sen可以作为动态支撑线。
+ *    - 在下降趋势中，Tenkan-Sen可以作为动态阻力线。
+ *
+ * 3. **交易信号**：
+ *    - 当价格从下方穿越Tenkan-Sen时，这是一个潜在的买入信号。
+ *    - 当价格从上方穿越Tenkan-Sen时，这是一个潜在的卖出信号。
+ *
+ * 4. **与其他Ichimoku指标的交叉**：
+ *    - Tenkan-Sen与Kijun-Sen的交叉可以产生重要的交易信号。
+ *    - 当Tenkan-Sen从下方穿越Kijun-Sen时，这是一个看涨信号，称为“黄金交叉”。
+ *    - 当Tenkan-Sen从上方穿越Kijun-Sen时，这是一个看跌信号，称为“死亡交叉”。
+ *
+ * ### 实际意义
+ *
+ * - **短期趋势判断**：Tenkan-Sen作为一个短期趋势指标，可以帮助交易者快速判断当前市场的短期趋势。
+ * - **市场强度评估**：通过观察价格与Tenkan-Sen的位置关系，交易者可以评估市场的强度和动量。
+ * - **辅助决策**：结合其他Ichimoku指标（如Kijun-Sen、Senkou Span A和Senkou Span B），Tenkan-Sen可以为交易者提供更全面的市场分析和交易决策支持。
+ *
+ * 总的来说，Tenkan-Sen Indicator 是Ichimoku云图中的重要组成部分，通过计算指定周期内的最高价和最低价的平均值，提供了对市场短期趋势的有效判断，帮助交易者识别交易信号和支撑/阻力水平。
+ *
  * @see <a href=
  *      "http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:ichimoku_cloud">
  *      http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:ichimoku_cloud</a>

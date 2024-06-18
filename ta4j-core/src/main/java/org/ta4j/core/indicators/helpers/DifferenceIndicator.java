@@ -29,7 +29,7 @@ import org.ta4j.core.num.Num;
 
 /**
  * Difference indicator.
- * 差异指标。
+ * 差异指标。/差值指标
  *
  * I.e.: first - second
  * 即：第一 - 第二

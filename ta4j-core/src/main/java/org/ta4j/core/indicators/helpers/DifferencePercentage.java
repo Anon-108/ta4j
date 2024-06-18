@@ -30,13 +30,13 @@ import org.ta4j.core.num.Num;
 
 /**
  * Difference Change Indicator.
- * 差异变化指标。
+ * 差异变化指标。/差异百分比
  *
  * Get the difference in percentage from the last time the threshold was reached.
  * 获取与上次达到阈值时的百分比差异。
  *
  * Or if you don't pass the threshold you will always just get the difference percentage from the precious value.
- * 或者，如果您没有通过阈值，您将始终只从珍贵值中获得差异百分比。
+ * 或者，如果您没有通过阈值，您将始终只能获得宝贵价值的差异百分比。
  *
  *
  * "差异变化指标"（Difference Change Indicator）通常指的是用于衡量两个时间点之间差异变化的指标。这种指标可以帮助分析价格、指标或其他数据在不同时间段内的变化幅度和趋势。
@@ -56,8 +56,10 @@ import org.ta4j.core.num.Num;
 public class DifferencePercentage extends CachedIndicator<Num> {
 
     private final Indicator<Num> indicator;
+    /**百分比阈值*/
     private final Num percentageThreshold;
     private final Num hundred;
+    /**最后通知*/
     private Num lastNotification;
 
     public DifferencePercentage(Indicator<Num> indicator) {

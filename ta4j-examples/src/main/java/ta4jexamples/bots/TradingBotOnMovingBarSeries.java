@@ -25,15 +25,11 @@ package ta4jexamples.bots;
 
 import java.time.Duration;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
-import org.ta4j.core.Bar;
-import org.ta4j.core.BarSeries;
-import org.ta4j.core.BaseBar;
-import org.ta4j.core.BaseStrategy;
-import org.ta4j.core.BaseTradingRecord;
-import org.ta4j.core.Strategy;
-import org.ta4j.core.Trade;
-import org.ta4j.core.TradingRecord;
+import org.ta4j.core.*;
 import org.ta4j.core.indicators.SMAIndicator;
 import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
 import org.ta4j.core.num.DecimalNum;
@@ -98,6 +94,33 @@ public class TradingBotOnMovingBarSeries {
         return buySellSignals;
     }
 
+    private static Map<String ,Strategy> buildStrategyToMap(BarSeries series, Map<String, Indicator> indicatorMap) {
+        if (series == null) {
+            throw new IllegalArgumentException("Series cannot be null 系列不能为空");
+        }
+        ClosePriceIndicator closePrice = (ClosePriceIndicator)indicatorMap.get("closePrice");
+        Map<String, Strategy> map = new HashMap<>();
+        Indicator sma = indicatorMap.get("SMA");
+        if (Objects.nonNull(sma)){
+            Strategy buySellSignals = new BaseStrategy(new OverIndicatorRule(sma, closePrice),
+                    new UnderIndicatorRule(sma, closePrice));
+            map.put("SMA",buySellSignals);
+        }
+
+//        ClosePriceIndicator closePrice = new ClosePriceIndicator(series);
+//        SMAIndicator sma = new SMAIndicator(closePrice, 12);
+
+        // Signals
+        // 信号
+        // Buy when SMA goes over close price
+        // 当 SMA 超过收盘价时买入
+        // Sell when close price goes over SMA
+        // 当收盘价超过 SMA 时卖出
+//        Strategy buySellSignals = new BaseStrategy(new OverIndicatorRule(sma, closePrice),
+//                new UnderIndicatorRule(sma, closePrice));
+        return map;
+    }
+
     /**
      * Generates a random decimal number between min and max.
      * * 生成一个介于 min 和 max 之间的随机十进制数。
@@ -146,7 +169,17 @@ public class TradingBotOnMovingBarSeries {
 
         // Building the trading strategy
         // 构建交易策略
-        Strategy strategy = buildStrategy(series);
+//        Strategy strategy = buildStrategy(series);
+
+        Map<String, Indicator> mapIndicator = new HashMap<>();
+
+        ClosePriceIndicator closePrice = new ClosePriceIndicator(series);
+        SMAIndicator sma = new SMAIndicator(closePrice, 12);
+        mapIndicator.put("SMA",sma);
+        mapIndicator.put("closePrice",closePrice);
+        Map<String, Strategy> builtStrategy = buildStrategyToMap(series, mapIndicator);
+        Strategy strategy = builtStrategy.get("SMA");
+
 
         // Initializing the trading history
         // 初始化交易历史
@@ -163,15 +196,14 @@ public class TradingBotOnMovingBarSeries {
             // 新栏
             Thread.sleep(30); // I know... // 我知道...
             Bar newBar = generateRandomBar();
-            System.out.println("------------------------------------------------------\n" + "Bar " + i
-                    + " added, close price 补充，收盘价 = " + newBar.getClosePrice().doubleValue());
+//            System.out.println("------------------------------------------------------\n" + "Bar " + i + " added, close price 补充，收盘价 = " + newBar.getClosePrice().doubleValue());
             series.addBar(newBar);
 
             int endIndex = series.getEndIndex();
             if (strategy.shouldEnter(endIndex)) {
                 // Our strategy should enter
                 // 我们的策略应该进入
-                System.out.println("Strategy should ENTER on 策略应进入 " + endIndex);
+//                System.out.println("Strategy should ENTER on 策略应进入 " + endIndex);
                 boolean entered = tradingRecord.enter(endIndex, newBar.getClosePrice(), DecimalNum.valueOf(10));
                 if (entered) {
                     Trade entry = tradingRecord.getLastEntry();
@@ -181,7 +213,7 @@ public class TradingBotOnMovingBarSeries {
             } else if (strategy.shouldExit(endIndex)) {
                 // Our strategy should exit
                 // 我们的策略应该退出
-                System.out.println("Strategy should EXIT on  策略应退出" + endIndex);
+//                System.out.println("Strategy should EXIT on  策略应退出" + endIndex);
                 boolean exited = tradingRecord.exit(endIndex, newBar.getClosePrice(), DecimalNum.valueOf(10));
                 if (exited) {
                     Trade exit = tradingRecord.getLastExit();

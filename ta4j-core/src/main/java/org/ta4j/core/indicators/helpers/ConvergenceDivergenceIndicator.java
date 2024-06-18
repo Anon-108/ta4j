@@ -34,24 +34,8 @@ import org.ta4j.core.rules.IsRisingRule;
 
 /**
  * Indicator-convergence-divergence.
- * * 指标-收敛-发散。  TODO ?? 是否为MACD??
- *
- * “Indicator convergence divergence”可能是指MACD（Moving Average Convergence Divergence）指标，这是一种广泛用于技术分析的指标。
- *
- * MACD指标由两条线组成：快速线（MACD线）和慢速线（信号线）。快速线是两个移动平均线之间的差异，通常是12天指数移动平均线减去26天指数移动平均线。慢速线是快速线的9天指数移动平均线。MACD的计算方法如下：
- *
- * 1. 计算12天指数移动平均线（EMA）。
- * 2. 计算26天指数移动平均线。
- * 3. 计算快速线（MACD线）：12天EMA减去26天EMA。
- * 4. 计算慢速线（信号线）：MACD线的9天EMA。
- *
- * MACD指标的主要应用包括：
- * - **趋势确认**：当MACD线交叉信号线向上时，可能表示买入信号；当MACD线交叉信号线向下时，可能表示卖出信号。
- * - **趋势强度**：MACD柱状图的高度可以反映价格趋势的强度。柱状图的增长表示价格加速上涨或下跌的动力增加，柱状图的缩小则表示价格动力减弱。
- * - **背离**：价格和MACD之间的背离可能暗示着价格趋势的转变。
- *
- * MACD指标在技术分析中是非常常用的工具之一，但在使用时，需要结合其他指标和分析方法，并且根据具体市场情况进行调整和确认。
- *
+ * * 指标-收敛-发散。/指标收敛背离
+ *收敛散度指标
  */
 public class ConvergenceDivergenceIndicator extends CachedIndicator<Boolean> {
 
@@ -61,103 +45,90 @@ public class ConvergenceDivergenceIndicator extends CachedIndicator<Boolean> {
      */
     public enum ConvergenceDivergenceType {
         /**
+         * 正收敛
          * Returns true for <b>"positiveConvergent"</b> when the values of the ref-{@link Indicator indicator} and the values of the other-{@link Indicator indicator}
            increase within the barCount. In short: "other" and "ref" makes   higher highs.
-         当 ref-{@link Indicator indicator} 的值和 other-{@link Indicator indicator} 的值时，<b>"positiveConvergent"</b> 返回 true
-         在 barCount 内增加。 简而言之：“其他”和“参考”创造了更高的高点。
+         <b><b> 当 ref-{@link Indicator indicator} 的值和 other-{@link Indicator indicator} 的值在 barCount 中增加时，返回 “positiveConvergent” 的 true。简而言之：“其他”和“参考”会产生更高的高点。
          */
         positiveConvergent,
 
         /**
+         * 负收敛
          * Returns true for <b>"negativeConvergent"</b> when the values of the
           ref-{@link Indicator indicator} and the values of the other-{@link Indicator
           indicator} decrease within the barCount. In short: "other" and "ref" makes
          lower lows.
-         当 <b>"negativeConvergent"</b> 的值为
-         ref-{@link Indicator indicator} 和 other-{@link Indicator} 的值
-         指标} 在 barCount 内减少。 简而言之：“其他”和“参考”使
-         较低的低点。
+         <b><b> 当 ref-{@link Indicator indicator} 的值和 other-{@link Indicator indicator} 的值在 barCount 中减小时，返回 “negativeConvergent” 的 true。简而言之：“other”和“ref”表示较低的低点。
          */
         negativeConvergent,
 
         /**
+         * 正发散
          * Returns true for <b>"positiveDivergent"</b> when the values of the
           ref-{@link Indicator indicator} increase and the values of the
           other-{@link Indicator indicator} decrease within a barCount. In short:
           "other" makes lower lows while "ref" makes higher highs.
-         当 <b>"positiveDivergent"</b> 的值为
-         ref-{@link Indicator indicator} 增加并且值
-         other-{@link Indicator indicator} 在 barCount 内减少。 简而言之：
-         “其他”产生较低的低点，而“参考”产生较高的高点。
+         <b><b> 当 barCount 中 ref-{@link Indicator indicator} 的值增加而 other-{@link Indicator indicator} 的值减少时，返回 “positiveDivergent” 的 true。简而言之：“其他”表示较低的低点，而“参考”表示较高的高点。
          */
         positiveDivergent,
 
         /**
+         * 负发散
          * Returns true for <b>"negativeDivergent"</b> when the values of the
           ref-{@link Indicator indicator} decrease and the values of the
           other-{@link Indicator indicator} increase within a barCount. In short:
           "other" makes higher highs while "ref" makes lower lows.
-         当 <b>"negativeDivergent"</b> 的值为
-         ref-{@link Indicator indicator} 减少并且
-         other-{@link Indicator indicator} 在 barCount 内增加。 简而言之：
-         “其他”创造更高的高点，而“参考”创造更低的低点。
+         <b><b> 当 barCount 中 ref-{@link Indicator indicator} 的值减小而 other-{@link Indicator indicator} 的值增加时，返回 “negativeDivergent” 的 true。简而言之：“其他”表示较高的高点，而“参考”表示较低的低点。
          */
         negativeDivergent
     }
 
     /**
+     * 收敛散度严格型
      * Select the type of strict convergence or divergence.
      * 选择严格收敛或发散的类型。
      */
     public enum ConvergenceDivergenceStrictType {
 
         /**
+         * 正收敛严格
          * Returns true for <b>"positiveConvergentStrict"</b> when the values of the
           ref-{@link Indicator indicator} and the values of the other-{@link Indicator
           indicator} increase consecutively within a barCount. In short: "other" and
           "ref" makes strict higher highs.
-         当 <b>"positiveConvergentStrict"</b> 的值为
-         ref-{@link Indicator indicator} 和 other-{@link Indicator} 的值
-         指标} 在 barCount 内连续增加。 简而言之：“其他”和
-         "ref" 产生严格的更高的高点。
+         <b><b> 当 ref-{@link Indicator indicator} 的值和 other-{@link Indicator indicator} 的值在 barCount 中连续增加时，返回 “positiveConvergentStrict” 的 true。简而言之：“其他”和“参考”严格表示更高的高点。
          */
         positiveConvergentStrict,
 
         /**
+         * 负收敛严格
          * Returns true for <b>"negativeConvergentStrict"</b> when the values of the
           ref-{@link Indicator indicator} and the values of the other-{@link Indicator
           indicator} decrease consecutively within a barCount. In short: "other" and
           "ref" makes strict lower lows.
-         当 <b>"negativeConvergentStrict"</b> 的值为
-         ref-{@link Indicator indicator} 和 other-{@link Indicator} 的值
-         指标} 在 barCount 内连续减少。 简而言之：“其他”和
-         "ref" 形成严格的低点。
+         <b><b> 当 ref-{@link Indicator indicator} 的值和 other-{@link Indicator indicator} 的值在 barCount 内连续减小时，为 “negativeConvergentStrict” 返回 true。简而言之：“other”和“ref”表示严格的较低低点。
          */
         negativeConvergentStrict,
 
         /**
+         * 正 发散 严格
          * Returns true for <b>"positiveDivergentStrict"</b> when the values of the
           ref-{@link Indicator indicator} increase consecutively and the values of the
           other-{@link Indicator indicator} decrease consecutively within a barCount.
           In short: "other" makes strict higher highs and "ref" makes strict lower  lows.
 
-         当 <b>"positiveDivergentStrict"</b> 的值为
-         ref-{@link Indicator indicator} 连续增加，
-         other-{@link Indicator indicator} 在 barCount 内连续减少。
-         简而言之：“other”产生严格的高点，“ref”产生严格的低点。
+         <b><b> 当 ref-{@link Indicator indicator} 的值在 barCount 中连续增加而 other-{@link Indicator indicator} 的值连续减少时，返回 “positiveDivergentStrict” 的 true。简而言之：“其他”表示严格的较高高点，“ref”表示严格的较低低点。
          */
         positiveDivergentStrict,
 
         /**
+         * 负 发散 严格
          * Returns true for <b>"negativeDivergentStrict"</b> when the values of the
          ref-{@link Indicator indicator} decrease consecutively and the values of the
           other-{@link Indicator indicator} increase consecutively within a barCount.
          In short: "other" makes strict lower lows and "ref" makes strict higher  highs.
 
-         当 <b>"negativeDivergentStrict"</b> 的值为
-         ref-{@link Indicator indicator} 连续递减，
-         other-{@link Indicator indicator} 在 barCount 内连续增加。
-         简而言之：“other”是严格的低点，“ref”是严格的高点。
+         <b><b> 当 ref-{@link Indicator indicator} 的值在 barCount 中连续减小而 other-{@link Indicator indicator} 的值连续增大时，为 “negativeDivergentStrict” 返回 true。简而言之：“其他”表示严格的较低低点，“ref”表示严格的较高高点。
          */
         negativeDivergentStrict
     }

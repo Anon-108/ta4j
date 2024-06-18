@@ -53,6 +53,35 @@ import org.ta4j.core.num.Num;
  *
  * 交易者可以利用查金振荡器来识别价格趋势的转折点和交易信号。例如，当查金振荡器从负值转变为正值时，可能意味着价格上涨的趋势即将开始；相反，当查金振荡器从正值转变为负值时，可能意味着价格下跌的趋势即将开始。
  *
+ * ==========================================================
+ * `Chaikin Oscillator Indicator`（柴金震荡指标）是一种技术分析工具，用于衡量市场中的买卖压力和潜在的趋势变化。它结合了价格和交易量数据，通过对累积/派发线（Accumulation/Distribution Line, ADL）进行快速和慢速的指数移动平均线（EMA）处理，旨在识别资金流动的变化。
+ *
+ * ### 柴金震荡指标的计算步骤
+ *
+ * 1. **计算累积/派发线（ADL）**：
+ *    - ADL反映了市场中资金的累计进出情况，通常通过每个交易期的货币流量量（Money Flow Volume, MFV）累加得到。
+ *
+ * 2. **计算ADL的快速EMA和慢速EMA**：
+ *    - 快速EMA（通常为3天）和慢速EMA（通常为10天）的计算步骤如下：
+ *      \[ \text{Fast EMA} = \text{EMA}(ADL, \text{fast period}) \]
+ *      \[ \text{Slow EMA} = \text{EMA}(ADL, \text{slow period}) \]
+ *
+ * 3. **计算柴金震荡指标**：
+ *    - 柴金震荡指标是快速EMA与慢速EMA之差：
+ *      \[ \text{Chaikin Oscillator} = \text{Fast EMA} - \text{Slow EMA} \]
+ *
+ * ### 使用场景
+ *
+ * 1. **识别趋势变化**：柴金震荡指标可以帮助识别市场中的趋势变化。如果指标从负值变为正值，表明买方力量增强，可能是买入信号；如果指标从正值变为负值，表明卖方力量增强，可能是卖出信号。
+ *
+ * 2. **确认交易信号**：柴金震荡指标可以用来确认其他技术分析工具发出的买卖信号。例如，如果某一技术指标发出买入信号，而柴金震荡指标也从负值转为正值，则信号的可靠性更高。
+ *
+ * 3. **分析市场动量**：柴金震荡指标可以用于分析市场动量和资金流动，识别市场中的买卖压力变化。
+ *
+ * ### 总结
+ *
+ * `Chaikin Oscillator Indicator` 是一种结合价格和交易量的技术分析工具，通过对累积/派发线（ADL）进行快速和慢速的指数移动平均线（EMA）处理来衡量市场中的买卖压力。通过计算和分析柴金震荡指标，投资者和交易者可以更好地理解市场趋势，识别潜在的趋势变化信号，并制定有效的交易策略。该指标对于确认交易信号和分析市场动量特别有用。
+ *
  * @see <a href=
  *      "http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:chaikin_oscillator">
  *      http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:chaikin_oscillator</a>

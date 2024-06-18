@@ -32,7 +32,7 @@ import org.ta4j.core.num.Num;
  * 交叉指标。
  *
  * Boolean indicator which monitors two-indicators crossings.
- * 监控两个指标交叉点的布尔指标。
+ * 布尔指标，用于监控两个指标的交叉。
  *
  * "Cross indicator" 并不是一个特定的技术分析指标，但这个术语可能指的是两条线或曲线在图表上交叉的情况，通常用于判断买入或卖出的信号。
  *

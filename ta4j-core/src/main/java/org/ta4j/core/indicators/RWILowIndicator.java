@@ -28,6 +28,7 @@ import org.ta4j.core.num.NaN;
 import org.ta4j.core.num.Num;
 
 /**
+ * TODO 趋势 和 超卖
  * The Class RandomWalkIndexLowIndicator.
  * 类随机游走指数低指标。
  *

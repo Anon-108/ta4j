@@ -44,6 +44,44 @@ import org.ta4j.core.num.Num;
  *
  * 总的来说，Senkou Span A 是一目均衡云中的一个重要指标，它用于显示未来的价格走势，并提供了一些支撑/阻力水平，有助于交易者做出更明智的交易决策。
  *
+ * =========================================================
+ * 
+ * Senkou Span A Indicator（先行A线指标）是Ichimoku云图（Ichimoku Kinko Hyo）的一部分。它是通过计算Tenkan-Sen（转换线）和Kijun-Sen（基准线）的平均值，然后将其向前平移一定的周期数来绘制的。
+ *  Senkou Span A与Senkou Span B共同形成了Ichimoku云图中的“云”（Kumo），用于识别支撑和阻力区域以及市场趋势。
+ *
+ * ### Senkou Span A的计算方法
+ *
+ * Senkou Span A的计算公式如下：
+ *
+ * Senkou Span A = Tenkan-Sen + Kijun-Sen / 2
+ *
+ * 然后将结果向前平移26个周期（默认设置，可以根据需要调整）。
+ *
+ * ### 应用
+ *
+ * 1. **趋势判断**：
+ *    - 当价格位于云的上方时，市场处于上升趋势。
+ *    - 当价格位于云的下方时，市场处于下降趋势。
+ *    - 当价格位于云的内部时，市场处于震荡或过渡阶段。
+ *
+ * 2. **支撑和阻力**：
+ *    - 云的上边界（Senkou Span A）和下边界（Senkou Span B）作为动态支撑和阻力水平。
+ *    - 在上升趋势中，Senkou Span A和Senkou Span B之间的区域可以作为支撑区域。
+ *    - 在下降趋势中，Senkou Span A和Senkou Span B之间的区域可以作为阻力区域。
+ *
+ * 3. **强度和弱度**：
+ *    - 云的厚度反映了市场的波动性和强度。较厚的云表示市场波动较大，较薄的云表示市场波动较小。
+ *    - 当Senkou Span A从下向上穿越Senkou Span B时，形成一个看涨信号，称为“黄金交叉”。
+ *    - 当Senkou Span A从上向下穿越Senkou Span B时，形成一个看跌信号，称为“死亡交叉”。
+ *
+ * ### 实际意义
+ *
+ * - **市场结构**：Senkou Span A与Senkou Span B一起形成了Ichimoku云图中的云，帮助交易者识别市场结构和潜在的支撑/阻力区域。
+ * - **趋势强度**：云的厚度和相对位置可以帮助交易者评估当前趋势的强度和可能的反转点。
+ * - **信号确认**：结合Ichimoku云图的其他指标，Senkou Span A可以用来确认交易信号，增加交易决策的准确性。
+ *
+ * 总的来说，Senkou Span A Indicator 是Ichimoku云图中的关键组成部分，通过计算Tenkan-Sen和Kijun-Sen的平均值并向前平移，帮助交易者识别市场趋势、支撑和阻力水平以及市场的整体结构。
+ * 
  * @see <a href=
  *      "http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:ichimoku_cloud">
  *      http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:ichimoku_cloud</a>

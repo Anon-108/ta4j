@@ -56,6 +56,7 @@ public class Quickstart {
         // Getting a bar series (from any provider: CSV, web service, etc.)
         // 获取条形系列（来自任何提供者：CSV、Web 服务等）
         BarSeries series = CsvTradesLoader.loadBitstampSeries();
+        series.setMaximumBarCount(50);
 
         // Getting the close price of the bars
         // 获取柱的收盘价
@@ -91,7 +92,12 @@ public class Quickstart {
         // - or if the price goes below a defined price (e.g $800.00)
         // - 或者如果价格低于定义的价格（例如 $800.00）
         Rule buyingRule = new CrossedUpIndicatorRule(shortSma, longSma)
-                .or(new CrossedDownIndicatorRule(closePrice, 800));
+                .or(new CrossedDownIndicatorRule(closePrice, 800))
+                .or(new CrossedDownIndicatorRule(closePrice, 700))
+                .or(new CrossedDownIndicatorRule(closePrice, 600))
+                .or(new CrossedDownIndicatorRule(closePrice, 500))
+                .or(new CrossedDownIndicatorRule(closePrice, 400))
+                .or(new CrossedDownIndicatorRule(closePrice, 300));
 
         // Selling rules
         // 销售规则

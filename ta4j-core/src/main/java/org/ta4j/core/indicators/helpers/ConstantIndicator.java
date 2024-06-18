@@ -28,7 +28,7 @@ import org.ta4j.core.indicators.AbstractIndicator;
 
 /**
  * Constant indicator.
- * 恒定指标。
+ * 常数指标
  *
  * "Constant indicator"（常数指标）并不是一个常见的技术分析指标，因为它不随市场价格的波动而变化。相反，它是一个静态值，通常在技术分析中用于设置阈值、参数或者作为其他指标的一部分。这种指标在定义时通常不依赖于价格数据，而是被固定在某个数值上。
  *
