@@ -23,23 +23,25 @@
  */
 package org.ta4j.core.utils;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 
-import org.ta4j.core.Bar;
-import org.ta4j.core.BarSeries;
-import org.ta4j.core.BaseBarSeries;
-import org.ta4j.core.BaseBarConvertibleBuilder;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.ta4j.core.*;
 import org.ta4j.core.aggregator.BarAggregator;
 import org.ta4j.core.aggregator.BarSeriesAggregator;
 import org.ta4j.core.aggregator.BaseBarSeriesAggregator;
 import org.ta4j.core.aggregator.DurationBarAggregator;
+import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
 import org.ta4j.core.num.Num;
+import org.ta4j.core.rules.OverIndicatorRule;
+import org.ta4j.core.rules.UnderIndicatorRule;
 
 /**
  * Common utilities and helper methods for {@link BarSeries}.
@@ -54,6 +56,96 @@ public final class BarSeriesUtils {
 
     private BarSeriesUtils() {
     }
+
+
+    public static BarSeries buildBinanceData(int limit,String fileName) throws IOException {
+        int num = 0;
+        BarSeries series = new BaseBarSeriesBuilder().withName("BTC/USDT").build();
+//        String fileName = "2024-06-15_28_2000.json";
+//        String fileName = "2024-06-13_18.json";
+        String filePath = "D:\\Program Files\\Code\\XChange\\xchange-examples\\src\\main\\resources\\dataFile\\"+fileName; // 文件的路径
+        ObjectMapper objectMapper = new ObjectMapper(); // 可以重用此实例
+
+        try {
+            List<LinkedHashMap<String,Object>> klines = objectMapper.readValue(new File(filePath), List.class);
+            for (LinkedHashMap<String,Object> kline : klines) {
+                if (limit > 0 && num == limit){
+                    break;
+                }
+                num++;
+                String instrument = (String) kline.get("instrument");
+                String interval = (String) kline.get("interval");
+                ZonedDateTime openTime = timestampToZonedDateTime((long) kline.get("openTime"));
+                ZonedDateTime closeTime = timestampToZonedDateTime((long) kline.get("closeTime"));
+                double open = (double) kline.get("open");
+                double high = (double) kline.get("high");
+                double low = (double) kline.get("low");
+                double close = (double) kline.get("close");
+                double volume = (double) kline.get("volume");
+//                double quoteAssetVolume = (double) kline.get("quoteAssetVolume");
+//                long numberOfTrades = (long) kline.get("numberOfTrades");
+//                double takerBuyBaseAssetVolume = (double) kline.get("takerBuyBaseAssetVolume");
+//                double takerBuyQuoteAssetVolume = (double) kline.get("takerBuyQuoteAssetVolume");
+//                boolean closed = (boolean) kline.get("closed");
+                series.addBar(Duration.ofHours(1),closeTime,open,high,low,close,volume);
+
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return series;
+    }
+
+    public static ZonedDateTime timestampToZonedDateTime( long timestamp) {
+//        timestamp +=1; // 增加时间，补充时间戳 2017-08-17T11:59:59.999
+
+        // 假设我们有一个时间戳，这里以毫秒为单位（从1970-01-01T00:00:00Z开始）
+//            long timestamp = 1609459200000L; // 例如，这是一个UTC时间戳
+
+        // 首先，我们将时间戳转换为Instant对象
+        Instant instant = Instant.ofEpochMilli(timestamp);
+
+        // 然后，我们可以将Instant转换为ZonedDateTime。这里我们使用UTC时区作为示例
+//        ZonedDateTime zonedDateTime = instant.atZone(ZoneId.of("UTC"));
+//        ZonedDateTime zonedDateTime2 = instant.atZone(ZoneId.of("GMT"));
+        ZonedDateTime zonedDateTime = instant.atZone(ZoneId.of("Asia/Shanghai"));
+
+//            // 如果你想要使用其他时区，只需更改ZoneId即可
+//            // 例如，使用纽约时区
+//            ZonedDateTime zonedDateTimeNewYork = instant.atZone(ZoneId.of("America/New_York"));!
+//
+//            // 打印结果
+//            System.out.println("UTC Time: " + zonedDateTime);
+//            System.out.println("New York Time: " + zonedDateTimeNewYork);
+
+
+//// 截断到小时，获取当前小时的开始时间
+//        ZonedDateTime startOfHourInShanghai = zonedDateTime.truncatedTo(java.time.temporal.ChronoUnit.HOURS);
+//
+//// 打印结果
+//        System.out.println("Current time in Shanghai: " + zonedDateTime);
+//        System.out.println("Start of current hour in Shanghai: " + startOfHourInShanghai);
+
+
+        return zonedDateTime;
+    }
+
+    public static Map<String , Strategy> buildStrategyToMap(BarSeries series, Map<String, Indicator> indicatorMap) {
+        if (series == null) {
+            throw new IllegalArgumentException("Series cannot be null 系列不能为空");
+        }
+        ClosePriceIndicator closePrice = (ClosePriceIndicator) indicatorMap.get("closePrice");
+        Map<String, Strategy> map = new HashMap<>();
+        Indicator sma = indicatorMap.get("SMA");
+        if (Objects.nonNull(sma)) {
+            Strategy buySellSignals = new BaseStrategy(new OverIndicatorRule(sma, closePrice),
+                    new UnderIndicatorRule(sma, closePrice));
+            map.put("SMA", buySellSignals);
+        }
+        return map;
+    }
+
 
     /**
      * Aggregates a list of bars by {@code timePeriod}. The new {@code timePeriod}

@@ -47,14 +47,13 @@ import org.ta4j.core.num.Num;
  *
  * ATR指标的值表示资产价格的平均波动幅度。通常情况下，ATR值越高，表示价格波动越大，市场越具有波动性；而ATR值越低，则表示价格波动较小，市场越平稳。
  *
- * 交易者可以利用ATR指标来确认价格波动性的水平，并结合其他技术指标一起使用，以辅助他们的交易决策。例如，在制定止损和止盈策略时，可以使用ATR指标来确定合适的止损和止盈距离；在确认趋势的强度时，
- * 可以使用ATR指标来判断价格波动是否符合预期。
- * TODO 与 Trading view 中 ATR指标的RMA 一致
+ * 交易者可以利用ATR指标来确认价格波动性的水平，并结合其他技术指标一起使用，以辅助他们的交易决策。例如，在制定止损和止盈策略时，可以使用ATR指标来确定合适的止损和止盈距离；在确认趋势的强度时，可以使用ATR指标来判断价格波动是否符合预期。
+ *
  */
-public class ATRIndicator extends AbstractIndicator<Num> {
+public class ATRIndicatorWMA extends AbstractIndicator<Num> {
 
     private final TRIndicator trIndicator;
-    private final MMAIndicator averageTrueRangeIndicator;
+    private final WMAIndicator averageTrueRangeIndicator;
 
     /**
      * Constructor.
@@ -62,7 +61,7 @@ public class ATRIndicator extends AbstractIndicator<Num> {
      * @param series   the bar series
      * @param barCount the time frame
      */
-    public ATRIndicator(BarSeries series, int barCount) {
+    public ATRIndicatorWMA(BarSeries series, int barCount) {
         this(new TRIndicator(series), barCount);
     }
 
@@ -72,10 +71,10 @@ public class ATRIndicator extends AbstractIndicator<Num> {
      * @param tr       the {@link TRIndicator}
      * @param barCount the time frame
      */
-    public ATRIndicator(TRIndicator tr, int barCount) {
+    public ATRIndicatorWMA(TRIndicator tr, int barCount) {
         super(tr.getBarSeries());
         this.trIndicator = tr;
-        this.averageTrueRangeIndicator = new MMAIndicator(new TRIndicator(tr.getBarSeries()), barCount);
+        this.averageTrueRangeIndicator = new WMAIndicator(new TRIndicator(tr.getBarSeries()), barCount);
     }
 
     @Override
@@ -95,7 +94,7 @@ public class ATRIndicator extends AbstractIndicator<Num> {
 
     /** @return the bar count of {@link #averageTrueRangeIndicator} */
     public int getBarCount() {
-        return averageTrueRangeIndicator.getBarCount();
+        return averageTrueRangeIndicator.getBarSeries().getBarCount();
     }
 
     @Override

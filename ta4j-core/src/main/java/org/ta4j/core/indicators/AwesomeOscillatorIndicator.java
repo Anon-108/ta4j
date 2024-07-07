@@ -31,7 +31,7 @@ import org.ta4j.core.num.Num;
 /**
  * Awesome oscillator (AO) indicator.
  * Awesome oscillator. (AO)
- * 很棒的振荡器。 (AO)
+ * 动量震动策略。 (AO)
  *
  * 令人敬畏的振荡器（Awesome Oscillator，AO）是一种技术指标，用于帮助交易者确认资产价格的趋势方向和趋势的强度。它是由比尔·威廉姆斯（Bill Williams）开发的，旨在捕捉市场的动能。
  *

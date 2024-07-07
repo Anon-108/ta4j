@@ -85,7 +85,8 @@ public class BaseBar implements Bar {
         checkTimeArguments(timePeriod, endTime);
         this.timePeriod = timePeriod;
         this.endTime = endTime;
-        this.beginTime = endTime.minus(timePeriod);
+//        this.beginTime = endTime.minus(timePeriod);
+        this.beginTime = endTime.truncatedTo(java.time.temporal.ChronoUnit.HOURS);
         this.volume = numFunction.apply(0);
         this.amount = numFunction.apply(0);
     }
@@ -401,7 +402,8 @@ public class BaseBar implements Bar {
         checkTimeArguments(timePeriod, endTime);
         this.timePeriod = timePeriod;
         this.endTime = endTime;
-        this.beginTime = endTime.minus(timePeriod);
+//        this.beginTime = endTime.minus(timePeriod);
+        this.beginTime = endTime.truncatedTo(java.time.temporal.ChronoUnit.HOURS);
         this.openPrice = openPrice;
         this.highPrice = highPrice;
         this.lowPrice = lowPrice;

@@ -55,7 +55,7 @@ import org.ta4j.core.num.Num;
  *
  * @see <a href=
  *      "https://school.stockcharts.com/doku.php?id=technical_indicators:distance_from_ma">
- *      https://school.stockcharts.com/doku.php?id=technical_indicators:distance_from_ma
+ *      https://school.stockcharts.com/doku.php?id=technical_indicators:distance_from_ma   。
  *      </a>
  */
 public class DistanceFromMAIndicator extends CachedIndicator<Num> {
