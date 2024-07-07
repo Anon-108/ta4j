@@ -58,12 +58,12 @@ public final class BarSeriesUtils {
     }
 
 
-    public static BarSeries buildBinanceData(int limit,String fileName) throws IOException {
+    public static BarSeries buildBinanceData(int limit,String filePath) throws IOException {
         int num = 0;
         BarSeries series = new BaseBarSeriesBuilder().withName("BTC/USDT").build();
 //        String fileName = "2024-06-15_28_2000.json";
 //        String fileName = "2024-06-13_18.json";
-        String filePath = "D:\\Program Files\\Code\\XChange\\xchange-examples\\src\\main\\resources\\dataFile\\"+fileName; // 文件的路径
+//        String filePath = "D:\\Program Files\\Code\\XChange\\xchange-examples\\src\\main\\resources\\dataFile\\"+fileName; // 文件的路径
         ObjectMapper objectMapper = new ObjectMapper(); // 可以重用此实例
 
         try {
