@@ -33,11 +33,13 @@ import org.ta4j.core.num.Num;
  * A facade to create the 3 Bollinger Band indicators. A simple moving average
  * of close price is used as the middle band. The BB bandwidth and %B indicators
  * can also be created on demand.
+ * 创建 3 个布林线指标的外观。收盘价的简单移动平均线用作中线。 BB 带宽和 %B 指标也可以按需创建。
  *
  * <p>
  * This class creates lightweight "fluent" numeric indicators. These objects are
  * not cached, although they may be wrapped around cached objects. Overall there
  * is less caching and probably better performance.
+ * 此类创建轻量级“流畅”数字指示器。这些对象不会被缓存，尽管它们可能包裹在缓存的对象周围。总的来说，缓存更少，性能可能更好。
  */
 public class BollingerBandFacade {
 

@@ -45,6 +45,7 @@ import org.ta4j.core.rules.UnderIndicatorRule;
  * NumericIndicator is a "fluent decorator" for Indicator<Num>. It provides
  * methods to create rules and other "lightweight" indicators, using a
  * (hopefully) natural-looking and expressive series of method calls.
+ * NumericIndicator 是 Indicator<Num> 的“流畅装饰器”。它提供了创建规则和其他“轻量级”指标的方法，使用（希望如此）自然且富有表现力的一系列方法调用
  * 
  * <p>
  * Methods like plus(), minus() and sqrt() correspond directly to methods in the
