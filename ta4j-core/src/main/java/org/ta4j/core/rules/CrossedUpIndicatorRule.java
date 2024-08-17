@@ -32,6 +32,7 @@ import org.ta4j.core.num.Num;
 /**
  * Satisfied when the value of the first {@link Indicator indicator} crosses-up
  * the value of the second one.
+ * 当第一个{@link Indicator指示符}的值与第二个指示符的值相交时感到满意。
  */
 public class CrossedUpIndicatorRule extends AbstractRule {
 

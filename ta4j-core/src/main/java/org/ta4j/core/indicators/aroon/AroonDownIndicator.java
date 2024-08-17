@@ -36,17 +36,67 @@ import org.ta4j.core.num.Num;
  * Aroon down indicator.
  * 阿隆下跌指标。
  *
- * Aroon下降指标是用于衡量价格下降趋势强度和时间的技术指标。它是由Tushar Chande在他的书《新的技术指标》（New Technical Indicators）中提出的。Aroon指标基于两个主要组成部分：Aroon Up和Aroon Down。
+ * AroonDownIndicator 是一种技术分析工具，用于衡量某一特定时间周期内市场处于低点的频率和强度。
+ * 该指标是 Aroon 指标的一部分，Aroon 指标由 Tushar Chande 于 1995 年开发，用于识别市场趋势的变化和趋势的强度。
  *
- * Aroon Down指标衡量了在一定时间周期内，价格创下新低点后经过的期间。Aroon Down值的计算公式如下：
+ * ### AroonDownIndicator 的定义
  *
- *  Aroon Down  = (周期 - 自价格出现新高后的周期数) / 周期 * 100
+ * AroonDownIndicator 主要用于识别价格在特定时间周期内达到最低点的频率。它通过计算从最近一次最低价到当前时间的天数来反映市场趋势的强弱。
  *
- * 通常，周期的设定是比较近期的若干个交易周期。例如，若周期设定为25个交易周期，Aroon Down将计算最近25个交易周期内价格创下新低点后经过的周期数，并以百分比的形式表示。
+ * ### 计算公式
  *
- * Aroon Down指标的数值范围从0到100，数值越高，表示价格创新低后经过的时间越长，即价格下降趋势的强度越高。
+ * \[
+ * \text{AroonDown} = \frac{n - \text{Days Since Lowest}}{n} \times 100
+ * \]
  *
- * 交易者通常将Aroon Down指标与Aroon Up指标结合使用。当Aroon Down高于Aroon Up时，可能暗示着价格处于下降趋势；反之，当Aroon Up高于Aroon Down时，则可能暗示着价格处于上升趋势。此外，Aroon指标还可用于识别价格趋势的转折点和确认交易信号。
+ * 其中：
+ * - \(n\) 是选定的时间周期（例如 14 天）。
+ * - \(\text{Days Since Lowest}\) 是从最近一次最低价到当前时间的天数。
+ *
+ * ### 计算步骤
+ *
+ * 1. **选择时间周期**：决定用于计算 AroonDown 的时间周期（例如 14 天）。
+ * 2. **收集数据**：对于每一天，收集前 n 天的价格数据。
+ * 3. **找出最低价**：在每个时间点 t，找出前 n 天内的最低价格，并计算从最低价到当前时间的天数。
+ * 4. **计算 AroonDown**：根据公式计算 AroonDown 指标。
+ *
+ * ### 计算实例
+ *
+ * 假设选择的时间周期是 14 天，并且我们要计算第 15 天的 AroonDownIndicator：
+ *
+ * 1. **时间周期**：14 天
+ * 2. **数据**：前 14 天的价格数据，例如：
+ *    \[
+ *    [50, 52, 48, 47, 51, 53, 49, 46, 50, 55, 54, 48, 45, 47]
+ *    \]
+ * 3. **找出最低价**：在这 14 天内，最低价是 45，出现在第 13 天。
+ * 4. **计算天数**：从第 13 天到第 15 天的天数是 2 天。
+ * 5. **计算 AroonDown**：根据公式计算：
+ *    \[
+ *    \text{AroonDown} = \frac{14 - 2}{14} \times 100 \approx 85.71
+ *    \]
+ *
+ * 因此，第 15 天的 AroonDownIndicator 值约为 85.71。
+ *
+ * ### 用途
+ *
+ * 1. **趋势识别**：
+ *    - 高 AroonDown 值（接近 100）表明价格最近达到最低点，市场可能处于下降趋势中。
+ *    - 低 AroonDown 值（接近 0）表明价格在较长时间内没有达到最低点，市场可能处于上升趋势中。
+ *
+ * 2. **交易信号**：
+ *    - **卖出信号**：当 AroonDown 上升并接近 100，表明市场可能进入下降趋势，可以考虑卖出。
+ *    - **买入信号**：当 AroonDown 下降并接近 0，表明市场可能进入上升趋势，可以考虑买入。
+ *
+ * ### 实际应用
+ *
+ * 在实际应用中，交易者可以将 AroonDownIndicator 与 AroonUpIndicator 结合使用，以更全面地分析市场趋势。
+ *  AroonUpIndicator 衡量市场在特定时间周期内达到最高点的频率，两者结合可以更准确地识别市场的趋势变化。
+ *
+ * ### 总结
+ *
+ * AroonDownIndicator 是一种有效的技术分析工具，通过衡量市场在特定时间周期内达到最低点的频率，
+ *  帮助交易者识别市场的下降趋势和潜在的交易机会。结合其他技术指标，交易者可以更全面地分析市场动态，制定更有效的交易策略。
  *
  * @see <a href=
  *      "http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:aroon">chart_school:technical_indicators:aroon</a>

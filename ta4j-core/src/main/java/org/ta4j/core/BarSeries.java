@@ -253,6 +253,8 @@ public interface BarSeries extends Serializable {
      * @param replace true to replace the latest bar. Some exchanges continuously
      *                provide new bar data in the respective period, e.g. 1 second
      *                in 1 minute duration.
+     *                true 替换最新的 bar。一些交易所在各自的时期内不断提供新的柱数据，例如1 分钟持续时间为 1 秒。
+     *
      * @apiNote to add bar data directly you can use
      *          {@link #addBar(Duration, ZonedDateTime, Num, Num, Num, Num, Num)}
      * @see BarSeries#setMaximumBarCount(int)

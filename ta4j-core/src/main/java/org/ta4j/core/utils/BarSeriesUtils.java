@@ -25,6 +25,7 @@ package org.ta4j.core.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -39,6 +40,7 @@ import org.ta4j.core.aggregator.BarSeriesAggregator;
 import org.ta4j.core.aggregator.BaseBarSeriesAggregator;
 import org.ta4j.core.aggregator.DurationBarAggregator;
 import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
+import org.ta4j.core.num.DecimalNum;
 import org.ta4j.core.num.Num;
 import org.ta4j.core.rules.OverIndicatorRule;
 import org.ta4j.core.rules.UnderIndicatorRule;
@@ -58,7 +60,7 @@ public final class BarSeriesUtils {
     }
 
 
-    public static BarSeries buildBinanceData(int limit,String filePath) throws IOException {
+    public static BarSeries buildBinanceData(int limit,String filePath){
         int num = 0;
         BarSeries series = new BaseBarSeriesBuilder().withName("BTC/USDT").build();
 //        String fileName = "2024-06-15_28_2000.json";
@@ -73,21 +75,30 @@ public final class BarSeriesUtils {
                     break;
                 }
                 num++;
+//                if (num >= 60814){
+//                    System.out.println();
+//                }
                 String instrument = (String) kline.get("instrument");
                 String interval = (String) kline.get("interval");
                 ZonedDateTime openTime = timestampToZonedDateTime((long) kline.get("openTime"));
                 ZonedDateTime closeTime = timestampToZonedDateTime((long) kline.get("closeTime"));
-                double open = (double) kline.get("open");
-                double high = (double) kline.get("high");
-                double low = (double) kline.get("low");
-                double close = (double) kline.get("close");
-                double volume = (double) kline.get("volume");
-//                double quoteAssetVolume = (double) kline.get("quoteAssetVolume");
-//                long numberOfTrades = (long) kline.get("numberOfTrades");
-//                double takerBuyBaseAssetVolume = (double) kline.get("takerBuyBaseAssetVolume");
-//                double takerBuyQuoteAssetVolume = (double) kline.get("takerBuyQuoteAssetVolume");
-//                boolean closed = (boolean) kline.get("closed");
-                series.addBar(Duration.ofHours(1),closeTime,open,high,low,close,volume);
+                Num open = DecimalNum.valueOf(kline.get("open").toString());
+                Num high =  DecimalNum.valueOf( kline.get("high").toString());
+                Num low =  DecimalNum.valueOf( kline.get("low").toString());
+                Num close =  DecimalNum.valueOf( kline.get("close").toString());
+                Num volume =  DecimalNum.valueOf( kline.get("volume").toString());
+
+                Num quoteAssetVolume =   DecimalNum.valueOf( kline.get("quoteAssetVolume").toString());
+                Long numberOfTrades = Long.parseLong( kline.get("numberOfTrades").toString());
+                BigDecimal takerBuyBaseAssetVolume = new BigDecimal( kline.get("takerBuyBaseAssetVolume").toString());
+                BigDecimal takerBuyQuoteAssetVolume = new BigDecimal( kline.get("takerBuyQuoteAssetVolume").toString());
+                boolean closed = (boolean) kline.get("closed");
+                
+
+                BaseBar baseBar = new BaseBar(Duration.ofHours(1),openTime,closeTime,open,high,low,close,volume,quoteAssetVolume,numberOfTrades);
+
+//                series.addBar(Duration.ofHours(1),closeTime,open,high,low,close,volume);
+                series.addBar(baseBar);
 
             }
 

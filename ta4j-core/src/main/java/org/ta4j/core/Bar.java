@@ -91,6 +91,31 @@ public interface Bar extends Serializable {
      */
     long getTrades();
 
+    public void setOpenPrice(Num openPrice);
+
+    public void setHighPrice(Num highPrice);
+
+    public void setLowPrice(Num lowPrice);
+
+    public void setClosePrice(Num closePrice);
+
+    public void setVolume(Num volume);
+
+    public void setAmount(Num amount);
+
+    public void setTrades(long trades);
+    /**
+     * @return the begin timestamp of the bar period
+     * * @return 柱周期的开始时间戳
+     */
+    public void setBeginTime(ZonedDateTime openTime);
+
+    /**
+     * @return the end timestamp of the bar period
+     * * @return 柱周期的结束时间戳
+     */
+    public void setEndTime(ZonedDateTime closeTime);
+
     /**
      * @param timestamp a timestamp
      *                  时间戳

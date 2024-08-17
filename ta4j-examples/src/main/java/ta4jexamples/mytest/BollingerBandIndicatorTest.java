@@ -16,9 +16,9 @@ import java.math.RoundingMode;
 
 public class BollingerBandIndicatorTest {
     public static void main(String[] args) throws IOException {
-        BarSeries series = BarSeriesUtils.buildBinanceData(-1, "ta4j-core/src/main/resources/Klines/BTCUSDT/Binance_2024-07-07_h1.json");
+        BarSeries series = BarSeriesUtils.buildBinanceData(-1, "D:\\Program Files\\Code\\Hengxinchuang\\ta4j\\ta4j-core\\src\\main\\resources\\Klines\\BTCUSDT\\Binance_2024-07-07_h1.json");
         Bar bar1 = series.getBar(0);
-        Bar bar2 = series.getBar(series.getEndIndex());
+        Bar bar2 = series.getBar(series.getEndIndex());//
 
 
         int barCount = 20;

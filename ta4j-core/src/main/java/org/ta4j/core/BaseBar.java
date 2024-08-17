@@ -44,11 +44,16 @@ public class BaseBar implements Bar {
     /** The time period (e.g. 1 day, 15 min, etc.) of the bar. */
     private final Duration timePeriod;
 
+//    /** The begin time of the bar period. */
+//    private final ZonedDateTime beginTime;
+//
+//    /** The end time of the bar period. */
+//    private final ZonedDateTime endTime;
     /** The begin time of the bar period. */
-    private final ZonedDateTime beginTime;
+    private  ZonedDateTime beginTime;
 
     /** The end time of the bar period. */
-    private final ZonedDateTime endTime;
+    private  ZonedDateTime endTime;
 
     /** The open price of the bar period. */
     private Num openPrice = null;
@@ -414,6 +419,34 @@ public class BaseBar implements Bar {
     }
 
     /**
+     *  TODO
+     * @param timePeriod
+     * @param beginTime
+     * @param endTime
+     * @param openPrice
+     * @param highPrice
+     * @param lowPrice
+     * @param closePrice
+     * @param volume
+     * @param amount
+     * @param trades
+     */
+    public BaseBar(Duration timePeriod, ZonedDateTime beginTime, ZonedDateTime endTime, Num openPrice, Num highPrice, Num lowPrice,
+            Num closePrice, Num volume, Num amount, long trades) {
+        checkTimeArguments(timePeriod, endTime);
+        this.timePeriod = timePeriod;
+        this.endTime = endTime;
+        this.beginTime = beginTime;
+        this.openPrice = openPrice;
+        this.highPrice = highPrice;
+        this.lowPrice = lowPrice;
+        this.closePrice = closePrice;
+        this.volume = volume;
+        this.amount = amount;
+        this.trades = trades;
+    }
+
+    /**
      * @return the {@link BaseBarBuilder} to build a new {@code BaseBar}
      */
     public static BaseBarBuilder builder() {
@@ -502,6 +535,52 @@ public class BaseBar implements Bar {
     public long getTrades() {
         return trades;
     }
+
+    @Override
+    public void setOpenPrice(Num openPrice) {
+        this.openPrice = openPrice;
+    }
+
+    @Override
+    public void setHighPrice(Num highPrice) {
+        this.highPrice = highPrice;
+    }
+
+    @Override
+    public void setLowPrice(Num lowPrice) {
+        this.lowPrice = lowPrice;
+    }
+
+    @Override
+    public void setClosePrice(Num closePrice) {
+        this.closePrice = closePrice;
+    }
+
+    @Override
+    public void setVolume(Num volume) {
+        this.volume = volume;
+    }
+
+    @Override
+    public void setAmount(Num amount) {
+        this.amount = amount;
+    }
+
+    @Override
+    public void setTrades(long trades) {
+        this.trades = trades;
+    }
+
+    @Override
+    public void setBeginTime(ZonedDateTime openTime) {
+        this.beginTime = openTime;
+    }
+
+    @Override
+    public void setEndTime(ZonedDateTime closeTime) {
+        this.endTime = closeTime;
+    }
+
 
     @Override
     public void addTrade(Num tradeVolume, Num tradePrice) {
