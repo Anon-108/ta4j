@@ -18,11 +18,14 @@ public class MyOrderExcel {
     @ExcelProperty(value ="利润" )
     private Double profit;
 
-    @ExcelIgnore
+//    @ExcelIgnore
+    @ExcelProperty(value ="订单ema" )
     private Double orderEma;
-    @ExcelIgnore
+//    @ExcelIgnore
+    @ExcelProperty(value ="开盘ema" )
     private Double openEma;
-    @ExcelIgnore
+//    @ExcelIgnore
+    @ExcelProperty(value ="收盘ema" )
     private Double closeEma;
 
     public MyOrderExcel(String tradeType, ZonedDateTime orderTime, Double orderPrice, Double klinePrice, Double profit, Double orderEma, Double openEma, Double closeEma) {

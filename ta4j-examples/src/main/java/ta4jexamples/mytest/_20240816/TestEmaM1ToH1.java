@@ -1,16 +1,12 @@
 package ta4jexamples.mytest._20240816;
 
 import com.alibaba.excel.EasyExcel;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import org.ta4j.core.*;
-import org.ta4j.core.backtest.BarSeriesManager;
 import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
 import org.ta4j.core.indicators.helpers.OpenPriceIndicator;
 import org.ta4j.core.num.DecimalNum;
 import org.ta4j.core.num.Num;
-import org.ta4j.core.rules.CrossedDownIndicatorRule;
-import org.ta4j.core.rules.CrossedUpIndicatorRule;
 import org.ta4j.core.rules.OverIndicatorRule;
 import org.ta4j.core.rules.UnderIndicatorRule;
 import org.ta4j.core.utils.BarSeriesUtils;
@@ -21,7 +17,7 @@ import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.*;
 
-public class Test240815 {
+public class TestEmaM1ToH1 {
     private static  Map trade = new HashMap<String,Boolean>();
     private static TradingRecord tradingRecord = new BaseTradingRecord();
     private static Map position = new HashMap<String,Num>();
@@ -173,7 +169,7 @@ public class Test240815 {
         position.put("opShort",null);
 
         // 定义Excel文件路径
-        String fileName = "D:\\Program Files\\Code\\ta4j\\ta4j-core\\src\\main\\resources\\Klines\\BTCUSDT\\2024_08_15\\Binance_BTCUSDT_2024-08-15_m1_1.xlsx";
+        String fileName = "D:\\Program Files\\Code\\Hengxinchuang\\ta4j\\ta4j-examples\\src\\main\\resources\\Excel\\20240816\\Binance_BTCUSDT_2024-08-15_m1_16.xlsx";
 
         // 创建示例数据
         List<MyOrderExcel> data = new ArrayList<>();
