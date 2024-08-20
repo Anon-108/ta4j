@@ -191,6 +191,7 @@ public class Position implements Serializable {
 
     /**
      * Operates the position at the index-th position.
+     * 在索引位置操作该位置。
      *
      * @param index  the bar index
      *               条形索引
@@ -262,6 +263,7 @@ public class Position implements Serializable {
     /**
      * Calculates the net profit of the position if it is closed. The net profit
      * includes any trading costs.
+     * 计算头寸关闭时的净利润。净利润包括任何交易成本。
      *
      * @return the profit or loss of the position
      *      * @return the profit or loss of the position
@@ -277,6 +279,7 @@ public class Position implements Serializable {
     /**
      * Calculates the net profit of the position. If it is open, calculates the
      * profit until the final bar. The net profit includes any trading costs.
+     * 计算头寸的净利润。如果它是开放的，则计算利润，直到最后一个柱状图。净利润包括任何交易成本。
      *
      * @param finalPrice the price of the final bar to be considered (if position is open)
      *                   * @param finalPrice 要考虑的最终柱的价格（如果持仓未平仓）
@@ -307,10 +310,14 @@ public class Position implements Serializable {
     /**
      * Calculates the gross profit of the position. The gross profit excludes any
      * trading costs.
+     * 计算该头寸的毛利。毛利润不包括任何交易成本。
      *
      * @param finalPrice the price of the final bar to be considered (if position is
      *                   open)
+     *                   最后要考虑的酒吧价格（如果头寸是空的）
+     *
      * @return the profit or loss of the position
+     *          头寸的损益
      */
     public Num getGrossProfit(Num finalPrice) {
         Num grossProfit;
@@ -330,8 +337,10 @@ public class Position implements Serializable {
     /**
      * Calculates the gross return of the position if it is closed. The gross return
      * excludes any trading costs (and includes the base).
+     * 计算头寸关闭时的总回报。总回报不包括任何交易成本（包括基础）。
      *
      * @return the gross return of the position in percent
+     *      该头寸的总回报率（%）
      * @see #getGrossReturn(Num)
      */
     public Num getGrossReturn() {
@@ -345,10 +354,12 @@ public class Position implements Serializable {
     /**
      * Calculates the gross return of the position, if it exited at the provided
      * price. The gross return excludes any trading costs (and includes the base).
+     * 如果头寸以提供的价格退出，则计算其总回报。总回报不包括任何交易成本（包括基础）。
      *
      * @param finalPrice the price of the final bar to be considered (if position is open)
      *                   要考虑的最后一根柱线的价格（如果头寸未平仓）
      * @return the gross return of the position in percent
+     *          该头寸的总回报率（%）
      * @see #getGrossReturn(Num, Num)
      */
     public Num getGrossReturn(Num finalPrice) {
@@ -359,6 +370,7 @@ public class Position implements Serializable {
      * Calculates the gross return of the position. If either the entry or exit
      * price is {@code NaN}, the close price from given {@code barSeries} is used.
      * The gross return excludes any trading costs (and includes the base).
+     * 计算该头寸的总回报。如果入场价或出场价为{@code NaN}，则使用给定{@code barSeries}的收盘价。总回报不包括任何交易成本（包括基础）。
      *
      * @param barSeries
      * @return the gross return in percent with entry and exit prices from the
@@ -406,6 +418,7 @@ public class Position implements Serializable {
 
     /**
      * Calculates the total cost of the position.
+     * 计算职位的总成本。
      *
      * @param finalIndex the index of the final bar to be considered (if position is
      *                   open)

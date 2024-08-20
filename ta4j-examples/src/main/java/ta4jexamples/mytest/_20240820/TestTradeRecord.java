@@ -2,6 +2,9 @@ package ta4jexamples.mytest._20240820;
 
 import com.alibaba.excel.EasyExcel;
 import org.ta4j.core.*;
+import org.ta4j.core.analysis.cost.CostModel;
+import org.ta4j.core.analysis.cost.FixedTransactionCostModel;
+import org.ta4j.core.analysis.cost.ZeroCostModel;
 import org.ta4j.core.indicators.RSIIndicator;
 import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
 import org.ta4j.core.indicators.helpers.OpenPriceIndicator;
@@ -38,22 +41,13 @@ public class TestTradeRecord {
     public static void main(String[] args) throws IOException {
 //        String filePath = "D:\\Program Files\\Code\\ta4j\\ta4j-core\\src\\main\\resources\\Klines\\BTCUSDT\\2024_08_15\\Binance_BTCUSDT_2024-08-15_m1_1.json";
 
-//        String filePath = "D:\\Program Files\\Code\\tradeData\\Data\\binance\\s1\\2024_08_12\\Binance_BTCUSDT_2024-08-13_s1_101.json";
+//        String filePath = "D:\\Program Files\\Code\\tradeData\\Data\\binance\\s1\\2024_08_18\\SOLUSDT\\Binance_SOLUSDT_2024-08-18_s1_1.json";
+//        String filePath = "D:\\Program Files\\Code\\tradeData\\Data\\binance\\s1\\2024_08_18\\SOLUSDT\\Binance_SOLUSDT_2024-08-18_s1_1.json";
 //        BarSeries series = BarSeriesUtils.buildBinanceData(-1, filePath);
 //        Bar firstBar1 = series2.getFirstBar();
 //        Bar lastBar1 = series2.getLastBar();
 
         BarSeries series = BarSeriesUtils.buildBinanceDataBig(-1, null);
-
-//        BarSeries series = new BaseBarSeriesBuilder().withName("BTC/USDA").build();
-//        for (int i = 45; i <93; i++) { //2024-04-11T20:26:40+08:00[Asia/Shanghai] - 2024-07-31T23:06:39.999+08:00[Asia/Shanghai]  96000000 ，48个文件
-//            String filePath = "D:\\Program Files\\Code\\tradeData\\Data\\binance\\s1\\2024_08_12\\Binance_BTCUSDT_2024-08-13_s1_"+i+".json";
-//            BarSeries data = BarSeriesUtils.buildBinanceData(-1, filePath);
-//            for (Bar barDatum : data.getBarData()) {
-//                series.addBar(barDatum);
-//            }
-//            System.out.println("文件："+i);
-//        }
 
         Bar firstBar = series.getFirstBar();//2024-08-12T21:34:46.999+08:00[Asia/Shanghai]
         Bar lastBar = series.getLastBar();
@@ -71,6 +65,10 @@ public class TestTradeRecord {
         int maxValue = 50; //最大数先用55
         Set<String> random = random(maxValue,50);
         int timeFrame = 60 * 60 ; //时间框架 基于k线级别：1分钟：60=1小时
+//        testTrade (series,8,4,100,timeFrame);
+        testTrade2 (series,8,4,100,timeFrame);
+
+
 
 //        for (String val : random) {
 //            String[] split = val.split(",");
@@ -85,14 +83,14 @@ public class TestTradeRecord {
 
         ExcelReader excelReader = new ExcelReader();
         String writeFileName = "D:\\Program Files\\Code\\Hengxinchuang\\ta4j\\ta4j-examples\\src\\main\\resources\\Excel\\randomEmaTest\\RandomEmaTestRSI_2_file2_筛选后的指标.xlsx"; // 文件路径
-        for (OrderRecord orderRecord : excelReader.getOrderRecords(writeFileName)) {
-            barCount1 = orderRecord.getBarCount1();
-            barCount2 = orderRecord.getBarCount2();
-//            backtestFile = "D:\\Program Files\\Code\\Hengxinchuang\\ta4j\\ta4j-examples\\src\\main\\resources\\Excel\\randomEmaTest\\_20240820\\ETHUSDT\\" +
-//                    "EmaTestRSI_2_backtest_barCount1_"+barCount1+"_barCount2_"+barCount2+"胜率："+winningProbability+".xlsx";
-            // rsi 14 盈利：交易总数:48,盈利数量:22.0,亏损数量:2.0,利润：3147.90胜率:91.66666666666666
-            testTrade (series,barCount1,barCount2,100,timeFrame);
-        }
+//        for (OrderRecord orderRecord : excelReader.getOrderRecords(writeFileName)) {
+//            barCount1 = orderRecord.getBarCount1();
+//            barCount2 = orderRecord.getBarCount2();
+////            backtestFile = "D:\\Program Files\\Code\\Hengxinchuang\\ta4j\\ta4j-examples\\src\\main\\resources\\Excel\\randomEmaTest\\_20240820\\ETHUSDT\\" +
+////                    "EmaTestRSI_2_backtest_barCount1_"+barCount1+"_barCount2_"+barCount2+"胜率："+winningProbability+".xlsx";
+//            // rsi 14 盈利：交易总数:48,盈利数量:22.0,亏损数量:2.0,利润：3147.90胜率:91.66666666666666
+//            testTrade (series,barCount1,barCount2,100,timeFrame);
+//        }
 
 //        backtestFile = "D:\\Program Files\\Code\\Hengxinchuang\\ta4j\\ta4j-examples\\src\\main\\resources\\Excel\\randomEmaTest\\EmaTestRSI_2_backtest.xlsx";
         // rsi 14 盈利：交易总数:48,盈利数量:22.0,亏损数量:2.0,利润：3147.90胜率:91.66666666666666
@@ -284,6 +282,196 @@ public class TestTradeRecord {
 //        orderRecords.add(orderRecord);
 
     }
+    public static void testTrade2 (BarSeries series,int barCount1,int barCount2,int startKline,int timeFrame) throws IOException {
+
+
+//===================================策略回测 开始================================================
+//        int timeFrame = 60; //时间框架
+
+        tradeMap = new HashMap<String,Boolean>();
+        tradingRecordT = new BaseTradingRecord();
+        positionMap = new HashMap<String,Num>();
+        orders = new ArrayList<>();
+        emaStatus = new HashMap<>();
+
+
+        tradeMap.put("isLong",false);
+        tradeMap.put("isShort",false);
+        tradeMap.put("start",true);
+
+        emaStatus.put("closeUpIndex",null);
+        emaStatus.put("closeDownIndex",null);
+
+//======================================================新的测试用例 开始================================================================
+
+        BaseBarSeries myBackTest = new BaseBarSeries("myBackTesting");
+        EmaV3Indicator closeLine = new EmaV3Indicator(new ClosePriceIndicator(myBackTest), barCount1);
+        EmaV3Indicator openLine = new EmaV3Indicator(new OpenPriceIndicator(myBackTest), barCount2);
+        List<Bar> timeBars = new ArrayList<>();
+
+
+        CrossedUpIndicatorRule upIndicatorRule = new CrossedUpIndicatorRule(closeLine, openLine);
+        CrossedDownIndicatorRule downIndicatorRule = new CrossedDownIndicatorRule(closeLine, openLine);
+
+        // 开多仓规则：当 closeLine 上穿 openLine 时
+//        Rule entryLongRule = new OverIndicatorRule(closeLine, openLine).and(upIndicatorRule);
+        Rule entryLongRule = new OverIndicatorRule(closeLine, openLine);
+        // 平多仓规则：当 closeLine 下穿 openLine 且 ifShort 为 false 时
+//        Rule exitLongRule = new UnderIndicatorRule(closeLine, openLine).and(new IndicatorRule(closeLine, openLine).isLessThan(Num.valueOf(ifShort ? 1 : 0)));
+//        Rule exitLongRule = new UnderIndicatorRule(closeLine, openLine).and(new BooleanRule(!ifShort));
+//        Rule exitLongRule = new UnderIndicatorRule(closeLine, openLine).and(downIndicatorRule);
+        Rule exitLongRule = new UnderIndicatorRule(closeLine, openLine);
+
+        // 开空仓规则：当 closeLine 下穿 openLine 且 ifShort 为 true 时
+//        Rule entryShortRule = new UnderIndicatorRule(closeLine, openLine).and(downIndicatorRule);
+        Rule entryShortRule = new UnderIndicatorRule(closeLine, openLine);
+        // 平空仓规则：当 closeLine 上穿 openLine 且 ifShort 为 true 时
+//        Rule exitShortRule = new OverIndicatorRule(closeLine, openLine).and(upIndicatorRule);
+        Rule exitShortRule = new OverIndicatorRule(closeLine, openLine);
+
+        RSIIndicator rsi = new RSIIndicator(new ClosePriceIndicator(myBackTest), 2);
+        CrossedDownIndicatorRule rsiLong = new CrossedDownIndicatorRule(rsi, 5);
+        CrossedUpIndicatorRule rsiShort = new CrossedUpIndicatorRule(rsi, 95);
+
+        Rule entryRuleLong = entryLongRule.and(rsiLong).and(upIndicatorRule);
+        Rule exitRuleLong = exitLongRule.and(rsiShort).and(downIndicatorRule);
+        Strategy longStrategy = new BaseStrategy(entryRuleLong, exitRuleLong);
+        Strategy shortStrategy = new BaseStrategy(exitRuleLong, entryRuleLong);
+
+        CostModel costModel = new FixedTransactionCostModel((0.003 / 100));
+        ZeroCostModel zeroCostModel = new ZeroCostModel();
+        TradingRecord longTradingRecord = new BaseTradingRecord(Trade.TradeType.BUY, costModel,zeroCostModel);
+        TradingRecord shortTradingRecord = new BaseTradingRecord(Trade.TradeType.SELL, costModel,zeroCostModel);
+
+
+//======================================================新的测试用例 结束================================================================
+
+
+                positionMap.put("opLong", null);
+        positionMap.put("opShort",null);
+
+        // 定义Excel文件路径
+//        String fileName = "D:\\Program Files\\Code\\Hengxinchuang\\ta4j\\ta4j-examples\\src\\main\\resources\\Excel\\20240817\\Binance_BTCUSDT_2024-08-15_m1_17.xlsx";
+
+        // 创建示例数据
+        List<MyOrderExcel> writeData = new ArrayList<>();
+//        List<MyOrder> myOrders = new ArrayList<>();
+        ZonedDateTime time = ZonedDateTime.parse("2024-04-30T09:00:00+08:00[Asia/Shanghai]");
+        for (int start = 0; start < series.getBarCount(); start++) {
+
+            if (series.getBar(start).getBeginTime().isBefore(time)){
+                continue;
+            }
+            if (myBackTest.getBarData().size() < startKline){//历史k线不能少于100
+                Bar openBar = series.getBar(start); //获取第一根bar为开盘
+                start = start + timeFrame - 1;
+                Bar closeBar = series.getBar(start); //获取时间范围最后一根bar为收盘
+                BaseBar baseBar = new BaseBar(Duration.ofHours(1),openBar.getBeginTime(),closeBar.getEndTime(),openBar.getOpenPrice(), DecimalNum.ZERO,DecimalNum.ZERO,closeBar.getClosePrice(),DecimalNum.ZERO,DecimalNum.ZERO,0l);
+                myBackTest.addBar(baseBar);
+                continue;
+            }
+            Bar barData = series.getBar(start);
+            if (timeBars.isEmpty()){ //如果当前为0表示时间段开始第一个bar
+                timeBars.add(barData);
+                BaseBar baseBar = new BaseBar(Duration.ofHours(1),barData.getBeginTime(),barData.getEndTime(),barData.getOpenPrice(), DecimalNum.ZERO,DecimalNum.ZERO,barData.getClosePrice(),DecimalNum.ZERO,DecimalNum.ZERO,0l);
+                myBackTest.addBar(baseBar);
+                int endIndex = myBackTest.getEndIndex();
+
+                //回测  Strategy longStrategy,
+                //    Strategy shortStrategy,
+                //    @NotNull  TradingRecord longTradingRecord,
+                //    TradingRecord shortTradingRecord,
+                //    @NotNull  Bar bar,
+                //    int index
+                backTest2(longStrategy,shortStrategy,longTradingRecord,shortTradingRecord,barData,endIndex);
+            }else {
+                //将第一条的bar结束时间和收盘价格设置为当前最新bar
+                timeBars.add(barData);
+
+                myBackTest.getLastBar().setEndTime(barData.getEndTime());
+                myBackTest.getLastBar().setClosePrice(barData.getClosePrice());
+
+                int endIndex = myBackTest.getEndIndex();
+                //回测
+                backTest2(longStrategy,shortStrategy,longTradingRecord,shortTradingRecord,barData,endIndex);
+                if (timeBars.size() == timeFrame){  //如果当前已经存储满 时间框架，则清空 开始下一个时间
+                    timeBars.clear();
+                }
+            }
+        }
+
+
+        System.out.println(longTradingRecord);
+        System.out.println(shortTradingRecord);
+
+        Num profit = DecimalNum.ZERO;
+        double profitQty = 0;
+        double lossesQty = 0;
+
+        for (int i = 0; i < orders.size(); i++) {
+            MyOrder order = orders.get(i);
+            Num num = order.getProfit();
+            if (num.isGreaterThan(DecimalNum.ZERO)){
+                ++profitQty;
+            }else if (num.isLessThan(DecimalNum.ZERO)){
+                ++lossesQty;
+            }
+            profit = profit.plus(num);
+            MyOrderExcel orderExcel = new MyOrderExcel(order.getTradeType(), order.getOrderTime(), order.getOrderPrice().doubleValue(), order.getKlinePrice().doubleValue()
+                    , order.getProfit().doubleValue(), order.getOrderEma().doubleValue(), order.getOpenEma().doubleValue(), order.getCloseEma().doubleValue());
+            writeData.add(orderExcel);
+
+        }
+
+        List<MyTradingRecordAnalysis> analysisList = analyzeTradingRecords(orders);
+        analysisList.sort(Comparator.comparingInt(MyTradingRecordAnalysis::getStatus).thenComparing(MyTradingRecordAnalysis::getCount).reversed());
+
+        int index = 0;
+        for (int i = 0; i < analysisList.size(); i++) {
+            MyTradingRecordAnalysis analysis = analysisList.get(i);
+            MyOrderExcel orderExcel = writeData.get(index);
+            if (analysis.getStatus() == 0){
+                orderExcel.setMaxProfitCount(analysis.getCount());
+                orderExcel.setStartingProfitTime(analysis.getStartTime());
+                ++index;
+            }
+        }
+        index = 0;
+        for (int i = 0; i < analysisList.size(); i++) {
+            MyTradingRecordAnalysis analysis = analysisList.get(i);
+            MyOrderExcel orderExcel = writeData.get(index);
+            if (analysis.getStatus() == 1){
+                orderExcel.setMaxLossesCount(analysis.getCount());
+                orderExcel.setStartingTimeOfLoss(analysis.getStartTime());
+                ++index;
+            }
+        }
+
+        double proportion = profitQty / (profitQty + lossesQty) * 100;
+        System.out.println("交易总数:"+orders.size()+" ,盈利数量:"+profitQty+" ,亏损数量:"+lossesQty+" ,利润："+profit+" 胜率:"+proportion);
+        MyOrderExcel order = writeData.get(0);
+        order.setCount(orders.size());
+        order.setProfitQty((int)profitQty);
+        order.setLossesQty((int)lossesQty);
+        order.setProfit(profit.doubleValue());
+        order.setProportion(proportion);
+
+
+        // 使用EasyExcel将数据写入Excel文件
+        backtestFile = "D:\\Program Files\\Code\\Hengxinchuang\\ta4j\\ta4j-examples\\src\\main\\resources\\Excel\\randomEmaTest\\_20240820\\ETHUSDT\\" +
+                "EmaTestRSI_2_backtest_barCount1_"+ TestTradeRecord.barCount1+"_barCount2_"+ TestTradeRecord.barCount2+"_胜率："+proportion+".xlsx";
+        EasyExcel.write(backtestFile, MyOrderExcel.class).sheet("数据表").doWrite(writeData);
+        System.out.println("写出文件:+"+backtestFile);
+
+//        if (profit.doubleValue() >= 0 && proportion >= 49){
+//            OrderRecord orderRecord = new OrderRecord(orders.size(), profitQty, lossesQty, profit.doubleValue(), proportion,barCount1,barCount2);
+//            orderRecords.add(orderRecord);
+//        }
+//        OrderRecord orderRecord = new OrderRecord(orders.size(), profitQty, lossesQty, profit.doubleValue(), proportion,barCount1,barCount2);
+//        orderRecords.add(orderRecord);
+
+    }
+
 
     /**
      * 回测
@@ -323,7 +511,7 @@ public class TestTradeRecord {
         if (Objects.nonNull(opShort)){
             Num plusPrice = opShort.multipliedBy(DecimalNum.valueOf(1).plus(profitAndLossRatio)); //空头止损价格
             Num minusPrice = opShort.multipliedBy(DecimalNum.valueOf(1).minus(profitAndLossRatio));//空头止盈价格
-            
+
             if (bar.getClosePrice().isGreaterThanOrEqual(plusPrice) || bar.getClosePrice().isLessThanOrEqual(minusPrice)){
                 closeShort = true;
             }
@@ -464,6 +652,239 @@ public class TestTradeRecord {
 
             }
         }
+    }
+
+    private static void backTest2(Strategy longStrategy,Strategy shortStrategy,TradingRecord longTradingRecord,TradingRecord shortTradingRecord,Bar bar,int index) {
+
+//
+//        Num openLineValue = openLine.getValue(index);
+//        Num closeLineValue = closeLine.getValue(index);
+//
+//        Bar bar = closeLine.getBarSeries().getBar(index);
+
+//        Num opLong = (Num) positionMap.get("opLong");
+//        Num opShort = (Num) positionMap.get("opShort");
+
+
+//        boolean closeLong = false; //多头止盈损
+//        boolean closeShort = false; //空头止盈损
+
+        //多头止盈损
+        boolean longExit = false;
+        Position longCurrentPosition = longTradingRecord.getCurrentPosition();
+        Trade longPositionEntry = longCurrentPosition.getEntry();
+
+        //空头止盈损
+        boolean shortExit = false;
+        Position shortCurrentPosition = shortTradingRecord.getCurrentPosition();
+        Trade shortPositionEntry = shortCurrentPosition.getEntry();
+
+        //止盈亏比例
+        Num profitAndLossRatio = DecimalNum.valueOf(1.26).dividedBy(DecimalNum.valueOf(100));
+
+        if (Objects.nonNull(longPositionEntry)){
+            Num pricePerAsset = longPositionEntry.getPricePerAsset(); //当前持仓价格
+            Num plusPrice = pricePerAsset.multipliedBy(DecimalNum.valueOf(1).plus(profitAndLossRatio));//多头止盈，空头止损 || 开仓价格 +（止盈损 * 开仓价格）
+            Num minusPrice = pricePerAsset.multipliedBy(DecimalNum.valueOf(1).minus(profitAndLossRatio));//空头止盈，多头止损 || 开仓价格 -（止盈损 * 开仓价格）
+
+            if (bar.getClosePrice().isGreaterThanOrEqual(plusPrice) || bar.getClosePrice().isLessThanOrEqual(minusPrice)){
+                longExit = true;
+            }
+        }
+        if (Objects.nonNull(shortPositionEntry)){
+            Num pricePerAsset = shortPositionEntry.getPricePerAsset(); //当前持仓价格
+            Num plusPrice = pricePerAsset.multipliedBy(DecimalNum.valueOf(1).plus(profitAndLossRatio));//多头止盈，空头止损 || 开仓价格 +（止盈损 * 开仓价格）
+            Num minusPrice = pricePerAsset.multipliedBy(DecimalNum.valueOf(1).minus(profitAndLossRatio));//空头止盈，多头止损 || 开仓价格 -（止盈损 * 开仓价格）
+
+            if (bar.getClosePrice().isGreaterThanOrEqual(plusPrice) || bar.getClosePrice().isLessThanOrEqual(minusPrice)){
+                shortExit = true;
+            }
+        }
+
+
+
+
+        DecimalNum openNum = DecimalNum.valueOf("10");
+
+        /*多头*/
+        if (longStrategy.shouldEnter(index)){ //如果满足开多条件
+            if (Objects.nonNull(shortPositionEntry)){ //如果持有空头，先对其平仓
+                boolean exit = shortTradingRecord.exit(index, bar.getClosePrice(), openNum);
+                System.out.println(exit);
+            }
+
+            boolean enter = longTradingRecord.enter(index, bar.getClosePrice(), openNum);
+            if (enter){
+                Trade lastEntry = longTradingRecord.getLastEntry();
+                System.out.println();
+            }
+        }else if (longStrategy.shouldExit(index) || longExit){ //平多
+            boolean exit = longTradingRecord.exit(index, bar.getClosePrice(), openNum);
+            if (exit){
+                Trade lastExit = longTradingRecord.getLastExit();
+                System.out.println();
+            }
+        }
+
+        /*空头*/
+        if (shortStrategy.shouldEnter(index)){ //如果满足开空条件
+            boolean enter = shortTradingRecord.enter(index, bar.getClosePrice(), openNum);
+            if (enter){
+                Trade lastEntry = shortTradingRecord.getLastEntry();
+                System.out.println();
+            }
+        }else if (shortStrategy.shouldExit(index) || shortExit){ //平空
+            boolean exit = shortTradingRecord.exit(index, bar.getClosePrice(), openNum);
+            if (exit){
+                Trade lastExit = shortTradingRecord.getLastExit();
+                System.out.println();
+            }
+        }
+
+//
+//        Num plusPrice = bar.getClosePrice().multipliedBy(DecimalNum.valueOf(1).plus(profitAndLossRatio)); //空头止损价格
+//        Num minusPrice = bar.getClosePrice().multipliedBy(DecimalNum.valueOf(1).minus(profitAndLossRatio));//空头止盈价格
+//
+//        if (bar.getClosePrice().isGreaterThanOrEqual(plusPrice) || bar.getClosePrice().isLessThanOrEqual(minusPrice)){
+//            closeShort = true;
+//        }
+
+//
+//        if (Objects.nonNull(opLong)){
+//            Num plusPrice = opLong.multipliedBy(DecimalNum.valueOf(1).plus(profitAndLossRatio));//多头止盈价格
+//            Num minusPrice = opLong.multipliedBy(DecimalNum.valueOf(1).minus(profitAndLossRatio));//多头止损价格
+//
+//            if (bar.getClosePrice().isGreaterThanOrEqual(plusPrice) || bar.getClosePrice().isLessThanOrEqual(minusPrice)){
+//                closeLong = true;
+//            }
+//        }
+//        if (Objects.nonNull(opShort)){
+//            Num plusPrice = opShort.multipliedBy(DecimalNum.valueOf(1).plus(profitAndLossRatio)); //空头止损价格
+//            Num minusPrice = opShort.multipliedBy(DecimalNum.valueOf(1).minus(profitAndLossRatio));//空头止盈价格
+//            if (bar.getClosePrice().isGreaterThanOrEqual(plusPrice) || bar.getClosePrice().isLessThanOrEqual(minusPrice)){
+//                closeShort = true;
+//            }
+//        }
+
+//        boolean isEntryLong = entryLongRule.isSatisfied(index);
+//        boolean isExitLong = exitLongRule.isSatisfied(index);
+//        boolean isEntryShort = entryShortRule.isSatisfied(index);
+//        boolean isExitShort = exitShortRule.isSatisfied(index);
+//
+//        /*交叉信号指标*/
+//        boolean isCrossUp = crossUpRule.isSatisfied(index); //金叉指标
+//        boolean isCrossDown = crossDownRule.isSatisfied(index); //死叉指标
+//
+//        //超买/超买
+//        double rsiVal = rsi.getValue(index).doubleValue();
+//        boolean rsiOverbuy =false;
+//        boolean rsiOversold =false;
+//        if (rsiVal > 70){
+//            rsiOverbuy = true;
+//        }else if (rsiVal < 30 ){
+//            rsiOversold = true;
+//        }
+//
+//        if (isCrossUp && Objects.isNull(emaStatus.get("closeUpIndex"))){
+//            emaStatus.put("closeUpIndex",index);
+//        }else if (isCrossDown && Objects.isNull(emaStatus.get("closeDownIndex"))){
+//            emaStatus.put("closeDownIndex",index);
+//        }
+//
+//        boolean openLong = false;
+//        boolean openShort = false;
+//
+//        if (Objects.nonNull(emaStatus.get("closeUpIndex"))){
+//            Integer upIndex = emaStatus.get("closeUpIndex");
+//
+//            int i = index - upIndex;
+//            if (i == 1){  //当前是金叉指标的下一次 , 条件达成
+//                openLong = true;
+//            }else if (i > 1){  //当前不是金叉指标的下一次 , 清除金叉指标
+//                emaStatus.put("closeUpIndex",null);
+//            }
+//        }
+//        if (Objects.nonNull(emaStatus.get("closeDownIndex"))){
+//            Integer downIndex = emaStatus.get("closeDownIndex");
+//
+//            int i = index - downIndex;
+//            if (i == 1){  //当前是死叉指标的下一次 , 条件达成
+//                openShort = true;
+//            }else if (i > 1){  //当前不是死叉指标的下一次 , 清除死叉指标
+//                emaStatus.put("closeDownIndex",null);
+//            }
+//        }
+//
+//
+//
+//        //第一次开盘的上一个指标必须是第一次 金叉
+//        if ((Boolean) tradeMap.get("start") && openLong){
+////            Num emaClose = closeLine.getValue(index - 1);
+////            Num emaOpen = openLine.getValue(index - 1);
+//            if (isEntryLong){
+//                //System.out.println("开多, 当前时间: "+bar.getEndTime()+",当前开盘ema： "+openLineValue+",收盘ema： "+closeLineValue);
+//                tradeMap.put("isLong",true);
+//                tradeMap.put("start",false);
+//
+//                positionMap.put("opLong",bar.getClosePrice());
+//                MyOrder order = new MyOrder("开多", bar.getEndTime(), bar.getClosePrice(), bar.getClosePrice(), DecimalNum.ZERO, closeLineValue, openLineValue, closeLineValue);
+//                orders.add(order);
+//            }
+//        }
+//
+//        //开多：当前是多头指标并且金叉指标达成 rsi 超卖
+//        if (isEntryLong && openLong && rsiOversold){
+//            //如果当前 有了多单和空则不开
+//            if (!(Boolean) tradeMap.get("isLong") && !(Boolean) tradeMap.get("start") && !(Boolean) tradeMap.get("isShort")){
+//                //System.out.println("开多, 当前时间: "+bar.getEndTime()+",当前开盘ema： "+openLineValue+",收盘ema： "+closeLineValue);
+//                tradeMap.put("isLong",true);
+//                positionMap.put("opLong",bar.getClosePrice());
+//
+//                MyOrder order = new MyOrder("开多", bar.getEndTime(), bar.getClosePrice(), bar.getClosePrice(), DecimalNum.ZERO, closeLineValue, openLineValue, closeLineValue);
+//                orders.add(order);
+//            }
+//        }
+//
+//        if (isExitLong || closeLong || openShort){
+//            //如果当前 没有了多单则不平
+//            if ((Boolean) tradeMap.get("isLong") && !(Boolean) tradeMap.get("start")){
+//                //System.out.println("平多, 当前时间: "+bar.getEndTime()+",当前开盘ema： "+openLineValue+",收盘ema： "+closeLineValue);
+//                tradeMap.put("isLong",false);
+//
+//                Num result = opLong.minus(bar.getClosePrice());
+//                MyOrder order = new MyOrder("平多", bar.getEndTime(), bar.getClosePrice(), bar.getClosePrice(), result, closeLineValue, openLineValue, closeLineValue);
+//                orders.add(order);
+//
+//                positionMap.put("opLong",null);
+//
+//            }
+//        }
+//        //开空：当前是空头指标并且死叉指标达成  rsi 超买
+//        if (isEntryShort && openShort && rsiOverbuy){
+//            //如果当前 有了多单和空单则不开
+//            if (!(Boolean) tradeMap.get("isLong") && !(Boolean) tradeMap.get("start") && !(Boolean) tradeMap.get("isShort")){
+////                System.out.println("开空, 当前时间: "+bar.getEndTime()+",当前开盘ema： "+openLineValue+",收盘ema： "+closeLineValue);
+//                tradeMap.put("isShort",true);
+//                positionMap.put("opShort",bar.getClosePrice());
+//
+//                MyOrder order = new MyOrder("开空", bar.getEndTime(), bar.getClosePrice(), bar.getClosePrice(), DecimalNum.ZERO, closeLineValue, openLineValue, closeLineValue);
+//                orders.add(order);
+//
+//            }
+//        }
+//        if (isExitShort|| closeShort || openLong){
+//            //如果当前 没有了空单则不开
+//            if (!(Boolean) tradeMap.get("isLong") && !(Boolean) tradeMap.get("start") && (Boolean) tradeMap.get("isShort")){
+////                System.out.println("平空, 当前时间: "+bar.getEndTime()+",当前开盘ema： "+openLineValue+",收盘ema： "+closeLineValue);
+//                tradeMap.put("isShort",false);
+//                positionMap.put("opShort",null);
+//
+//                Num result = opShort.minus(bar.getClosePrice());
+//                MyOrder order = new MyOrder("平空", bar.getEndTime(), bar.getClosePrice(), bar.getClosePrice(), result, closeLineValue, openLineValue, closeLineValue);
+//                orders.add(order);
+//
+//            }
+//        }
     }
 
     public static Set<String> random(int MAX_VALUE,int multiplier) {

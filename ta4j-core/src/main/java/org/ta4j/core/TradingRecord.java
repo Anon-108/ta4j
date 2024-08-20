@@ -90,14 +90,17 @@ public interface TradingRecord extends Serializable {
 
     /**
      * Places an entry trade in the trading record.
+     * 在交易记录中记录一笔入场交易。
      *
      * @param index  the index to place the entry
+     *                 放置条目的索引
      * @param price  the trade price per asset
+     *               每项资产的交易价格
      * @param amount the trade amount
      *               交易金额
      *
      * @return true if the entry has been placed, false otherwise
-     * 如果已放置条目，则为 true，否则为 false
+     *          如果条目已放置，则为true，否则为false
      */
     boolean enter(int index, Num price, Num amount);
 

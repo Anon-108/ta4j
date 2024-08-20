@@ -36,6 +36,7 @@ import org.ta4j.core.num.Num;
  * <ul>
  * <li>the index (in the {@link BarSeries bar series}) on which the trade is
  * executed
+ * 执行交易的指数（在{@link BarSeries条形图系列}中）
  * <li>a {@link TradeType type} (BUY or SELL)
  * <li>a pricePerAsset (optional)
  * <li>a trade amount (optional)
@@ -74,28 +75,34 @@ public class Trade implements Serializable {
         public abstract TradeType complementType();
     }
 
-    /** The type of the trade. */
+    /** The type of the trade.
+     *  贸易的类型。
+     * */
     private final TradeType type;
 
-    /** The index the trade was executed. */
+    /** The index the trade was executed.
+     * 交易执行的指数。
+     * */
     private final int index;
 
-    /** The trade price per asset. */
+    /** The trade price per asset.
+     * 每项资产的交易价格。*/
     private Num pricePerAsset;
 
     /**
      * The net price per asset for the trade (i.e. {@link #pricePerAsset} with
      * {@link #cost}).
+     * 交易的每项资产的净价（即{@link pricePerAsset}加上{@link cost}）。
      */
     private Num netPrice;
 
-    /** The trade amount. */
+    /** The trade amount. 交易金额。 */
     private final Num amount;
 
-    /** The cost for executing the trade. */
+    /** The cost for executing the trade. 执行交易的成本。 */
     private Num cost;
 
-    /** The cost model for trade execution. */
+    /** The cost model for trade execution. 交易执行的成本模型。 */
     private transient CostModel costModel;
 
     /**

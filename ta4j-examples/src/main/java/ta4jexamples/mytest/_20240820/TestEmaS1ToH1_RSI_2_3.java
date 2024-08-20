@@ -19,12 +19,16 @@ import ta4jexamples.mytest._20240817.OrderRecord;
 import ta4jexamples.mytest._240818.ExcelReader;
 import ta4jexamples.mytest._240818.MyTradingRecordAnalysis;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.*;
 
-public class TestEmaS1ToH1_RSI_2_2 {
+public class TestEmaS1ToH1_RSI_2_3 {
     private static  Map trade = null;
     private static TradingRecord tradingRecord = null;
     private static Map position = null;
@@ -37,48 +41,85 @@ public class TestEmaS1ToH1_RSI_2_2 {
     private static   Integer barCount1  = null;
     private static   Integer barCount2  = null;
     private static   Integer fileNum  = 0;
+    private static   String symbol  = null;
     public static void main(String[] args) throws IOException {
 
+//==========================================================================================
+        // 假设我们要读取的目录是当前工作目录
+        File directory = new File("E:\\tradeData\\Data\\binance\\s1\\2024_08_18");//TODO 改成E盘
+        String createFileName = null;
 
-        BarSeries series = BarSeriesUtils.buildBinanceDataBig(-1, null);
+        // 使用listFiles()方法获取目录下的所有文件和文件夹
+        File[] files = directory.listFiles();
 
-//        BarSeries series = new BaseBarSeriesBuilder().withName("BTC/USDA").build();
-//        for (int i = 45; i <93; i++) { //2024-04-11T20:26:40+08:00[Asia/Shanghai] - 2024-07-31T23:06:39.999+08:00[Asia/Shanghai]  96000000 ，48个文件
-//            String filePath = "D:\\Program Files\\Code\\tradeData\\Data\\binance\\s1\\2024_08_12\\Binance_BTCUSDT_2024-08-13_s1_"+i+".json";
-//            BarSeries data = BarSeriesUtils.buildBinanceData(-1, filePath);
-//            for (Bar barDatum : data.getBarData()) {
-//                series.addBar(barDatum);
-//            }
-//            System.out.println("文件："+i);
-//        }
+        // 检查目录是否为空或不存在
+        if (files != null) {
+            for (File file : files) {
+                createFileName = file.getName(); //获取代币目录，并创建目录
+                String filePath = "D:\\Program Files\\Code\\Hengxinchuang\\ta4j\\ta4j-examples\\src\\main\\resources\\Excel\\randomEmaTest\\_20240821\\"+createFileName;
+                Path createFilePath = Paths.get(filePath);
 
+                if (!Files.exists(createFilePath)) {
+                    try {
+                        // 如果目录不存在则创建
+                        Files.createDirectories(createFilePath);
+                        System.out.println("目录创建成功: " + createFilePath.toAbsolutePath());
+                    } catch (IOException e) {
+                        // 处理创建目录时的异常
+                        System.err.println("无法创建目录: " + e.getMessage());
+                        continue;
+                    }
+                } else {
+                    System.out.println("目录已存在: " + createFilePath.toAbsolutePath());
+                    continue;
+                }
+
+
+                File[] files2 = file.listFiles();
+                // 检查目录是否为空或不存在
+                if (files != null) {
+                    // 使用自定义的比较器按最后修改时间对文件进行排序
+                    Arrays.sort(files2, new Comparator<File>() {
+                        @Override
+                        public int compare(File f1, File f2) {
+                            // 如果f1比f2最后修改时间早，则返回正数；如果晚，则返回负数
+                            return Long.compare(f1.lastModified(), f2.lastModified());
+                        }
+                    });
+                    if (files2.length < 1 ){
+                        System.out.println();
+                        continue;
+                    }
+                    startTest(files2,createFileName);
+
+//                    for (File file2 : files2) {
+//                        if (!file2.isDirectory()) { // 假设我们只关心文件，不关心目录
+//                            System.out.println(file2.getName() + " - Last Modified: " + new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date(file2.lastModified())));
+//                        }
+//                    }
+                }
+            }
+        } else {
+            System.out.println("目录不存在或为空");
+        }
+
+
+//==========================================================================================
+
+
+
+    }
+
+    private static void startTest(File[] files,String directory) {
+        BarSeries series = BarSeriesUtils.buildBinanceDataBig(files);
+        symbol = directory;
         Bar firstBar = series.getFirstBar();//2024-08-12T21:34:46.999+08:00[Asia/Shanghai]
         Bar lastBar = series.getLastBar();
-//        Bar lastBar2 = series.getBar(series.getEndIndex()-1);
-//        Bar lastBar3 = series.getBar(series.getEndIndex()-2);
-//
-//        long differenceInSeconds = ChronoUnit.SECONDS.between(lastBar.getBeginTime(), lastBar2.getBeginTime());
-//        long differenceInSeconds2 = ChronoUnit.SECONDS.between(firstBar.getBeginTime(), lastBar.getBeginTime());
-//        long differenceInSeconds3 = ChronoUnit.SECONDS.between(lastBar3.getBeginTime(), lastBar2.getBeginTime());
-//        boolean nextSecond = isNextSecond(lastBar3.getBeginTime(), lastBar2.getBeginTime());
-//        System.out.println();
 
 
-//        String ExcelFileName = "D:\\Program Files\\Code\\Hengxinchuang\\ta4j\\ta4j-examples\\src\\main\\resources\\Excel\\randomEmaTest\\RandomEmaTestRSI_2_file2.xlsx";
         int maxValue = 50; //最大数先用55
         Set<String> random = random(maxValue,50);
         int timeFrame = 60 * 60 ; //时间框架 基于k线级别：1分钟：60=1小时
-
-//        for (String val : random) {
-//            String[] split = val.split(",");
-//            Integer num1 = Integer.valueOf(split[0]);
-//            Integer num2 = Integer.valueOf(split[1]);
-//            int startKline = num1 >= num2 ? num1 * 3 : num2 * 3;
-//            if (startKline < 100){
-//                startKline = 100;
-//            }
-//            testTrade (series,num1,num2,startKline,timeFrame);
-//        }
 
         ExcelReader excelReader = new ExcelReader();
         String writeFileName = "D:\\Program Files\\Code\\Hengxinchuang\\ta4j\\ta4j-examples\\src\\main\\resources\\Excel\\randomEmaTest\\RandomEmaTestRSI_2_file2_筛选后的指标.xlsx"; // 文件路径
@@ -89,32 +130,12 @@ public class TestEmaS1ToH1_RSI_2_2 {
 //            backtestFile = "D:\\Program Files\\Code\\Hengxinchuang\\ta4j\\ta4j-examples\\src\\main\\resources\\Excel\\randomEmaTest\\_20240820\\ETHUSDT\\" +
 //                    "EmaTestRSI_2_backtest_barCount1_"+barCount1+"_barCount2_"+barCount2+"胜率："+winningProbability+".xlsx";
             // rsi 14 盈利：交易总数:48,盈利数量:22.0,亏损数量:2.0,利润：3147.90胜率:91.66666666666666
-            testTrade (series,barCount1,barCount2,100,timeFrame);
+            try {
+                testTrade (series,barCount1,barCount2,100,timeFrame);
+            } catch (IOException e) {
+                System.out.println("回测指标失败");
+            }
         }
-
-//        backtestFile = "D:\\Program Files\\Code\\Hengxinchuang\\ta4j\\ta4j-examples\\src\\main\\resources\\Excel\\randomEmaTest\\EmaTestRSI_2_backtest.xlsx";
-        // rsi 14 盈利：交易总数:48,盈利数量:22.0,亏损数量:2.0,利润：3147.90胜率:91.66666666666666
-//        testTrade (series,8,4,100,timeFrame);
-
-
-
-//        orderRecords.removeIf(order -> order.getProportion() < 49);
-//
-//        // 使用 Comparator 对列表进行排序
-//        Collections.sort(orderRecords, (o1, o2) -> {
-//            // 首先根据分数降序排序
-//            int scoreComparison = Integer.compare(o1.getCount(), o2.getCount());
-//            if (scoreComparison != 0) {
-//                return scoreComparison;
-//            }
-//
-//            // 如果分数相同，则根据年龄升序排序
-//            return Double.compare(o1.getProportion(), o2.getProportion());
-//        });
-//        Collections.reverse(orderRecords);
-//
-//        EasyExcel.write(ExcelFileName, OrderRecord.class).sheet("数据表").doWrite(orderRecords);
-
     }
 
 
@@ -268,16 +289,15 @@ public class TestEmaS1ToH1_RSI_2_2 {
         order.setCountProfit(profit.doubleValue());
         order.setProportion(proportion);
         order.setRsiBarCount(rsiBarCount);
-        order.setEmaBarCount1(TestEmaS1ToH1_RSI_2_2.barCount1);
-        order.setEmaBarCount2(TestEmaS1ToH1_RSI_2_2.barCount2);
+        order.setEmaBarCount1(TestEmaS1ToH1_RSI_2_3.barCount1);
+        order.setEmaBarCount2(TestEmaS1ToH1_RSI_2_3.barCount2);
 
 
         // 使用EasyExcel将数据写入Excel文件
 //        backtestFile = "D:\\Program Files\\Code\\Hengxinchuang\\ta4j\\ta4j-examples\\src\\main\\resources\\Excel\\randomEmaTest\\_20240821\\ETHUSDT\\" +
 //                "EmaTestRSI_2_backtest_barCount1_"+TestEmaS1ToH1_RSI_2_2.barCount1+"_barCount2_"+TestEmaS1ToH1_RSI_2_2.barCount2+"_胜率："+proportion+".xlsx";
-        String symble = "ETHUSDT";
-        backtestFile = "D:\\Program Files\\Code\\Hengxinchuang\\ta4j\\ta4j-examples\\src\\main\\resources\\Excel\\randomEmaTest\\_20240821\\"+symble+"\\" +
-                symble+"_backtest_胜率："+proportion+(++fileNum)+".xlsx";
+        backtestFile = "D:\\Program Files\\Code\\Hengxinchuang\\ta4j\\ta4j-examples\\src\\main\\resources\\Excel\\randomEmaTest\\_20240821\\"+symbol+"\\" +
+                symbol+"_backtest_胜率："+proportion+(++fileNum)+".xlsx";
         EasyExcel.write(backtestFile, MyOrderExcel.class).sheet("数据表").doWrite(writeData);
         System.out.println("写出文件:+"+backtestFile);
 
