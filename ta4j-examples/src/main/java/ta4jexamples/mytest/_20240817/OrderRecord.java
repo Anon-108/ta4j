@@ -21,6 +21,8 @@ public class OrderRecord {
     @ExcelProperty("最大连续亏损次数")
     private Integer maxLoss;
 
+    public OrderRecord() {}
+
     public OrderRecord(Integer count, Double profitQty, Double lossQty, Double profit, Double proportion, Integer barCount1, Integer barCount2, Integer maxProfit, Integer maxLoss) {
         this.count = count;
         this.profitQty = profitQty;

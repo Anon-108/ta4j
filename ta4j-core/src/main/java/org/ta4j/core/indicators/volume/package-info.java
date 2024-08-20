@@ -23,5 +23,6 @@
  */
 /**
  * Indicators for the realization of volume based analysis.
+ * 实现基于量的分析的指标。
  */
 package org.ta4j.core.indicators.volume;

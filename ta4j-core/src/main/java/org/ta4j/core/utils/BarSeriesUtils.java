@@ -30,6 +30,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Function;
 
@@ -98,8 +99,14 @@ public final class BarSeriesUtils {
                 BaseBar baseBar = new BaseBar(Duration.ofHours(1),openTime,closeTime,open,high,low,close,volume,quoteAssetVolume,numberOfTrades);
 
 //                series.addBar(Duration.ofHours(1),closeTime,open,high,low,close,volume);
+                if (series.getBarCount() > 0 ){
+                    //如果当前时间不是
+                    boolean nextSecond = isNextSecond(series.getLastBar().getBeginTime(), openTime);
+                    if (!nextSecond) {//如果当前时间不是上一个时间的下一个标准时间，则认为数据有问题 抛出异常
+                        throw new RuntimeException("当前对象("+baseBar+")数据的时间("+openTime+")不是上一个时间("+series.getLastBar()+")的下一个标准时间。");
+                    }
+                }
                 series.addBar(baseBar);
-
             }
 
         } catch (IOException e) {
@@ -107,6 +114,73 @@ public final class BarSeriesUtils {
         }
         return series;
     }
+    // 判断是否是下一秒
+    public static boolean isNextSecond(ZonedDateTime previousTime, ZonedDateTime currentTime) {
+        long differenceInSeconds = ChronoUnit.SECONDS.between(previousTime, currentTime);
+        return differenceInSeconds == 1;
+    }
+
+    public static BarSeries buildBinanceDataBig(int limit,String filePath){
+        int num = 0;
+        int numFile = 0;
+        BarSeries series = new BaseBarSeriesBuilder().withName("BTC/USDT").build();
+//        String fileName = "2024-06-15_28_2000.json";
+//        String fileName = "2024-06-13_18.json";
+//        String filePath = "D:\\Program Files\\Code\\XChange\\xchange-examples\\src\\main\\resources\\dataFile\\"+fileName; // 文件的路径
+        ObjectMapper objectMapper = new ObjectMapper(); // 可以重用此实例
+
+        for (int i = 1; i <49; i++) { //2024-04-11T20:26:40+08:00[Asia/Shanghai] - 2024-07-31T23:06:39.999+08:00[Asia/Shanghai]  96000000 ，48个文件
+            filePath = "D:\\Program Files\\Code\\tradeData\\Data\\binance\\s1\\2024_08_18\\ETHUSDT\\Binance_ETHUSDT_2024-08-18_s1_"+i+".json";
+            try {
+                List<LinkedHashMap<String,Object>> klines = objectMapper.readValue(new File(filePath), List.class);
+                for (LinkedHashMap<String,Object> kline : klines) {
+                    if (limit > 0 && num == limit){
+                        break;
+                    }
+                    ++num;
+//                if (num >= 60814){
+//                    System.out.println();
+//                }
+                    String instrument = (String) kline.get("instrument");
+                    String interval = (String) kline.get("interval");
+                    ZonedDateTime openTime = timestampToZonedDateTime((long) kline.get("openTime"));
+                    ZonedDateTime closeTime = timestampToZonedDateTime((long) kline.get("closeTime"));
+                    Num open = DecimalNum.valueOf(kline.get("open").toString());
+                    Num high =  DecimalNum.valueOf( kline.get("high").toString());
+                    Num low =  DecimalNum.valueOf( kline.get("low").toString());
+                    Num close =  DecimalNum.valueOf( kline.get("close").toString());
+                    Num volume =  DecimalNum.valueOf( kline.get("volume").toString());
+
+                    Num quoteAssetVolume =   DecimalNum.valueOf( kline.get("quoteAssetVolume").toString());
+                    Long numberOfTrades = Long.parseLong( kline.get("numberOfTrades").toString());
+                    BigDecimal takerBuyBaseAssetVolume = new BigDecimal( kline.get("takerBuyBaseAssetVolume").toString());
+                    BigDecimal takerBuyQuoteAssetVolume = new BigDecimal( kline.get("takerBuyQuoteAssetVolume").toString());
+                    boolean closed = (boolean) kline.get("closed");
+
+
+                    BaseBar baseBar = new BaseBar(Duration.ofHours(1),openTime,closeTime,open,high,low,close,volume,quoteAssetVolume,numberOfTrades);
+
+//                series.addBar(Duration.ofHours(1),closeTime,open,high,low,close,volume);
+                    if (series.getBarCount() > 0 ){
+                        //如果当前时间不是
+                        boolean nextSecond = isNextSecond(series.getLastBar().getBeginTime(), openTime);
+                        if (!nextSecond) {//如果当前时间不是上一个时间的下一个标准时间，则认为数据有问题 抛出异常
+                            throw new RuntimeException("当前对象("+baseBar+")数据的时间("+openTime+")不是上一个时间("+series.getLastBar()+")的下一个标准时间。");
+                        }
+                    }
+                    series.addBar(baseBar);
+
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            System.out.println("当前文件索引"+i+",读取文件数量："+(++numFile));
+        }
+
+        return series;
+    }
+
 
     public static ZonedDateTime timestampToZonedDateTime( long timestamp) {
 //        timestamp +=1; // 增加时间，补充时间戳 2017-08-17T11:59:59.999
