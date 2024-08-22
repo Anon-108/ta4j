@@ -260,6 +260,7 @@ public class Trade implements Serializable {
     /**
      * @return the trade price per asset, or, if {@code NaN}, the close price from
      *         the supplied {@link BarSeries}.
+     *         每项资产的交易价格，或者，如果{@code NaN}，则提供的{@link BarSeries}的收盘价。
      */
     public Num getPricePerAsset(BarSeries barSeries) {
         if (pricePerAsset.isNaN()) {
@@ -271,6 +272,7 @@ public class Trade implements Serializable {
     /**
      * @return the net price per asset for the trade (i.e. {@link #pricePerAsset}
      *         with {@link #cost})
+     *         交易的每项资产的净价（即{@link pricePerAsset}和{@link cost}）
      */
     public Num getNetPrice() {
         return netPrice;

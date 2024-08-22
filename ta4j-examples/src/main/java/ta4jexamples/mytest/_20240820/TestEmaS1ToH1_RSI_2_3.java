@@ -87,7 +87,6 @@ public class TestEmaS1ToH1_RSI_2_3 {
                         }
                     });
                     if (files2.length < 1 ){
-                        System.out.println();
                         continue;
                     }
                     startTest(files2,createFileName);
@@ -111,10 +110,9 @@ public class TestEmaS1ToH1_RSI_2_3 {
     }
 
     private static void startTest(File[] files,String directory) {
-        BarSeries series = BarSeriesUtils.buildBinanceDataBig(files);
+//        BarSeries series = BarSeriesUtils.buildBinanceDataBig(files);
+        BarSeries series = null;
         symbol = directory;
-        Bar firstBar = series.getFirstBar();//2024-08-12T21:34:46.999+08:00[Asia/Shanghai]
-        Bar lastBar = series.getLastBar();
 
 
         int maxValue = 50; //最大数先用55
@@ -131,7 +129,7 @@ public class TestEmaS1ToH1_RSI_2_3 {
 //                    "EmaTestRSI_2_backtest_barCount1_"+barCount1+"_barCount2_"+barCount2+"胜率："+winningProbability+".xlsx";
             // rsi 14 盈利：交易总数:48,盈利数量:22.0,亏损数量:2.0,利润：3147.90胜率:91.66666666666666
             try {
-                testTrade (series,barCount1,barCount2,100,timeFrame);
+                testTrade (series,barCount1,barCount2,100,timeFrame,files);
             } catch (IOException e) {
                 System.out.println("回测指标失败");
             }
@@ -139,7 +137,7 @@ public class TestEmaS1ToH1_RSI_2_3 {
     }
 
 
-    public static void testTrade (BarSeries series,int barCount1,int barCount2,int startKline,int timeFrame) throws IOException {
+    public static void testTrade (BarSeries series, int barCount1, int barCount2, int startKline, int timeFrame, File[] files) throws IOException {
 
 
 //===================================策略回测 开始================================================
@@ -197,41 +195,53 @@ public class TestEmaS1ToH1_RSI_2_3 {
         List<MyOrderExcel> writeData = new ArrayList<>();
 //        List<MyOrder> myOrders = new ArrayList<>();
         ZonedDateTime time = ZonedDateTime.parse("2024-04-30T09:00:00+08:00[Asia/Shanghai]");
-        for (int start = 0; start < series.getBarCount(); start++) {
-
-            if (series.getBar(start).getBeginTime().isBefore(time)){
-                continue;
-            }
-            if (myBackTest.getBarData().size() < startKline){//历史k线不能少于100
-                Bar openBar = series.getBar(start); //获取第一根bar为开盘
-                start = start + timeFrame - 1;
-                Bar closeBar = series.getBar(start); //获取时间范围最后一根bar为收盘
-                BaseBar baseBar = new BaseBar(Duration.ofHours(1),openBar.getBeginTime(),closeBar.getEndTime(),openBar.getOpenPrice(), DecimalNum.ZERO,DecimalNum.ZERO,closeBar.getClosePrice(),DecimalNum.ZERO,DecimalNum.ZERO,0l);
-                myBackTest.addBar(baseBar);
-                continue;
-            }
-            Bar barData = series.getBar(start);
-            if (timeBars.isEmpty()){ //如果当前为0表示时间段开始第一个bar
-                timeBars.add(barData);
-                BaseBar baseBar = new BaseBar(Duration.ofHours(1),barData.getBeginTime(),barData.getEndTime(),barData.getOpenPrice(), DecimalNum.ZERO,DecimalNum.ZERO,barData.getClosePrice(),DecimalNum.ZERO,DecimalNum.ZERO,0l);
-                myBackTest.addBar(baseBar);
-                int endIndex = myBackTest.getEndIndex();
-
-                //回测
-                backTest(entryLongRule,  exitLongRule,  entryShortRule,  exitShortRule, upIndicatorRule,downIndicatorRule,closeLine, openLine, endIndex, rsi);
+        for (int j = 0; j < files.length; j++) {
+            if (j < 3){
+                series = series = BarSeriesUtils.buildBinanceDataBig(files);
+                Bar firstBar = series.getFirstBar();
+                Bar lastBar = series.getLastBar();
+                j = 3;
             }else {
-                //将第一条的bar结束时间和收盘价格设置为当前最新bar
-                timeBars.add(barData);
+                series = BarSeriesUtils.buildBinanceData(-1,files[j].toString());
+                Bar firstBar = series.getFirstBar();
+                Bar lastBar = series.getLastBar();//2024-05-07T07:39:59.999+08:00[Asia/Shanghai]
+            }
 
-                myBackTest.getLastBar().setEndTime(barData.getEndTime());
-                myBackTest.getLastBar().setClosePrice(barData.getClosePrice());
+            for (int start = 0; start < series.getBarCount(); start++) {
+                if (series.getBar(start).getBeginTime().isBefore(time)){
+                    continue;
+                }
+                if (myBackTest.getBarData().size() < startKline){//历史k线不能少于100
+                    Bar openBar = series.getBar(start); //获取第一根bar为开盘
+                    start = start + timeFrame - 1;
+                    Bar closeBar = series.getBar(start); //获取时间范围最后一根bar为收盘
+                    BaseBar baseBar = new BaseBar(Duration.ofHours(1),openBar.getBeginTime(),closeBar.getEndTime(),openBar.getOpenPrice(), DecimalNum.ZERO,DecimalNum.ZERO,closeBar.getClosePrice(),DecimalNum.ZERO,DecimalNum.ZERO,0l);
+                    myBackTest.addBar(baseBar);
+                    continue;
+                }
+                Bar barData = series.getBar(start);
+                if (timeBars.isEmpty()){ //如果当前为0表示时间段开始第一个bar
+                    timeBars.add(barData);
+                    BaseBar baseBar = new BaseBar(Duration.ofHours(1),barData.getBeginTime(),barData.getEndTime(),barData.getOpenPrice(), DecimalNum.ZERO,DecimalNum.ZERO,barData.getClosePrice(),DecimalNum.ZERO,DecimalNum.ZERO,0l);
+                    myBackTest.addBar(baseBar);
+                    int endIndex = myBackTest.getEndIndex();
 
-                int endIndex = myBackTest.getEndIndex();
-                //回测
-                backTest(entryLongRule,  exitLongRule,  entryShortRule,  exitShortRule, upIndicatorRule,downIndicatorRule,closeLine, openLine, endIndex,rsi);
+                    //回测
+                    backTest(entryLongRule,  exitLongRule,  entryShortRule,  exitShortRule, upIndicatorRule,downIndicatorRule,closeLine, openLine, endIndex, rsi);
+                }else {
+                    //将第一条的bar结束时间和收盘价格设置为当前最新bar
+                    timeBars.add(barData);
 
-                if (timeBars.size() == timeFrame){  //如果当前已经存储满 时间框架，则清空 开始下一个时间
-                    timeBars.clear();
+                    myBackTest.getLastBar().setEndTime(barData.getEndTime());
+                    myBackTest.getLastBar().setClosePrice(barData.getClosePrice());
+
+                    int endIndex = myBackTest.getEndIndex();
+                    //回测
+                    backTest(entryLongRule,  exitLongRule,  entryShortRule,  exitShortRule, upIndicatorRule,downIndicatorRule,closeLine, openLine, endIndex,rsi);
+
+                    if (timeBars.size() == timeFrame){  //如果当前已经存储满 时间框架，则清空 开始下一个时间
+                        timeBars.clear();
+                    }
                 }
             }
         }
